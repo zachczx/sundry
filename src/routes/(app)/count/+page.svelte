@@ -108,7 +108,7 @@
 <svelte:head>
 	<title>Count</title>
 </svelte:head>
-<PageWrapper title="Spray Logs" {pb}>
+<PageWrapper title="Count" {pb}>
 	<main class="grid h-full content-center justify-items-center gap-8 p-2">
 		<!-- <h1 class="w-full max-w-lg pb-2 text-center text-4xl font-medium text-secondary/60">Countdown</h1> -->
 		<div class="grid w-full max-w-lg grid-cols-[auto_1fr] justify-items-center gap-y-8">
