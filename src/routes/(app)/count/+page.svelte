@@ -74,7 +74,6 @@
 		started = false;
 	}
 
-	$inspect(min, sec);
 	function pause() {
 		pauseTarget = min * 60 + sec;
 		clearInterval(timerInterval);
@@ -103,6 +102,13 @@
 			}
 		};
 	});
+
+	function doubleDigits(num: number): string {
+		if (num < 10) {
+			return 0 + String(num);
+		}
+		return String(num);
+	}
 </script>
 
 <svelte:head>
@@ -146,32 +152,32 @@
 			</div>
 			<div class="grid grid-cols-2 gap-4">
 				<div class="flex flex-col px-2 text-center lg:px-8">
-					<span class="countdown-custom text-8xl">
+					<span class="text-8xl">
 						{#if !started && !pauseTarget}
 							<span
 								style={`--value:${targetMin};`}
 								aria-live="polite"
-								aria-label={String(targetMin)}>{targetMin}</span
+								aria-label={String(targetMin)}>{doubleDigits(targetMin)}</span
 							>
 						{:else}
 							<span style={`--value:${min};`} aria-live="polite" aria-label={String(min)}
-								>{min}</span
+								>{doubleDigits(min)}</span
 							>
 						{/if}
 					</span>
 					min
 				</div>
 				<div class="flex flex-col px-2 text-center lg:px-8">
-					<span class="countdown-custom text-8xl">
+					<span class="text-8xl">
 						{#if !started && !pauseTarget}
 							<span
 								style={`--value:${targetSec};`}
 								aria-live="polite"
-								aria-label={String(targetSec)}>{targetSec}</span
+								aria-label={String(targetSec)}>{doubleDigits(targetSec)}</span
 							>
 						{:else}
 							<span style={`--value:${sec};`} aria-live="polite" aria-label={String(sec)}
-								>{sec}</span
+								>{doubleDigits(sec)}</span
 							>
 						{/if}
 					</span>
@@ -246,9 +252,11 @@
 </PageWrapper>
 
 <style>
-	.countdown-custom {
+	/* .countdown {
 		display: inline-flex;
-
+		&.countdown {
+			line-height: 1em;
+		}
 		& > * {
 			display: inline-block;
 			overflow-y: hidden;
@@ -259,7 +267,8 @@
 				white-space: pre;
 				top: calc(var(--value) * -1em);
 				text-align: center;
+				transition: all 0.3s cubic-bezier(1, 0, 0, 1);
 			}
 		}
-	}
+	} */
 </style>
