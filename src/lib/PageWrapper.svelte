@@ -34,26 +34,59 @@
 		class="navbar border-b-base-300/50 bg-neutral text-neutral-content items-center border-b"
 	>
 		<div class="navbar-start">
-			<div class="dropdown">
-				<div class="drawer lg:hidden">
+			<a href="/" class="btn btn-ghost text-xl font-bold">Towsey</a>
+		</div>
+		<div id="desktop-menu" class="navbar-center hidden lg:flex">
+			<ul class="menu menu-horizontal gap-8 px-1 text-lg">
+				<li>
+					<a
+						href="/towelie"
+						class={[
+							'border-b-2',
+							page.route.id?.includes('towelie') &&
+								'border-b-neutral-content rounded-none border-b-2 font-bold',
+							!page.route.id?.includes('towelie') && 'border-b-transparent hover:bg-white/20'
+						]}>Towelie</a
+					>
+				</li>
+				<li>
+					<a
+						href="/nosey"
+						class={[
+							'border-b-2',
+							page.route.id?.includes('nosey') && 'border-b-neutral-content rounded-none font-bold',
+							!page.route.id?.includes('nosey') && 'border-b-transparent hover:bg-white/20'
+						]}>Nosey</a
+					>
+				</li>
+				<li>
+					<a
+						href="/count"
+						class={[
+							'border-b-2',
+							page.route.id?.includes('count') &&
+								'border-b-neutral-content rounded-none border-b-2 font-bold',
+							!page.route.id?.includes('count') && 'border-b-transparent hover:bg-white/20'
+						]}>Count</a
+					>
+				</li>
+			</ul>
+		</div>
+		<div class="navbar-end">
+			<div id="mobile-hamburger" class="dropdown lg:hidden">
+				<div class="drawer drawer-end">
 					<input id="side-drawer" type="checkbox" class="drawer-toggle" bind:this={drawerToggle} />
 					<div class="drawer-content">
-						<label for="side-drawer" class="btn btn-ghost drawer-button"
-							><svg
+						<label for="side-drawer" class="btn btn-ghost drawer-button p-0">
+							<svg
 								xmlns="http://www.w3.org/2000/svg"
-								class="h-5 w-5"
-								fill="none"
+								width="32"
+								height="32"
+								class="material-symbols:menu h-6 w-6"
 								viewBox="0 0 24 24"
-								stroke="currentColor"
+								><path fill="currentColor" d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z" /></svg
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M4 6h16M4 12h8m-8 6h16"
-								/>
-							</svg></label
-						>
+						</label>
 					</div>
 					<div class="drawer-side">
 						<label for="side-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
@@ -191,51 +224,18 @@
 					</div>
 				</div>
 			</div>
-			<a href="/" class="btn btn-ghost text-xl font-bold">Towsey</a>
-		</div>
-		<div class="navbar-center hidden lg:flex">
-			<ul class="menu menu-horizontal gap-8 px-1 text-lg">
-				<li>
-					<a
-						href="/towelie"
-						class={[
-							page.route.id?.includes('towelie') &&
-								'border-b-neutral-content rounded-none border-b-2 font-bold',
-							!page.route.id?.includes('towelie') && 'hover:bg-white/20'
-						]}>Towelie</a
+			<div id="desktop-logout" class="hidden items-center text-sm lg:flex">
+				{#if pb.authStore.isValid}
+					{pb.authStore.record?.email}<a href="/logout" class="btn btn-sm btn-outline ms-4"
+						>Logout</a
 					>
-				</li>
-				<li>
-					<a
-						href="/nosey"
-						class={[
-							page.route.id?.includes('nosey') &&
-								'border-b-neutral-content rounded-none border-b-2 font-bold',
-							!page.route.id?.includes('nosey') && 'hover:bg-white/20'
-						]}>Nosey</a
+				{:else}
+					<a href="/register" class="underline">Register</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a
+						href="/login"
+						class="underline">Login</a
 					>
-				</li>
-				<li>
-					<a
-						href="/count"
-						class={[
-							page.route.id?.includes('count') &&
-								'border-b-neutral-content rounded-none border-b-2 font-bold',
-							!page.route.id?.includes('count') && 'hover:bg-white/20'
-						]}>Count</a
-					>
-				</li>
-			</ul>
-		</div>
-		<div class="navbar-end hidden text-sm lg:flex">
-			{#if pb.authStore.isValid}
-				{pb.authStore.record?.email}<a href="/logout" class="btn btn-sm btn-outline ms-4">Logout</a>
-			{:else}
-				<a href="/register" class="underline">Register</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a
-					href="/login"
-					class="underline">Login</a
-				>
-			{/if}
+				{/if}
+			</div>
 		</div>
 	</div>
 
