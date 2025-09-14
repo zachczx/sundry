@@ -150,11 +150,11 @@
 
 			<section class="bg-primary/5 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
 				<h3 class="text-sm font-bold">Jump To</h3>
-				<ul class="justify-items-around grid grid-cols-3 gap-2">
+				<ul class="justify-items-around grid grid-cols-3 gap-4">
 					<li>
 						<a
 							href="/towelie"
-							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid w-full content-center justify-items-center gap-1 rounded-3xl border p-4 font-semibold"
+							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid aspect-square w-full content-center justify-items-center gap-1 rounded-3xl border p-2 font-semibold"
 							><svg
 								xmlns="http://www.w3.org/2000/svg"
 								width="1em"
@@ -175,7 +175,7 @@
 					<li>
 						<a
 							href="/nosey"
-							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid w-full content-center justify-items-center gap-1 rounded-3xl border p-4 font-semibold"
+							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid aspect-square w-full content-center justify-items-center gap-1 rounded-3xl border p-2 font-semibold"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -193,7 +193,7 @@
 					<li>
 						<a
 							href="/count"
-							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid w-full content-center justify-items-center gap-1 rounded-3xl border p-4 font-semibold"
+							class="focus:bg-primary focus:text-primary-content border-primary/30 hover:bg-primary hover:text-primary-content text-primary grid aspect-square w-full content-center justify-items-center gap-1 rounded-3xl border p-2 font-semibold"
 						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
