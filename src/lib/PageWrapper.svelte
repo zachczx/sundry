@@ -30,7 +30,7 @@
 
 <div class="grid min-h-dvh w-full grid-rows-[auto_1fr] content-start justify-items-center">
 	<div
-		id="safe-area"
+		id="safe-area-topnav"
 		class="navbar border-b-base-300/50 bg-neutral text-neutral-content items-center border-b"
 	>
 		<div class="navbar-start">
@@ -245,7 +245,8 @@
 </div>
 
 <style>
-	#safe-area {
+	#safe-area-topnav,
+	#mobile-hamburger {
 		padding-top: calc(var(--safe-area-inset-top) + 0.5rem) !important;
 	}
 </style>
