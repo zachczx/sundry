@@ -88,7 +88,7 @@
 							>
 						</label>
 					</div>
-					<div class="drawer-side">
+					<div id="mobile-drawer" class="drawer-side">
 						<label for="side-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
 
 						<ul
@@ -246,7 +246,7 @@
 
 <style>
 	#safe-area-topnav,
-	#mobile-hamburger {
+	#mobile-drawer {
 		padding-top: calc(var(--safe-area-inset-top) + 0.5rem) !important;
 	}
 </style>
