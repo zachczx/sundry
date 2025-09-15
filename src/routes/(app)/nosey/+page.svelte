@@ -1,8 +1,13 @@
 <script lang="ts">
+	import Red from '$lib/images/red.webp?w=600&enhanced';
+	import Orange from '$lib/images/orange.webp?w=600&enhanced';
+	import Yellow from '$lib/images/yellow.webp?w=600&enhanced';
+	import Green from '$lib/images/green.webp?w=600&enhanced';
 	import { pb } from '$lib/pb';
 	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
+	import relativeTime from 'dayjs/plugin/relativeTime';
 	import timezone from 'dayjs/plugin/timezone';
 	import { Calendar, DayGrid, Interaction } from '@event-calendar/core';
 	import PageWrapper from '$lib/PageWrapper.svelte';
@@ -10,15 +15,16 @@
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 
+	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	let results: SprayDB[] | undefined = $state([]);
+	let sprayDB: SprayDB[] | undefined = $state([]);
 	let singleDay: SprayDB[] | undefined = $state([]);
 
 	onMount(async () => {
 		if (pb.authStore.isValid) {
-			results = await pb.collection('spray').getFullList({
+			sprayDB = await pb.collection('spray').getFullList({
 				sort: '-time'
 			});
 		}
@@ -36,15 +42,15 @@
 			spinner = false;
 		}
 
-		results = await pb.collection('spray').getFullList({
+		sprayDB = await pb.collection('spray').getFullList({
 			sort: '-time'
 		});
 	}
 
 	let times = $derived.by(() => {
 		let times: Calendar.EventInput[] = [];
-		if (results && results.length > 0) {
-			for (const r of results) {
+		if (sprayDB && sprayDB.length > 0) {
+			for (const r of sprayDB) {
 				//Adding the timezone here creates a problem for mobile devices, not sure why => .tz('Asia/Singapore');
 				const n = dayjs.utc(r.time);
 				times.push({ start: n.toDate(), end: n.toDate(), title: `— Sprayed` });
@@ -57,7 +63,6 @@
 		return {
 			view: 'dayGridMonth',
 			events: [...times],
-
 			selectBackgroundColor: 'red',
 			eventBackgroundColor: '#4a4a7d',
 			titleFormat: (date) => {
@@ -68,8 +73,14 @@
 				return dayjs(date).format('MMMM YYYY');
 			},
 			dateClick: async (info) => {
-				singleDay = results?.filter((day) => {
+				singleDay = sprayDB?.filter((day) => {
 					return dayjs(day.time).get('date') == dayjs(info.date).get('date');
+				});
+				singleDayModal.showModal();
+			},
+			eventClick: async (info) => {
+				singleDay = sprayDB?.filter((day) => {
+					return dayjs(day.time).get('date') == dayjs(info.event.start).get('date');
 				});
 				singleDayModal.showModal();
 			}
@@ -78,29 +89,155 @@
 
 	let singleDayModal = $state() as HTMLDialogElement;
 	let spinner = $state(false);
+
+	function getStatusColorFromValue(val: number): string {
+		const day = 24;
+
+		if (val > 0 && val <= 3 * day) return 'green';
+
+		// if (val > 2 * day && val <= 4 * day) return 'yellow';
+
+		// if (val > 4 * day && val <= 6 * day) return 'orange';
+
+		if (val > 3 * day && val <= 999 * day) return 'red';
+
+		return '';
+	}
+
+	let lastSpray: number | undefined = $derived.by(() => {
+		let lastSpray;
+		if (sprayDB && sprayDB.length > 0) {
+			const lastWashDate = dayjs(sprayDB[0].time);
+			const today = dayjs();
+			lastSpray = today.diff(lastWashDate, 'hours', true);
+			return lastSpray;
+		}
+	});
+
+	let status = $derived.by(() => {
+		if (!lastSpray) {
+			return '';
+		}
+		return getStatusColorFromValue(lastSpray);
+	});
+
+	let currentTab = $state('overview');
 </script>
 
 <svelte:head>
 	<title>Nosey</title>
 </svelte:head>
 
-<PageWrapper title="Spray Logs" {pb}>
-	<main class="grid w-full content-start justify-items-center gap-8">
-		<h2 class="font-space text-6xl font-bold">Nosey</h2>
-		<button
-			class="btn btn-xl btn-primary flex min-w-54 items-center gap-2 max-md:w-full"
-			onclick={handleClick}
-			><MaterialSymbolsAdd class="size-[1.3em]" />
-			{#if !spinner}
-				Add Spray
-			{:else}
-				<span class="loading loading-md loading-spinner"></span>
-			{/if}
-		</button>
-		<div class="w-full max-w-[1200px]">
-			{#key results}
-				<Calendar plugins={[DayGrid, Interaction]} {options} />
+<PageWrapper title="Spray Logs" {pb} noPadding={true}>
+	<main
+		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2"
+	>
+		<div class="grid content-start justify-items-center gap-4 px-4 pt-4">
+			{#key sprayDB}
+				{#if status === 'green'}
+					<enhanced:img src={Green} alt="Clean" class="rounded-3xl" />
+				{:else if status === 'yellow'}
+					<enhanced:img src={Yellow} alt="Still Good" class="rounded-3xl" />
+				{:else if status === 'orange'}
+					<enhanced:img src={Orange} alt="Ripening" class="rounded-3xl" />
+				{:else}
+					<enhanced:img src={Red} alt="Time to Wash!" class="rounded-3xl" />
+				{/if}
 			{/key}
+			<button
+				class="btn btn-xl btn-primary flex w-full min-w-54 items-center gap-2"
+				onclick={handleClick}
+				><MaterialSymbolsAdd class="size-[1.3em]" />
+				{#if !spinner}
+					Just Sprayed!
+				{:else}
+					<span class="loading loading-md loading-spinner"></span>
+				{/if}
+			</button>
+		</div>
+
+		<div class="grid w-full content-start gap-8 py-4">
+			<ul class="grid w-full grid-cols-2 content-center justify-items-center">
+				<li class="w-full">
+					<button
+						class={[
+							currentTab === 'overview' ? 'border-b-primary font-semibold' : 'border-b-base-300',
+							'w-full border-b-2 text-center'
+						]}
+						onclick={() => {
+							currentTab = 'overview';
+						}}
+					>
+						Overview</button
+					>
+				</li>
+				<li class="w-full">
+					<button
+						class={[
+							currentTab === 'calendar' ? 'border-b-primary font-semibold' : 'border-b-base-300',
+							'w-full border-b-2 text-center'
+						]}
+						onclick={() => {
+							currentTab = 'calendar';
+						}}
+					>
+						Calendar</button
+					>
+				</li>
+			</ul>
+			{#if currentTab === 'overview'}
+				<div class="w-full px-4">
+					<div
+						class="text-md border-base-content/5 bg-base-200/50 grid grid-cols-2 content-center gap-4 rounded-lg border shadow"
+					>
+						<div class="border-r-base-content/15 grid justify-items-center border-r p-4">
+							<div>Status</div>
+							{#key sprayDB}
+								{#if status}
+									<div class="flex min-h-20 items-center justify-center gap-4 text-2xl font-bold">
+										{#if status === 'green'}
+											<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
+											<span class="text-center text-lime-500">Dosed</span>
+										{:else if status === 'yellow'}
+											<div class="hidden h-6 w-6 rounded-full bg-yellow-500 lg:flex"></div>
+											<span class="text-yellow-500">Good</span>
+										{:else if status === 'orange'}
+											<div class="hidden h-6 w-6 rounded-full bg-orange-400 lg:flex"></div>
+											<span class="text-orange-400">Due</span>
+										{:else}
+											<div class="hidden h-5 w-5 rounded-full bg-red-700 lg:flex"></div>
+											<span class="text-red-700">Overdue</span>
+										{/if}
+									</div>
+								{:else}
+									<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
+								{/if}
+							{/key}
+						</div>
+						<div class="grid justify-items-center p-4">
+							<div>Last Sprayed</div>
+							<div class="text-center text-2xl font-bold">
+								{#key sprayDB}
+									{#if sprayDB && sprayDB.length > 0}
+										{@const formatted = dayjs(sprayDB[0].time).fromNow()}
+										{formatted}
+									{:else}
+										<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
+									{/if}
+								{/key}
+							</div>
+						</div>
+					</div>
+				</div>
+			{/if}
+			{#if currentTab === 'calendar'}
+				<!-- The minmax(0, 1fr) or min-w-0 approaches explicitly tell the browser that the calendar can shrink below its content size, which is often what's needed for responsive calendar components. -->
+				<div class="grid w-full grid-cols-[minmax(0,1fr)] overflow-hidden px-4">
+					{#key sprayDB}
+						<Calendar plugins={[DayGrid, Interaction]} {options} />
+					{/key}
+				</div>
+			{/if}
 		</div>
 	</main>
 </PageWrapper>
@@ -136,7 +273,8 @@
 <style>
 	:global {
 		.ec.ec-day-grid {
-			max-width: 95vw;
+			/* max-width: 90vw; */
+			width: 100%;
 		}
 
 		.ec-title {

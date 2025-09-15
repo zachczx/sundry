@@ -8,7 +8,12 @@
 	import MaterialSymbolsLogin from './assets/svg/MaterialSymbolsLogin.svelte';
 	import MaterialSymbolsLogout from './assets/svg/MaterialSymbolsLogout.svelte';
 
-	let { pb, children, title }: { pb: Client; children: Snippet; title: string } = $props();
+	let {
+		pb,
+		children,
+		title,
+		noPadding = false
+	}: { pb: Client; children: Snippet; title: string; noPadding?: boolean } = $props();
 
 	let drawerToggle = $state() as HTMLInputElement;
 
@@ -239,7 +244,7 @@
 		</div>
 	</div>
 
-	<div class="w-full px-4 py-4 lg:px-12 lg:pt-12">
+	<div class={['w-full', !noPadding && 'px-4 py-4 lg:px-12 lg:pt-12']}>
 		{@render children?.()}
 	</div>
 </div>

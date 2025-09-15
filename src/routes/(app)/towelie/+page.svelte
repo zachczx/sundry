@@ -69,6 +69,20 @@
 		return gapsDates;
 	});
 
+	function getStatusColorFromValue(val: number): string {
+		const day = 24;
+
+		if (val > 0 && val <= 2 * day) return 'green';
+
+		if (val > 2 * day && val <= 4 * day) return 'yellow';
+
+		if (val > 4 * day && val <= 6 * day) return 'orange';
+
+		if (val > 6 * day && val <= 999 * day) return 'red';
+
+		return '';
+	}
+
 	let towelDirty: number | undefined = $derived.by(() => {
 		let towelDirty;
 		if (towelRecords && towelRecords.length > 0) {
@@ -128,24 +142,10 @@
 		if (!towelDirty) {
 			return '';
 		}
-		return getValue(towelDirty);
+		return getStatusColorFromValue(towelDirty);
 	});
 
 	let modal = $state() as HTMLDialogElement;
-
-	function getValue(val: number): string {
-		const day = 24;
-
-		if (val > 0 && val <= 2 * day) return 'green';
-
-		if (val > 2 * day && val <= 4 * day) return 'yellow';
-
-		if (val > 4 * day && val <= 6 * day) return 'orange';
-
-		if (val > 6 * day && val <= 999 * day) return 'red';
-
-		return '';
-	}
 
 	async function addHandler() {
 		const result = await pb.collection('towel').create({
@@ -186,7 +186,7 @@
 	function getColorClass(gapDays: number | undefined): string {
 		if (!gapDays) return '';
 
-		if (gapDays > 0 && gapDays <= 2) return 'lime-400';
+		if (gapDays > 0 && gapDays <= 2) return 'lime-500';
 
 		if (gapDays > 2 && gapDays <= 4) return 'yellow-500';
 
@@ -235,8 +235,8 @@
 							{#if status}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">
 									{#if status === 'green'}
-										<div class="hidden h-6 w-6 rounded-full bg-lime-400 lg:flex"></div>
-										<span class="text-lime-400">Squeaky Clean</span>
+										<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
+										<span class="text-lime-500">Squeaky Clean</span>
 									{:else if status === 'yellow'}
 										<div class="hidden h-6 w-6 rounded-full bg-yellow-500 lg:flex"></div>
 										<span class="text-yellow-500">Still Fresh</span>
@@ -310,7 +310,7 @@
 		<h3 class="text-4xl font-bold">More Details</h3>
 		<div class="grid min-h-16 w-full grid-cols-4">
 			<div
-				class="flex items-center justify-center rounded-l-lg bg-lime-400 {status === 'green'
+				class="flex items-center justify-center rounded-l-lg bg-lime-500 {status === 'green'
 					? 'border-base-content border-4 font-bold'
 					: undefined}"
 			>
