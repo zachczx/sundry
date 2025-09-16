@@ -315,7 +315,9 @@
 							<div>Status</div>
 							{#key towelRecords}
 								{#if status}
-									<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">
+									<div
+										class="flex min-h-20 items-center justify-center gap-4 text-center text-2xl font-bold"
+									>
 										{#if status === 'green'}
 											<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
 											<span class="text-lime-500">Squeaky Clean</span>
