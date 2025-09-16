@@ -22,6 +22,7 @@
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsClose from '$lib/assets/svg/MaterialSymbolsClose.svelte';
 	import MaterialSymbolsCheckCircle from '$lib/assets/svg/MaterialSymbolsCheckCircle.svelte';
+	import { SafeArea } from '@capacitor-community/safe-area';
 </script>
 
 <div>
@@ -65,6 +66,7 @@
 			align-items: center;
 			column-gap: 2rem;
 			padding: 1rem;
+			margin-top: calc(var(--safe-area-inset-top) + 1rem) !important;
 			border-radius: 0.5rem;
 			box-shadow:
 				0 4px 6px -1px rgb(0 0 0 / 0.3),
