@@ -55,7 +55,7 @@
 
 <PageWrapper title="Register" {pb}>
 	<form class="grid h-full w-full max-w-sm content-center justify-self-center">
-		<div class="lg:bg-base-200 w-full rounded-2xl shadow-md lg:p-8">
+		<div class="lg:bg-base-200 w-full rounded-2xl lg:p-8 lg:shadow-md">
 			<h1
 				class="text-primary mb-4 text-center text-5xl font-bold tracking-tighter lg:mb-12 lg:text-9xl"
 			>
@@ -67,7 +67,7 @@
 					name="email"
 					bind:value={email}
 					class="input input-lg w-full"
-					placeholder="Email address"
+					placeholder="Email"
 				/>
 			</fieldset>
 
@@ -95,8 +95,8 @@
 					<span class="loading loading-md loading-spinner"></span>
 				{/if}
 			</button>
-			<div class="mt-2 text-center">
-				<a href="/login" class=""><u>Or login here</u></a>
+			<div class="mt-8 text-center">
+				Have an account? <a href="/login" class="text-primary font-bold">Login here.</a>
 			</div>
 		</div>
 	</form>
