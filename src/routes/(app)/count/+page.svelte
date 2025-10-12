@@ -128,7 +128,7 @@
 <svelte:head>
 	<title>Count</title>
 </svelte:head>
-<PageWrapper title="Count" {pb}>
+<PageWrapper title="Count" back={true} {pb}>
 	<div class="grid h-full grid-rows-[1fr_auto]">
 		<main class="grid h-full content-center justify-items-center gap-8 p-2">
 			<div class="grid w-full max-w-lg grid-cols-[auto_1fr] justify-items-center gap-y-8">

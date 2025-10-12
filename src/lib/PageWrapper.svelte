@@ -13,8 +13,15 @@
 		pb,
 		children,
 		title,
+		back,
 		noPadding = false
-	}: { pb: Client; children: Snippet; title: string; noPadding?: boolean } = $props();
+	}: {
+		pb: Client;
+		children: Snippet;
+		title: string;
+		back?: boolean;
+		noPadding?: boolean;
+	} = $props();
 
 	let drawerToggle = $state() as HTMLInputElement;
 
@@ -37,9 +44,39 @@
 <div class="grid min-h-dvh w-full grid-rows-[auto_1fr] content-start justify-items-center">
 	<div
 		id="safe-area-topnav"
-		class="navbar border-b-base-300/50 bg-neutral text-neutral-content min-h-14 items-center border-b px-4"
+		class={[
+			'navbar border-b-base-300/50 bg-neutral text-neutral-content min-h-14 items-center border-b pe-4',
+			back ? 'lg:ps-4' : 'ps-4'
+		]}
 	>
 		<div class="navbar-start">
+			{#if back}
+				<button
+					aria-label="go back"
+					class="cursor-pointer p-2 max-lg:me-4 lg:hidden"
+					onclick={() => {
+						if (window) {
+							history.back();
+						}
+					}}
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="32"
+						height="32"
+						class="lucide:arrow-left size-6"
+						viewBox="0 0 24 24"
+						><path
+							fill="none"
+							stroke="currentColor"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="m12 19l-7-7l7-7m7 7H5"
+						/></svg
+					>
+				</button>
+			{/if}
 			<a href="/" class="text-xl font-bold">Towsey</a>
 		</div>
 		<div id="desktop-menu" class="navbar-center hidden lg:flex">

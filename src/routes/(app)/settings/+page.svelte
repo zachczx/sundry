@@ -43,7 +43,7 @@
 	}
 </script>
 
-<PageWrapper title="Settings" {pb}>
+<PageWrapper title="Settings" back={true} {pb}>
 	<div
 		class="grid h-full w-full max-w-lg justify-self-center max-lg:grid-rows-[auto_1fr] max-lg:content-start lg:content-center"
 	>

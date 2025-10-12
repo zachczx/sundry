@@ -250,11 +250,11 @@
 	<title>Towelie</title>
 </svelte:head>
 
-<PageWrapper title="Towelie" {pb} noPadding={true}>
+<PageWrapper title="Towelie" {pb} back={true} noPadding={true}>
 	<div
 		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2 lg:pt-8"
 	>
-		<div class="grid content-start justify-items-center gap-4 px-4 pt-4">
+		<div class="grid content-start justify-items-center gap-4 px-4 pt-8">
 			{#key towelRecords}
 				{#if status === 'green'}
 					<enhanced:img src={Green} alt="Clean" class="rounded-3xl" />

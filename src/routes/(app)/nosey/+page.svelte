@@ -15,6 +15,7 @@
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import Chart from 'chart.js/auto';
+	import { defaultSprayInterval } from '$lib/config';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -118,7 +119,6 @@
 
 	let currentTab = $state('overview');
 
-	const defaultSprayInterval = 3;
 	let daysToNext = $state(defaultSprayInterval);
 
 	// For Statuses
@@ -207,11 +207,11 @@
 	<title>Nosey</title>
 </svelte:head>
 
-<PageWrapper title="Spray Logs" {pb} noPadding={true}>
+<PageWrapper title="Spray Logs" back={true} {pb} noPadding={true}>
 	<main
 		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2 lg:pt-8"
 	>
-		<div class="grid content-start justify-items-center gap-4 px-4 pt-4">
+		<div class="grid content-start justify-items-center gap-4 px-4 pt-8">
 			{#key sprayDB}
 				{#if status === 'green'}
 					<enhanced:img src={Green} alt="Clean" class="rounded-3xl" />
