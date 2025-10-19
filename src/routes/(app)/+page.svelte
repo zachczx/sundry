@@ -338,7 +338,8 @@
 										d="M3.93 2.832a.078.078 0 0 0-.138-.07l-.3.597V2.48a.078.078 0 1 0-.156 0v1.206a.078.078 0 0 0 .15.03l.445-.884z"
 										style="fill:#ffb74d;fill-rule:nonzero"
 									/><path
-										style="fill:#e64a19;fill-rule:nonzero"
+										class="this-is-ticking-hand"
+										style="fill:none;fill-rule:nonzero"
 										d="m1.895 2 3.147 3.147-.11.11-3.147-3.146z"
 									/></g
 								></svg
