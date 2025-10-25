@@ -25,7 +25,7 @@
 			});
 
 			sprayDB = await pb.collection('spray').getFullList({
-				sort: '-created'
+				sort: '-time'
 			});
 		}
 	});
