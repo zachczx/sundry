@@ -90,12 +90,9 @@
 <PageWrapper title="Towsey" {pb}>
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
-			<section class="grid gap-4 py-4">
-				<a
-					href="/towelie"
-					class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4"
-				>
-					<div class="flex items-center">
+			<div class="grid gap-4 py-4">
+				<section class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
+					<a href="/towelie" class="flex items-center">
 						<div class="flex grow items-center gap-8">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -137,18 +134,15 @@
 								><MaterialSymbolsChevronRight class="size-6" /></button
 							>
 						</div>
-					</div>
+					</a>
 					<button
 						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-2xl"
 						onclick={addTowelHandler}>Just Washed My Towel!</button
 					>
-				</a>
+				</section>
 
-				<a
-					href="/nosey"
-					class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4"
-				>
-					<div class="flex items-center">
+				<section class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
+					<a href="/nosey" class="flex items-center">
 						<div class="flex grow items-center gap-8">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -205,12 +199,12 @@
 								><MaterialSymbolsChevronRight class="size-6" /></button
 							>
 						</div>
-					</div>
+					</a>
 					<button
 						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-2xl"
 						onclick={addSprayHandler}>Just Sprayed Nose!</button
 					>
-				</a>
+				</section>
 
 				<a
 					href="/count"
@@ -354,7 +348,7 @@
 						</div>
 					</div></a
 				>
-			</section>
+			</div>
 		</div>
 	</main>
 </PageWrapper>
