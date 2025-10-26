@@ -41,7 +41,7 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="grid min-h-dvh w-full grid-rows-[auto_1fr] content-start justify-items-center">
+<div class="grid h-dvh w-full grid-rows-[auto_1fr] content-start justify-items-center">
 	<div
 		id="safe-area-topnav"
 		class={[
@@ -229,7 +229,7 @@
 								{#if pb.authStore.isValid}
 									<li>
 										<a
-											href="/settings"
+											href="/profile"
 											class="text-base-content flex w-full gap-4 py-4 text-lg font-semibold"
 											><MaterialSymbolsSettings class="size-[1.3em] opacity-75" />Settings</a
 										>
@@ -276,7 +276,7 @@
 			</div>
 			<div id="desktop-logout" class="hidden items-center text-sm lg:flex">
 				{#if pb.authStore.isValid}
-					<a href="/settings" class="btn btn-ghost"
+					<a href="/profile" class="btn btn-ghost"
 						><MaterialSymbolsSettings class="size-[1.5em] opacity-75" /></a
 					><a href="/logout" class="btn btn-outline ms-1">Logout</a>
 				{:else}
@@ -289,7 +289,12 @@
 		</div>
 	</div>
 
-	<div class={['bg-pattern w-full', !noPadding && 'px-4 py-4 lg:px-12 lg:pt-12']}>
+	<div
+		class={[
+			'bg-pattern w-full max-lg:h-full lg:grid lg:content-start',
+			!noPadding && 'px-4 py-4 lg:px-12 lg:pt-12'
+		]}
+	>
 		{@render children?.()}
 	</div>
 </div>
@@ -308,4 +313,8 @@
 		background:
 			linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), url('/gplay.webp'); /* #008c8c; */
 	}
+
+	/* .content-height {
+		min-height: calc(100vh - 57px);
+	} */
 </style>

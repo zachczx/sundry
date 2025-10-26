@@ -1,6 +1,6 @@
 interface TowelDB {
 	collectionId: string;
-	collectionName: string;
+	collectionName: 'towel';
 	id: string;
 	time: string;
 	created: string;
@@ -14,7 +14,7 @@ interface TowelRecord extends TowelDB {
 
 interface SprayDB {
 	collectionId: string;
-	collectionName: string;
+	collectionName: 'spray';
 	id: string;
 	time: string;
 	created: string;
@@ -37,4 +37,15 @@ interface UserDB {
 	defaultSprayInterval: number;
 	created: string;
 	updated: string;
+}
+
+interface VacationDB {
+	collectionId: string;
+	collectionName: 'vacation';
+	id: string;
+	created: string;
+	updated: string;
+	user: string;
+	startTime: string;
+	endTime: string;
 }
