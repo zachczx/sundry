@@ -161,7 +161,7 @@
 				{/if}
 
 				{#if currentTab === 'vacations'}
-					<div class="bg-base-200 mt-4 rounded-xl p-4">
+					<div class="bg-base-200 lg:bg-base-300 mt-4 rounded-xl p-4">
 						<div class="mb-2 flex items-center">
 							<h3 class="text-base-content/70 grow font-semibold uppercase">Recent Vacations</h3>
 							<button
