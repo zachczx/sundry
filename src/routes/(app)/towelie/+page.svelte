@@ -24,7 +24,7 @@
 
 	const vacations = createQuery<VacationDB[]>(() => ({
 		queryKey: ['vacations'],
-		queryFn: async () => await pb.collection('vacation').getFullList({ sort: '-time' })
+		queryFn: async () => await pb.collection('vacation').getFullList({ sort: '-startDateTime' })
 	}));
 
 	const towels = createQuery<TowelDB[]>(() => ({
