@@ -26,7 +26,7 @@
 		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' })
 	}));
 
-	const userPref = createQuery<UserDB>(() => ({
+	const user = createQuery<UserDB>(() => ({
 		queryKey: ['user', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id))
 	}));
@@ -41,11 +41,11 @@
 	});
 
 	let daysToNext = $derived.by(() => {
-		if (userPref.isPending) {
+		if (user.isPending) {
 			return undefined;
 		}
 
-		return userPref.data?.defaultSprayInterval;
+		return user.data?.defaultSprayInterval;
 	});
 
 	let sprayLast: string = $derived.by(() => {
