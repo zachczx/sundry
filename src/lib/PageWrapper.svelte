@@ -336,6 +336,52 @@
 				</div>
 			</div>
 			<div id="desktop-logout" class="hidden items-center text-sm lg:flex">
+				<div class="dropdown dropdown-end">
+					<div tabindex="0" role="button" class="btn btn-ghost drawer-button px-2 py-0 opacity-75">
+						{#if !sprayNotification && !towelNotification}
+							<MaterialSymbolsNotifications class="size-6" />
+						{:else}
+							<MaterialSymbolsNotificationImportant class="size-6" />
+						{/if}
+					</div>
+					<ul
+						class="dropdown-content menu rounded-box bg-base-100 text-md text-base-content z-1 w-72 p-2 shadow-lg"
+					>
+						{#if !sprayNotification && !towelNotification}
+							<li>
+								<div class="flex items-center justify-center gap-2">
+									<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>All good!</span>
+								</div>
+							</li>
+						{/if}
+
+						{#if sprayNotification}
+							<li>
+								<a href="/nosey" class="flex items-center">
+									<div class="flex grow items-center gap-2">
+										<MaterialSymbolsWarning class="size-[1.3em]" />Spray your nose!
+									</div>
+									<div>
+										<MaterialSymbolsChevronRight class="size-5 opacity-50" />
+									</div>
+								</a>
+							</li>
+						{/if}
+
+						{#if towelNotification}
+							<li>
+								<a href="/towelie" class="flex items-center">
+									<div class="flex grow items-center gap-2">
+										<MaterialSymbolsWarning class="size-[1.3em]" />Wash your towel!
+									</div>
+									<div>
+										<MaterialSymbolsChevronRight class="size-5 opacity-50" />
+									</div>
+								</a>
+							</li>
+						{/if}
+					</ul>
+				</div>
 				{#if pb.authStore.isValid}
 					<a href="/profile" class="btn btn-ghost"
 						><MaterialSymbolsSettings class="size-[1.5em] opacity-75" /></a
