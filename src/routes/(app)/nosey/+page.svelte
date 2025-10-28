@@ -31,7 +31,7 @@
 
 	const userPref = createQuery<UserDB>(() => ({
 		queryKey: ['user', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('user').getOne(String(pb.authStore?.record?.id))
+		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id))
 	}));
 
 	const tanstackClient = useQueryClient();
