@@ -25,7 +25,7 @@
 	let singleDayModal = $state() as HTMLDialogElement;
 
 	const sprays = createQuery<SprayDB[]>(() => ({
-		queryKey: ['sprays'],
+		queryKey: ['sprays', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' })
 	}));
 

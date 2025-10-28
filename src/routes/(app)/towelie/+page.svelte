@@ -24,12 +24,12 @@
 	dayjs.extend(timezone);
 
 	const vacations = createQuery<VacationDB[]>(() => ({
-		queryKey: ['vacations'],
+		queryKey: ['vacations', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('vacation').getFullList({ sort: '-startDateTime' })
 	}));
 
 	const towels = createQuery<TowelDB[]>(() => ({
-		queryKey: ['towels'],
+		queryKey: ['towels', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('towel').getFullList({ sort: '-time' })
 	}));
 

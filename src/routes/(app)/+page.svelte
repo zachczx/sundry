@@ -17,12 +17,12 @@
 	dayjs.extend(timezone);
 
 	const towels = createQuery<TowelDB[]>(() => ({
-		queryKey: ['towels'],
+		queryKey: ['towels', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('towel').getFullList({ sort: '-time' })
 	}));
 
 	const sprays = createQuery<SprayDB[]>(() => ({
-		queryKey: ['sprays'],
+		queryKey: ['sprays', pb.authStore?.record?.id],
 		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' })
 	}));
 
