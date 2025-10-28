@@ -15,7 +15,6 @@
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import Chart from 'chart.js/auto';
-	import { defaultSprayInterval } from '$lib/config';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 
 	dayjs.extend(relativeTime);
