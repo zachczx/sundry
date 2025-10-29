@@ -18,7 +18,6 @@
 	import { calculateVacationOverlap } from '$lib/overlap';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import { dirtyTowelDays } from '$lib/config';
-	import { SsgoiTransition } from '@ssgoi/svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -265,18 +264,35 @@
 
 <PageWrapper title="Towelie" {pb} back={true} noPadding={true}>
 	<div
-		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2 lg:pt-8"
+		class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center lg:pt-8"
 	>
-		<div class="grid content-start justify-items-center gap-4 px-4 pt-8">
+		<div class="grid w-full content-start justify-items-center gap-4 px-4 pt-8">
 			{#key towelRecords}
+				{@const status = 'green'}
 				{#if status === 'green'}
-					<enhanced:img src={Green} alt="Clean" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-[#dbf0be] p-4">
+							<enhanced:img src={Green} alt="Still Good" class="" />
+						</div>
+					</div>
 				{:else if status === 'yellow'}
-					<enhanced:img src={Yellow} alt="Still Good" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-yellow-200/70 p-4">
+							<enhanced:img src={Yellow} alt="Still Good" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else if status === 'orange'}
-					<enhanced:img src={Orange} alt="Ripening" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-orange-200/70 p-4">
+							<enhanced:img src={Orange} alt="Ripening" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else if status === 'red'}
-					<enhanced:img src={Red} alt="Time to Wash!" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-red-200/70 p-4">
+							<enhanced:img src={Red} alt="Time to Wash!" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else}
 					<div class="skeleton h-[600px] w-[600px] max-lg:h-[342px] max-lg:w-[342px]"></div>
 				{/if}

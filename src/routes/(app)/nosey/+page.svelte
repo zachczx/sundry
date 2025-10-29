@@ -2,7 +2,7 @@
 	import Red from '$lib/images/nosey_red.webp?w=600&enhanced';
 	import Orange from '$lib/images/nosey_orange.webp?w=600&enhanced';
 	import Yellow from '$lib/images/nosey_olive.webp?w=600&enhanced';
-	import Green from '$lib/images/nosey_green.webp?w=150&enhanced';
+	import Green from '$lib/images/nosey_green.webp?w=600&enhanced';
 	import { pb } from '$lib/pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
@@ -237,18 +237,34 @@
 
 <PageWrapper title="Spray Logs" back={true} {pb} noPadding={true}>
 	<main
-		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2 lg:pt-8"
+		class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center lg:pt-8"
 	>
 		<div class="grid w-full content-start justify-items-center gap-4 px-4 pt-8">
 			{#if sprays.isSuccess}
 				{#if status === 'green'}
-					<enhanced:img src={Green} alt="Still Good" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-[#dbf0be]">
+							<enhanced:img src={Green} alt="Still Good" class="" />
+						</div>
+					</div>
 				{:else if status === 'yellow'}
-					<enhanced:img src={Yellow} alt="Still Good" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-yellow-200/70">
+							<enhanced:img src={Yellow} alt="Still Good" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else if status === 'orange'}
-					<enhanced:img src={Orange} alt="Ripening" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-orange-200/70">
+							<enhanced:img src={Orange} alt="Ripening" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else if status === 'red'}
-					<enhanced:img src={Red} alt="Time to Wash!" class="rounded-3xl" />
+					<div class="avatar">
+						<div class="w-32 rounded-full bg-red-200/70">
+							<enhanced:img src={Red} alt="Time to Wash!" class="rounded-2xl" />
+						</div>
+					</div>
 				{:else}
 					<div class="skeleton h-[600px] w-[600px] max-lg:h-[342px] max-lg:w-[342px]"></div>
 				{/if}
