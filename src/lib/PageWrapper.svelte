@@ -8,15 +8,10 @@
 	import MaterialSymbolsLogin from './assets/svg/MaterialSymbolsLogin.svelte';
 	import MaterialSymbolsLogout from './assets/svg/MaterialSymbolsLogout.svelte';
 	import MaterialSymbolsSettings from './assets/svg/MaterialSymbolsSettings.svelte';
-	import dayjs from 'dayjs';
-	import type { CreateQueryResult } from '@tanstack/svelte-query';
 	import MaterialSymbolsNotifications from './assets/svg/MaterialSymbolsNotifications.svelte';
-	import { dirtyTowelDays } from './config';
-	import MaterialSymbolsExclamation from './assets/svg/MaterialSymbolsExclamation.svelte';
 	import MaterialSymbolsWarning from './assets/svg/MaterialSymbolsWarning.svelte';
 	import MaterialSymbolsChevronRight from './assets/svg/MaterialSymbolsChevronRight.svelte';
 	import MaterialSymbolsCheckCircle from './assets/svg/MaterialSymbolsCheckCircle.svelte';
-	import MaterialSymbolsCheck from './assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsNotificationImportant from './assets/svg/MaterialSymbolsNotificationImportant.svelte';
 
 	let {
