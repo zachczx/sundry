@@ -287,7 +287,7 @@
 										<a
 											href="/profile"
 											class="text-base-content flex w-full gap-4 py-4 text-lg font-semibold"
-											><MaterialSymbolsSettings class="size-[1.3em] opacity-75" />Settings</a
+											><MaterialSymbolsSettings class="size-[1.3em] opacity-75" />Profile</a
 										>
 									</li>
 									<li>
