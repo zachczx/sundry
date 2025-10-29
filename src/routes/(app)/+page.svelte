@@ -9,30 +9,39 @@
 	import { dirtyTowelDays } from '$lib/config';
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import { onMount } from 'svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
+	let mounted = $state(false);
+
 	const towels = createQuery<TowelDB[]>(() => ({
 		queryKey: ['towels', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('towel').getFullList({ sort: '-time' })
+		queryFn: async () => await pb.collection('towel').getFullList({ sort: '-time' }),
+		enabled: mounted,
+		placeholderData: []
 	}));
 
 	const sprays = createQuery<SprayDB[]>(() => ({
 		queryKey: ['sprays', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' })
+		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' }),
+		enabled: mounted,
+		placeholderData: []
 	}));
 
 	const user = createQuery<UserDB>(() => ({
 		queryKey: ['user', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id))
+		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id)),
+		enabled: mounted,
+		placeholderData: undefined
 	}));
 
 	const tanstackClient = useQueryClient();
 
 	let towelLast: string = $derived.by(() => {
-		if (towels.isSuccess) {
+		if (towels.isSuccess && towels.data.length > 0) {
 			return dayjs(towels.data[0].time).fromNow();
 		}
 		return '';
@@ -47,7 +56,7 @@
 	});
 
 	let sprayLast: string = $derived.by(() => {
-		if (sprays.isSuccess) return dayjs(sprays.data[0].time).fromNow();
+		if (sprays.isSuccess && sprays.data.length > 0) return dayjs(sprays.data[0].time).fromNow();
 
 		return '';
 	});
@@ -90,7 +99,7 @@
 	}
 
 	let sprayNotification = $derived.by(() => {
-		if (!sprays?.isSuccess) return false;
+		if (!sprays?.isSuccess || sprays.data.length === 0) return false;
 
 		const lastSpray = sprays.data?.[0] ?? null;
 
@@ -111,7 +120,7 @@
 	});
 
 	let towelNotification = $derived.by(() => {
-		if (!towels?.isSuccess) return false;
+		if (!towels?.isSuccess || towels.data.length === 0) return false;
 
 		const lastWash = towels.data?.[0] ?? null;
 
@@ -130,6 +139,10 @@
 		}
 
 		return false;
+	});
+
+	onMount(() => {
+		mounted = true;
 	});
 </script>
 
@@ -178,7 +191,7 @@
 									<span class="btn btn-error btn-xs mb-2 rounded-full">Overdue</span>
 								{/if}
 								<p class="font-semibold uppercase">Wash Towel</p>
-								{#if towels.isPending}
+								{#if towels.isPending && !towels.data}
 									<div class="custom-loader"></div>
 								{/if}
 								{#if towels.error}
@@ -253,7 +266,7 @@
 									<span class="btn btn-error btn-xs mb-2 rounded-full">Overdue</span>
 								{/if}
 								<p class="font-semibold uppercase">Spray Nose</p>
-								{#if sprays.isPending}
+								{#if sprays.isPending && !sprays.data}
 									<div class="custom-loader"></div>
 								{/if}
 								{#if sprays.error}
