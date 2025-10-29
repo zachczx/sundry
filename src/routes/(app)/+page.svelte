@@ -140,7 +140,7 @@
 <PageWrapper title="Towsey" {pb} {towelNotification} {sprayNotification}>
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
-			<div class="grid gap-4 py-4">
+			<div class="grid gap-8 py-4">
 				<section
 					class={[
 						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
