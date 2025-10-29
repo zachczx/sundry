@@ -18,6 +18,7 @@
 	import { calculateVacationOverlap } from '$lib/overlap';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import { dirtyTowelDays } from '$lib/config';
+	import { SsgoiTransition } from '@ssgoi/svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -239,8 +240,6 @@
 		return getStatusColorFromValue(towelDirty);
 	});
 
-	let modal = $state() as HTMLDialogElement;
-
 	async function addHandler() {
 		const result = await pb.collection('towel').create({
 			user: pb.authStore.record?.id,
@@ -253,7 +252,7 @@
 		}
 
 		await tanstackClient.refetchQueries({
-			queryKey: ['towels'],
+			queryKey: ['towels', pb.authStore?.record?.id],
 			type: 'active',
 			exact: true
 		});
@@ -284,13 +283,13 @@
 			{/key}
 			<form class="w-full">
 				<button
-					class="btn btn-xl btn-primary flex w-full items-center gap-2 rounded-2xl"
-					onclick={addHandler}>Just Washed My Towel!</button
+					class="btn btn-xl btn-primary flex w-full items-center gap-2 rounded-full"
+					onclick={addHandler}>Just Washed</button
 				>
 			</form>
 		</div>
 
-		<div class="grid w-full content-start gap-8 py-4">
+		<div class="grid w-full content-start gap-8 pt-4 pb-8">
 			<ul class="grid w-full grid-cols-2 content-center justify-items-center">
 				<li class="w-full">
 					<button

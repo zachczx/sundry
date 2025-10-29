@@ -1,6 +1,5 @@
 <script lang="ts">
 	import PageWrapper from '$lib/PageWrapper.svelte';
-	import { onMount } from 'svelte';
 	import { pb } from '$lib/pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
@@ -8,7 +7,6 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { addToast } from '$lib/ui/ArkToaster.svelte';
 	import { dirtyTowelDays } from '$lib/config';
-	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 
@@ -65,7 +63,7 @@
 		}
 
 		await tanstackClient.refetchQueries({
-			queryKey: ['towels'],
+			queryKey: ['towels', pb.authStore?.record?.id],
 			type: 'active',
 			exact: true
 		});
@@ -85,7 +83,7 @@
 		}
 
 		await tanstackClient.refetchQueries({
-			queryKey: ['sprays'],
+			queryKey: ['sprays', pb.authStore?.record?.id],
 			type: 'active',
 			exact: true
 		});
@@ -138,6 +136,7 @@
 <svelte:head>
 	<title>Towsey</title>
 </svelte:head>
+
 <PageWrapper title="Towsey" {pb} {towelNotification} {sprayNotification}>
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
@@ -178,7 +177,7 @@
 								{#if towelNotification}
 									<span class="btn btn-error btn-xs mb-2 rounded-full">Overdue</span>
 								{/if}
-								<p class="font-semibold uppercase">Wash</p>
+								<p class="font-semibold uppercase">Wash Towel</p>
 								{#if towels.isPending}
 									<div class="custom-loader"></div>
 								{/if}
@@ -197,8 +196,8 @@
 						</div>
 					</a>
 					<button
-						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-2xl"
-						onclick={addTowelHandler}>Just Washed My Towel!</button
+						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-full"
+						onclick={addTowelHandler}>Just Washed</button
 					>
 				</section>
 
@@ -253,7 +252,7 @@
 								{#if sprayNotification}
 									<span class="btn btn-error btn-xs mb-2 rounded-full">Overdue</span>
 								{/if}
-								<p class="font-semibold uppercase">Spray</p>
+								<p class="font-semibold uppercase">Spray Nose</p>
 								{#if sprays.isPending}
 									<div class="custom-loader"></div>
 								{/if}
@@ -273,8 +272,8 @@
 						</div>
 					</a>
 					<button
-						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-2xl"
-						onclick={addSprayHandler}>Just Sprayed Nose!</button
+						class="btn btn-primary btn-lg flex w-full items-center gap-2 rounded-full"
+						onclick={addSprayHandler}>Just Sprayed</button
 					>
 				</section>
 

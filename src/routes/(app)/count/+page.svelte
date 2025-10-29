@@ -128,6 +128,7 @@
 <svelte:head>
 	<title>Count</title>
 </svelte:head>
+
 <PageWrapper title="Count" back={true} {pb}>
 	<div class="grid h-full grid-rows-[1fr_auto]">
 		<main class="grid h-full content-center justify-items-center gap-8 p-2">
@@ -202,7 +203,7 @@
 
 			<div class="grid w-full max-w-lg grid-cols-2 gap-2">
 				<button
-					class="btn btn-lg btn-primary w-full"
+					class="btn btn-lg btn-primary w-full rounded-full"
 					onclick={() => {
 						if (!started && !pauseTarget) {
 							start();
@@ -224,7 +225,9 @@
 						Resume
 					{/if}
 				</button>
-				<button class="btn btn-lg btn-neutral w-full" onclick={() => stop()}>Reset</button>
+				<button class="btn btn-lg btn-neutral w-full rounded-full" onclick={() => stop()}
+					>Reset</button
+				>
 			</div>
 
 			<div>

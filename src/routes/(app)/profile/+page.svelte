@@ -5,8 +5,6 @@
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
-
-	import { onMount } from 'svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 
 	dayjs.extend(utc);
@@ -76,7 +74,7 @@
 				spinner = false;
 
 				await tanstackClient.refetchQueries({
-					queryKey: ['vacation'],
+					queryKey: ['vacation', pb.authStore?.record?.id],
 					type: 'active',
 					exact: true
 				});
@@ -107,9 +105,9 @@
 	}
 </script>
 
-<PageWrapper title="Settings" back={true} {pb}>
+<PageWrapper title="Settings" back={true} {pb} largeScreenCenter={true}>
 	<div
-		class="lg:bg-base-200 grid w-full rounded-2xl max-lg:h-full max-lg:grid-rows-[1fr_auto] lg:max-w-lg lg:justify-self-center lg:p-8 lg:shadow-md"
+		class="lg:bg-base-200 grid w-full rounded-2xl max-lg:h-full max-lg:grid-rows-[1fr_auto] lg:h-min lg:max-w-lg lg:justify-self-center lg:p-8 lg:shadow-md"
 	>
 		<div class="overflow-y-auto">
 			<h1 class="text-primary mb-4 text-center text-4xl font-bold">Profile</h1>

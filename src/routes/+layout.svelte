@@ -8,10 +8,6 @@
 	const queryClient = new QueryClient();
 
 	let { children } = $props();
-
-	if (!pb.authStore.isValid) {
-		goto('/login');
-	}
 </script>
 
 <QueryClientProvider client={queryClient}>

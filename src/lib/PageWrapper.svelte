@@ -21,7 +21,8 @@
 		back,
 		noPadding = false,
 		towelNotification,
-		sprayNotification
+		sprayNotification,
+		largeScreenCenter
 	}: {
 		pb: Client;
 		children: Snippet;
@@ -30,6 +31,7 @@
 		noPadding?: boolean;
 		towelNotification?: boolean;
 		sprayNotification?: boolean;
+		largeScreenCenter?: boolean;
 	} = $props();
 
 	let drawerToggle = $state() as HTMLInputElement;
@@ -50,11 +52,11 @@
 	<title>{title}</title>
 </svelte:head>
 
-<div class="grid h-dvh w-full grid-rows-[auto_1fr] content-start justify-items-center">
+<div class="grid h-dvh w-full content-start justify-items-center">
 	<div
 		id="safe-area-topnav"
 		class={[
-			'navbar border-b-base-300/50 bg-neutral text-neutral-content min-h-14 items-center border-b pe-4',
+			'navbar border-b-base-300/50 bg-neutral text-neutral-content fixed top-0 min-h-14 items-center border-b pe-4',
 			back ? 'lg:ps-4' : 'ps-4'
 		]}
 	>
@@ -140,7 +142,7 @@
 						{#if !sprayNotification && !towelNotification}
 							<li>
 								<div class="flex items-center justify-center gap-2">
-									<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>All good!</span>
+									<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>No pending items</span>
 								</div>
 							</li>
 						{/if}
@@ -345,7 +347,7 @@
 						{#if !sprayNotification && !towelNotification}
 							<li>
 								<div class="flex items-center justify-center gap-2">
-									<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>All good!</span>
+									<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>No pending items</span>
 								</div>
 							</li>
 						{/if}
@@ -393,8 +395,9 @@
 
 	<div
 		class={[
-			'bg-pattern w-full max-lg:h-full lg:grid lg:content-start',
-			!noPadding && 'px-4 py-4 lg:px-12 lg:pt-12'
+			'bg-pattern mt-14 min-h-[calc(100dvh-3.5rem)] w-full lg:grid',
+			!noPadding && 'px-4 pt-4 pb-8 lg:px-12 lg:pt-12',
+			largeScreenCenter && 'lg:content-center'
 		]}
 	>
 		{@render children?.()}

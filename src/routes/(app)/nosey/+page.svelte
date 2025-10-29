@@ -1,10 +1,9 @@
 <script lang="ts">
-	import Red from '$lib/images/red.webp?w=600&enhanced';
-	import Orange from '$lib/images/orange.webp?w=600&enhanced';
-	import Yellow from '$lib/images/yellow.webp?w=600&enhanced';
-	import Green from '$lib/images/green.webp?w=600&enhanced';
+	import Red from '$lib/images/nosey_red.webp?w=600&enhanced';
+	import Orange from '$lib/images/nosey_orange.webp?w=600&enhanced';
+	import Yellow from '$lib/images/nosey_olive.webp?w=600&enhanced';
+	import Green from '$lib/images/nosey_green.webp?w=150&enhanced';
 	import { pb } from '$lib/pb';
-	import { onMount } from 'svelte';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
 	import relativeTime from 'dayjs/plugin/relativeTime';
@@ -13,9 +12,9 @@
 	import PageWrapper from '$lib/PageWrapper.svelte';
 	import { addToast } from '$lib/ui/ArkToaster.svelte';
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
-	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import Chart from 'chart.js/auto';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import { onMount } from 'svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -50,7 +49,7 @@
 		}
 
 		await tanstackClient.refetchQueries({
-			queryKey: ['sprays'],
+			queryKey: ['sprays', pb.authStore?.record?.id],
 			type: 'active',
 			exact: true
 		});
@@ -149,7 +148,7 @@
 	// For Statuses
 
 	let sprayRecords: SprayRecord[] | undefined = $derived.by(() => {
-		if (sprays.isSuccess) {
+		if (sprays.isSuccess && sprays.data) {
 			return sprays.data.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
@@ -203,25 +202,31 @@
 	let lineChartEl = $state() as HTMLCanvasElement;
 	let lineChart: Chart | undefined = $state();
 
-	onMount(async () => {
-		if (pb.authStore.isValid) {
-			lineChart = new Chart(lineChartEl, {
-				type: 'line',
-				options: { plugins: { legend: { display: false } } },
-				data: {
-					labels: [...gapsDates],
-					datasets: [
-						{
-							label: '',
-							data: gaps,
-							fill: false,
-							borderColor: 'oklch(56.86% 0.255 257.57)',
-							tension: 0.1,
-							showLine: true
-						}
-					]
-				}
-			});
+	onMount(() => {
+		lineChart = new Chart(lineChartEl, {
+			type: 'line',
+			options: { plugins: { legend: { display: false } } },
+			data: {
+				labels: [...gapsDates],
+				datasets: [
+					{
+						label: '',
+						data: gaps,
+						fill: false,
+						borderColor: 'oklch(56.86% 0.255 257.57)',
+						tension: 0.1,
+						showLine: true
+					}
+				]
+			}
+		});
+	});
+
+	$effect(() => {
+		if (lineChart && gapsDates && gaps) {
+			lineChart.data.labels = [...gapsDates];
+			lineChart.data.datasets[0].data = gaps;
+			lineChart.update();
 		}
 	});
 </script>
@@ -234,10 +239,10 @@
 	<main
 		class="grid w-full max-w-[1200px] content-start justify-items-center gap-4 justify-self-center lg:grid-cols-2 lg:pt-8"
 	>
-		<div class="grid content-start justify-items-center gap-4 px-4 pt-8">
+		<div class="grid w-full content-start justify-items-center gap-4 px-4 pt-8">
 			{#if sprays.isSuccess}
 				{#if status === 'green'}
-					<enhanced:img src={Green} alt="Clean" class="rounded-3xl" />
+					<enhanced:img src={Green} alt="Still Good" class="rounded-3xl" />
 				{:else if status === 'yellow'}
 					<enhanced:img src={Yellow} alt="Still Good" class="rounded-3xl" />
 				{:else if status === 'orange'}
@@ -250,19 +255,19 @@
 			{/if}
 
 			<button
-				class="btn btn-xl btn-primary flex w-full min-w-54 grow items-center gap-2 rounded-2xl"
+				class="btn btn-xl btn-primary flex w-full min-w-54 grow items-center gap-2 rounded-full"
 				onclick={handleClick}
 			>
 				{#if !spinner}
-					Just Sprayed!
+					Just Sprayed
 				{:else}
 					<span class="loading loading-md loading-spinner"></span>
 				{/if}
 			</button>
 		</div>
 
-		<div class="grid w-full content-start gap-8 py-4">
-			<ul class="grid w-full grid-cols-3 content-center justify-items-center">
+		<div class="grid w-full content-start gap-8 pt-4 pb-8">
+			<ul class="grid w-full grid-cols-2 content-center justify-items-center">
 				<li class="w-full">
 					<button
 						class={[
@@ -289,19 +294,6 @@
 						Calendar</button
 					>
 				</li>
-				<li class="w-full">
-					<button
-						class={[
-							currentTab === 'settings' ? 'border-b-primary font-semibold' : 'border-b-base-300',
-							'w-full cursor-pointer border-b-2 text-center'
-						]}
-						onclick={() => {
-							currentTab = 'settings';
-						}}
-					>
-						Settings</button
-					>
-				</li>
 			</ul>
 
 			<div class="{currentTab === 'overview' ? 'grid' : 'hidden'} w-full gap-8 px-4">
@@ -313,7 +305,7 @@
 						{#if sprays.isSuccess}
 							{#if status}
 								<div
-									class="flex min-h-20 items-center justify-center gap-4 text-center text-2xl font-bold"
+									class="flex min-h-14 items-center justify-center gap-4 text-center text-2xl font-bold lg:min-h-20"
 								>
 									{#if status === 'green'}
 										<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
