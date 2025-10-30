@@ -6,19 +6,19 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import {
+		createUserQueryOptions,
+		createUserRefetchOptions,
+		createVacationQueryOptions,
+		createVacationRefetchOptions
+	} from '$lib/queries';
 
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	const user = createQuery<UserDB>(() => ({
-		queryKey: ['user', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id))
-	}));
+	const user = createQuery(createUserQueryOptions);
 
-	const vacations = createQuery<VacationDB[]>(() => ({
-		queryKey: ['vacations', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('vacation').getFullList({ sort: '-startDateTime' })
-	}));
+	const vacations = createQuery(createVacationQueryOptions);
 
 	const tanstackClient = useQueryClient();
 
@@ -51,6 +51,8 @@
 			});
 			addToast('success', 'Updated!');
 			spinner = false;
+
+			await tanstackClient.refetchQueries(createUserRefetchOptions());
 		} catch (err) {
 			console.log(err);
 		}
@@ -73,11 +75,7 @@
 				addToast('success', 'Added successfully!');
 				spinner = false;
 
-				await tanstackClient.refetchQueries({
-					queryKey: ['vacation', pb.authStore?.record?.id],
-					type: 'active',
-					exact: true
-				});
+				await tanstackClient.refetchQueries(createVacationRefetchOptions());
 			}
 		} catch (err) {
 			console.log(err);
@@ -110,9 +108,7 @@
 		class="lg:bg-base-200 grid w-full rounded-2xl max-lg:h-full max-lg:grid-rows-[1fr_auto] lg:h-min lg:max-w-lg lg:justify-self-center lg:p-8 lg:shadow-md"
 	>
 		<div class="overflow-y-auto">
-			<h1 class="text-primary mb-4 text-center text-4xl font-bold">Profile</h1>
-
-			<ul class="grid w-full grid-cols-2 content-center justify-items-center pt-8">
+			<ul class="grid w-full grid-cols-2 content-center justify-items-center pt-4">
 				<li class="w-full">
 					<button
 						class={[

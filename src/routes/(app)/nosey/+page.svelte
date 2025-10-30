@@ -15,6 +15,11 @@
 	import Chart from 'chart.js/auto';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
+	import {
+		createSprayQueryOptions,
+		createSprayRefetchOptions,
+		createUserQueryOptions
+	} from '$lib/queries';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -23,15 +28,9 @@
 	let singleDay: SprayDB[] | undefined = $state([]);
 	let singleDayModal = $state() as HTMLDialogElement;
 
-	const sprays = createQuery<SprayDB[]>(() => ({
-		queryKey: ['sprays', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('spray').getFullList({ sort: '-time' })
-	}));
+	const sprays = createQuery(createSprayQueryOptions);
 
-	const userPref = createQuery<UserDB>(() => ({
-		queryKey: ['user', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('users').getOne(String(pb.authStore?.record?.id))
-	}));
+	const user = createQuery(createUserQueryOptions);
 
 	const tanstackClient = useQueryClient();
 
@@ -48,11 +47,7 @@
 			spinner = false;
 		}
 
-		await tanstackClient.refetchQueries({
-			queryKey: ['sprays', pb.authStore?.record?.id],
-			type: 'active',
-			exact: true
-		});
+		await tanstackClient.refetchQueries(createSprayRefetchOptions());
 	}
 
 	let times = $derived.by(() => {
@@ -138,11 +133,11 @@
 	let currentTab = $state('overview');
 
 	let daysToNext = $derived.by(() => {
-		if (userPref.isPending) {
+		if (user.isPending) {
 			return undefined;
 		}
 
-		return userPref.data?.defaultSprayInterval;
+		return user.data?.defaultSprayInterval;
 	});
 
 	// For Statuses

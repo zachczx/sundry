@@ -18,20 +18,19 @@
 	import { calculateVacationOverlap } from '$lib/overlap';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import { dirtyTowelDays } from '$lib/config';
+	import {
+		createTowelQueryOptions,
+		createTowelRefetchOptions,
+		createVacationQueryOptions
+	} from '$lib/queries';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	const vacations = createQuery<VacationDB[]>(() => ({
-		queryKey: ['vacations', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('vacation').getFullList({ sort: '-startDateTime' })
-	}));
+	const vacations = createQuery(createVacationQueryOptions);
 
-	const towels = createQuery<TowelDB[]>(() => ({
-		queryKey: ['towels', pb.authStore?.record?.id],
-		queryFn: async () => await pb.collection('towel').getFullList({ sort: '-time' })
-	}));
+	const towels = createQuery(createTowelQueryOptions);
 
 	const tanstackClient = useQueryClient();
 
@@ -250,11 +249,7 @@
 			spinner = false;
 		}
 
-		await tanstackClient.refetchQueries({
-			queryKey: ['towels', pb.authStore?.record?.id],
-			type: 'active',
-			exact: true
-		});
+		await tanstackClient.refetchQueries(createTowelRefetchOptions());
 	}
 </script>
 
