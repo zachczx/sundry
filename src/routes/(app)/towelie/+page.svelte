@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Red from '$lib/images/red.webp?w=600&enhanced';
-	import Orange from '$lib/images/orange.webp?w=600&enhanced';
-	import Yellow from '$lib/images/yellow.webp?w=600&enhanced';
-	import Green from '$lib/images/green.webp?w=600&enhanced';
+	import Red from '$lib/images/red.webp?w=150&enhanced';
+	import Orange from '$lib/images/orange.webp?w=150&enhanced';
+	import Yellow from '$lib/images/yellow.webp?w=150&enhanced';
+	import Green from '$lib/images/green.webp?w=150&enhanced';
 	import { onMount } from 'svelte';
 	import { pb } from '$lib/pb';
 	import { goto } from '$app/navigation';

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import Red from '$lib/images/nosey_red.webp?w=600&enhanced';
-	import Orange from '$lib/images/nosey_orange.webp?w=600&enhanced';
-	import Yellow from '$lib/images/nosey_olive.webp?w=600&enhanced';
-	import Green from '$lib/images/nosey_green.webp?w=600&enhanced';
+	import Red from '$lib/images/nosey_red.webp?w=150&enhanced';
+	import Orange from '$lib/images/nosey_orange.webp?w=150&enhanced';
+	import Yellow from '$lib/images/nosey_olive.webp?w=150&enhanced';
+	import Green from '$lib/images/nosey_green.webp?w=150&enhanced';
 	import { pb } from '$lib/pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
