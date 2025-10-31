@@ -11,6 +11,8 @@
 	--color-neutral-content: #fafafa;
 
 	--color-info: #e9ff00;
+	--color-success: #5cb85c;
+	--color-success-content: #fafafa;
 }
 
 @theme {

@@ -28,14 +28,15 @@
 	let singleDay: SprayDB[] | undefined = $state([]);
 	let singleDayModal = $state() as HTMLDialogElement;
 
+	let sprayButtonStatus: 'default' | 'loading' | 'success' = $state('default');
+
 	const sprays = createQuery(createSprayQueryOptions);
-
 	const user = createQuery(createUserQueryOptions);
-
 	const tanstackClient = useQueryClient();
 
-	async function handleClick() {
-		spinner = true;
+	async function addSprayHandler() {
+		sprayButtonStatus = 'loading';
+
 		const result = await pb.collection('spray').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
@@ -44,7 +45,12 @@
 
 		if (result.id) {
 			addToast('success', 'Added successfully!');
-			spinner = false;
+
+			sprayButtonStatus = 'success';
+
+			setTimeout(() => {
+				sprayButtonStatus = 'default';
+			}, 3000);
 		}
 
 		await tanstackClient.refetchQueries(createSprayRefetchOptions());
@@ -266,13 +272,20 @@
 			{/if}
 
 			<button
-				class="btn btn-xl btn-primary flex w-full min-w-54 grow items-center gap-2 rounded-full"
-				onclick={handleClick}
+				class={[
+					'btn btn-lg flex w-full items-center gap-2 rounded-full',
+					sprayButtonStatus === 'default' && 'btn-primary',
+					sprayButtonStatus === 'loading' && 'btn-primary',
+					sprayButtonStatus === 'success' && 'btn-success'
+				]}
+				onclick={addSprayHandler}
 			>
-				{#if !spinner}
-					Just Sprayed
+				{#if sprayButtonStatus === 'success'}
+					<MaterialSymbolsCheck class="size-6" />Added!
+				{:else if sprayButtonStatus === 'loading'}
+					<span class="loading loading-spinner loading-md"></span>
 				{:else}
-					<span class="loading loading-md loading-spinner"></span>
+					Just Sprayed
 				{/if}
 			</button>
 		</div>

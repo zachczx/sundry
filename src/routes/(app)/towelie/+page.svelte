@@ -28,10 +28,10 @@
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
+	let towelButtonStatus: 'default' | 'loading' | 'success' = $state('default');
+
 	const vacations = createQuery(createVacationQueryOptions);
-
 	const towels = createQuery(createTowelQueryOptions);
-
 	const tanstackClient = useQueryClient();
 
 	let towelRecords: TowelRecord[] | undefined = $derived.by(() => {
@@ -238,7 +238,9 @@
 		return getStatusColorFromValue(towelDirty);
 	});
 
-	async function addHandler() {
+	async function addTowelHandler() {
+		towelButtonStatus = 'loading';
+
 		const result = await pb.collection('towel').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore')
@@ -246,7 +248,11 @@
 
 		if (result.id) {
 			addToast('success', 'Added successfully!');
-			spinner = false;
+			towelButtonStatus = 'success';
+
+			setTimeout(() => {
+				towelButtonStatus = 'default';
+			}, 3000);
 		}
 
 		await tanstackClient.refetchQueries(createTowelRefetchOptions());
@@ -294,9 +300,22 @@
 			{/key}
 			<form class="w-full">
 				<button
-					class="btn btn-xl btn-primary flex w-full items-center gap-2 rounded-full"
-					onclick={addHandler}>Just Washed</button
+					class={[
+						'btn btn-lg flex w-full items-center gap-2 rounded-full',
+						towelButtonStatus === 'default' && 'btn-primary',
+						towelButtonStatus === 'loading' && 'btn-primary',
+						towelButtonStatus === 'success' && 'btn-success'
+					]}
+					onclick={addTowelHandler}
 				>
+					{#if towelButtonStatus === 'success'}
+						<MaterialSymbolsCheck class="size-6" />Added!
+					{:else if towelButtonStatus === 'loading'}
+						<span class="loading loading-spinner loading-md"></span>
+					{:else}
+						Just Washed
+					{/if}
+				</button>
 			</form>
 		</div>
 
