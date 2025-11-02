@@ -278,7 +278,7 @@
 					</div>
 				{:else if status === 'yellow'}
 					<div class="avatar">
-						<div class="w-32 rounded-full bg-yellow-200/70 p-4">
+						<div class="w-32 rounded-full bg-[#dbf0be] p-4">
 							<enhanced:img src={Yellow} alt="Still Good" class="rounded-2xl" />
 						</div>
 					</div>
@@ -365,8 +365,8 @@
 											<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
 											<span class="text-lime-500">Squeaky Clean</span>
 										{:else if status === 'yellow'}
-											<div class="hidden h-6 w-6 rounded-full bg-[#848e3f] lg:flex"></div>
-											<span class="text-[#848e3f]">Still Fresh</span>
+											<div class="hidden h-6 w-6 rounded-full bg-lime-500 lg:flex"></div>
+											<span class="text-lime-500">Still Fresh</span>
 										{:else if status === 'orange'}
 											<div class="hidden h-6 w-6 rounded-full bg-orange-400 lg:flex"></div>
 											<span class="text-orange-400">Kinda Funky</span>
