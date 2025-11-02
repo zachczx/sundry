@@ -13,6 +13,10 @@
 	import MaterialSymbolsChevronRight from './assets/svg/MaterialSymbolsChevronRight.svelte';
 	import MaterialSymbolsCheckCircle from './assets/svg/MaterialSymbolsCheckCircle.svelte';
 	import MaterialSymbolsNotificationImportant from './assets/svg/MaterialSymbolsNotificationImportant.svelte';
+	import { createSprayQueryOptions, createTowelQueryOptions } from './queries';
+	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import dayjs from 'dayjs';
+	import { dirtyTowelDays } from './config';
 
 	let {
 		pb,
@@ -20,8 +24,8 @@
 		title,
 		back,
 		noPadding = false,
-		towelNotification,
-		sprayNotification,
+		// towelNotification,
+		// sprayNotification,
 		largeScreenCenter
 	}: {
 		pb: Client;
@@ -29,8 +33,8 @@
 		title: string;
 		back?: boolean;
 		noPadding?: boolean;
-		towelNotification?: boolean;
-		sprayNotification?: boolean;
+		// towelNotification?: boolean;
+		// sprayNotification?: boolean;
 		largeScreenCenter?: boolean;
 	} = $props();
 
@@ -45,6 +49,52 @@
 			navigationBarContent: 'light',
 			offset: 0
 		}
+	});
+
+	const towels = createQuery(createTowelQueryOptions);
+	const sprays = createQuery(createSprayQueryOptions);
+
+	let sprayNotification = $derived.by(() => {
+		if (!sprays?.isSuccess || sprays.data.length === 0) return false;
+
+		const lastSpray = sprays.data?.[0] ?? null;
+
+		if (!lastSpray) {
+			return false;
+		}
+
+		const now = dayjs();
+		const leadTimeHours = 12;
+		const intervalHours = lastSpray.daysToNext * 24;
+
+		const hoursSinceLastSpray = now.diff(dayjs(lastSpray.time), 'hour', true);
+		if (hoursSinceLastSpray >= intervalHours - leadTimeHours) {
+			return true;
+		}
+
+		return false;
+	});
+
+	let towelNotification = $derived.by(() => {
+		if (!towels?.isSuccess || towels.data.length === 0) return false;
+
+		const lastWash = towels.data?.[0] ?? null;
+
+		if (!lastWash) {
+			return false;
+		}
+
+		const now = dayjs();
+		const leadTimeHours = 12;
+		const intervalHours = dirtyTowelDays * 24;
+
+		const hoursSinceLastWash = now.diff(dayjs(lastWash.time), 'hour', true);
+
+		if (hoursSinceLastWash >= intervalHours - leadTimeHours) {
+			return true;
+		}
+
+		return false;
 	});
 </script>
 

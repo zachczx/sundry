@@ -143,7 +143,7 @@
 	<title>Towsey</title>
 </svelte:head>
 
-<PageWrapper title="Towsey" {pb} {towelNotification} {sprayNotification}>
+<PageWrapper title="Towsey" {pb}>
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<div class="grid gap-8 py-4">
