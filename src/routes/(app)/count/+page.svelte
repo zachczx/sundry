@@ -45,9 +45,7 @@
 		if (totalSec > 0 && playSound) {
 			audioPlayer?.play();
 
-			if (totalSec % 60 === 0) {
-				play(totalSec / 60, character);
-			}
+			play(totalSec, character);
 		}
 
 		const minSec = getMinSec(totalSec);
@@ -225,8 +223,9 @@
 						Resume
 					{/if}
 				</button>
-				<button class="btn btn-lg btn-neutral w-full rounded-full" onclick={() => stop()}
-					>Reset</button
+				<button
+					class="btn btn-lg btn-neutral btn-outline w-full rounded-full"
+					onclick={() => stop()}>Reset</button
 				>
 			</div>
 
@@ -266,35 +265,66 @@
 				</button>
 			</div>
 		</main>
-		<select
-			class="select select-lg select-neutral w-full max-w-lg justify-self-center"
-			bind:value={character}
-		>
-			<option value="robot">Robot</option>
-			<!-- <option value="frankenstein">Frankenstein</option> -->
-			<option value="furnando">Furnando</option>
-		</select>
+
+		<div class="segmented-control">
+			<label>
+				<input type="radio" bind:group={character} value="robot" name="character" />Robot
+			</label>
+			<label>
+				<input type="radio" bind:group={character} value="furnando" name="type" />Furnando
+			</label>
+		</div>
 	</div>
 </PageWrapper>
 
 <style>
-	/* .countdown {
-		display: inline-flex;
-		&.countdown {
-			line-height: 1em;
-		}
-		& > * {
-			display: inline-block;
-			overflow-y: hidden;
-			height: 1em;
-			&:before {
-				position: relative;
-				content: '00\A 01\A 02\A 03\A 04\A 05\A 06\A 07\A 08\A 09\A 10\A 11\A 12\A 13\A 14\A 15\A 16\A 17\A 18\A 19\A 20\A 21\A 22\A 23\A 24\A 25\A 26\A 27\A 28\A 29\A 30\A 31\A 32\A 33\A 34\A 35\A 36\A 37\A 38\A 39\A 40\A 41\A 42\A 43\A 44\A 45\A 46\A 47\A 48\A 49\A 50\A 51\A 52\A 53\A 54\A 55\A 56\A 57\A 58\A 59\A 60\A 61\A 62\A 63\A 64\A 65\A 66\A 67\A 68\A 69\A 70\A 71\A 72\A 73\A 74\A 75\A 76\A 77\A 78\A 79\A 80\A 81\A 82\A 83\A 84\A 85\A 86\A 87\A 88\A 89\A 90\A 91\A 92\A 93\A 94\A 95\A 96\A 97\A 98\A 99\A';
-				white-space: pre;
-				top: calc(var(--value) * -1em);
-				text-align: center;
-				transition: all 0.3s cubic-bezier(1, 0, 0, 1);
+	.segmented-control {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		cursor: pointer;
+		text-align: center;
+
+		label {
+			width: 100%;
+			font-size: 1.125rem;
+
+			&:first-child {
+				border-start-start-radius: var(--join-ss, var(--radius-field) /* var(--radius-field) */);
+				border-end-start-radius: var(--join-es, var(--radius-field) /* var(--radius-field) */);
+			}
+
+			&:last-child {
+				border-start-end-radius: var(--join-se, var(--radius-field) /* var(--radius-field) */);
+				border-end-end-radius: var(--join-ee, var(--radius-field) /* var(--radius-field) */);
+			}
+			border: 1px solid rgba();
+			height: var(--size);
+			outline: var(--border) solid #0000;
+			position: relative;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+
+			outline-color: var(--input-color);
+			--input-color: color-mix(
+				in oklab,
+				var(--color-base-content) /* var(--color-base-content) */ 40%,
+				#0000
+			);
+			--size: calc(var(--size-field, 0.25rem /* 4px */) * 10);
+
+			&:has(input:checked) {
+				color: var(--color-neutral-content);
+				background-color: var(--color-neutral);
+			}
+			&:has(input:not(checked)) {
+				color: var(--color-base-content);
+				background-color: var(--color-base-100);
+			}
+
+			input {
+				display: none;
 			}
 		}
-	} */
+	}
 </style>
