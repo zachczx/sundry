@@ -24,6 +24,7 @@
 	} from '$lib/queries';
 	import { getCalendarEntries } from '$lib/calendar';
 	import { getStatusColorFromValue } from '$lib/towels';
+	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -217,7 +218,7 @@
 
 	let status = $derived.by(() => {
 		if (!towelDirty) {
-			return '';
+			return 'empty';
 		}
 		return getStatusColorFromValue(towelDirty);
 	});
@@ -276,6 +277,8 @@
 							<enhanced:img src={Red} alt="Time to Wash!" class="rounded-2xl" />
 						</div>
 					</div>
+				{:else if status === 'empty'}
+					<EmptyState class="text-primary/30 my-4" />
 				{:else}
 					<div class="skeleton h-[600px] w-[600px] max-lg:h-[342px] max-lg:w-[342px]"></div>
 				{/if}
@@ -352,9 +355,11 @@
 										{:else if status === 'orange'}
 											<div class="hidden h-6 w-6 rounded-full bg-orange-400 lg:flex"></div>
 											<span class="text-orange-400">Kinda Funky</span>
-										{:else}
+										{:else if status === 'red'}
 											<div class="hidden h-5 w-5 rounded-full bg-red-700 lg:flex"></div>
 											<span class="text-red-700">Wash Me!</span>
+										{:else}
+											<span>Nil</span>
 										{/if}
 									</div>
 								{:else}

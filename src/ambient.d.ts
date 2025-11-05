@@ -27,6 +27,17 @@ interface SprayRecord extends SprayDB {
 	gap: number;
 }
 
+interface GummyDB {
+	collectionId: string;
+	collectionName: 'spray';
+	id: string;
+	time: string;
+	created: string;
+	updated: string;
+	user: string;
+	daysToNext: number;
+}
+
 type Characters = 'frankenstein' | 'robot' | 'furnando';
 
 interface UserDB {
@@ -40,6 +51,7 @@ interface UserDB {
 	avatar: string;
 	mute: boolean;
 	defaultSprayInterval: number;
+	defaultGummyInterval: number;
 	created: string;
 	updated: string;
 }
@@ -59,3 +71,5 @@ interface NotificationStatus {
 	show: boolean;
 	level: 'ok' | 'due' | 'overdue';
 }
+
+type ButtonStatus = 'default' | 'loading' | 'success';

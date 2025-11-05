@@ -24,6 +24,7 @@
 	import MaterialSymbolsHealthAndSafety from './assets/svg/MaterialSymbolsHealthAndSafety.svelte';
 	import LucideLabTowelRack from './assets/svg/LucideLabTowelRack.svelte';
 	import PhTowelFill from './assets/svg/PhTowelFill.svelte';
+	import IconParkSolidBottleOne from './assets/svg/IconParkSolidBottleOne.svelte';
 
 	let {
 		pb,
@@ -48,6 +49,8 @@
 			return 'nosey';
 		} else if (p.includes('towelie')) {
 			return 'towelie';
+		} else if (p.includes('gummy')) {
+			return 'gummy';
 		} else if (p.endsWith('')) {
 			return '/';
 		} else {
@@ -117,6 +120,7 @@
 						]}>Dashboard</a
 					>
 				</li>
+
 				<li>
 					<a
 						href="/towelie"
@@ -127,6 +131,7 @@
 						]}>Towelie</a
 					>
 				</li>
+
 				<li>
 					<a
 						href="/nosey"
@@ -137,6 +142,18 @@
 						]}>Nosey</a
 					>
 				</li>
+
+				<li>
+					<a
+						href="/gummy"
+						class={[
+							'px-4 py-2',
+							currentPage === 'gummy' && 'rounded-full bg-white/30 font-bold',
+							currentPage !== 'gummy' && 'rounded-full hover:bg-white/20'
+						]}>Gummy</a
+					>
+				</li>
+
 				<li>
 					<a
 						href="/count"
@@ -144,7 +161,7 @@
 							'px-4 py-2',
 							currentPage === 'count' && 'rounded-full bg-white/20 font-bold',
 							currentPage !== 'count' && 'rounded-full hover:bg-white/10'
-						]}>Count</a
+						]}>Timer</a
 					>
 				</li>
 			</ul>
@@ -188,7 +205,7 @@
 			title === 'Login' ? 'hidden' : undefined
 		]}
 	>
-		<a href="/" class={[currentPage === '' && 'text-primary font-semibold']}>
+		<a href="/" class={[currentPage === '/' && 'text-primary font-semibold']}>
 			<MaterialSymbolsHome class="size-[1.5em]" />
 			<span class="text-sm tracking-wider">Home</span>
 		</a>
@@ -199,13 +216,18 @@
 		</a>
 
 		<a href="/nosey" class={[currentPage === 'nosey' && 'text-primary font-semibold']}>
-			<MaterialSymbolsHealthAndSafety class="size-[1.5em]" />
+			<IconParkSolidBottleOne class="size-[1.5em]" />
 			<span class="text-sm tracking-wider">Nosey</span>
+		</a>
+
+		<a href="/gummy" class={[currentPage === 'gummy' && 'text-primary font-semibold']}>
+			<MaterialSymbolsHealthAndSafety class="size-[1.5em]" />
+			<span class="text-sm tracking-wider">Gummy</span>
 		</a>
 
 		<a href="/count" class={[currentPage === 'count' && 'text-primary font-semibold']}>
 			<MaterialSymbolsTimer class="size-[1.5em]" />
-			<span class="text-sm tracking-wider">Stopwatch</span>
+			<span class="text-sm tracking-wider">Timer</span>
 		</a>
 	</nav>
 </div>

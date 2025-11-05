@@ -39,6 +39,15 @@ export function createVacationQueryOptions() {
 	});
 }
 
+export function createGummyQueryOptions() {
+	return queryOptions({
+		queryKey: ['gummies', pb.authStore?.record?.id],
+		queryFn: async (): Promise<GummyDB[]> =>
+			await pb.collection('gummy').getFullList({ sort: '-time' }),
+		staleTime: staleTime
+	});
+}
+
 export function createTowelRefetchOptions(): RefetchQueryFilters {
 	return {
 		queryKey: ['towels', pb.authStore?.record?.id],
@@ -50,6 +59,14 @@ export function createTowelRefetchOptions(): RefetchQueryFilters {
 export function createSprayRefetchOptions(): RefetchQueryFilters {
 	return {
 		queryKey: ['sprays', pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+export function createGummyRefetchOptions(): RefetchQueryFilters {
+	return {
+		queryKey: ['gummies', pb.authStore?.record?.id],
 		type: 'active',
 		exact: true
 	};

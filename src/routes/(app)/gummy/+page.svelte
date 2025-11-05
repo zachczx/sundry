@@ -16,7 +16,8 @@
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import { onMount } from 'svelte';
 	import {
-		createSprayQueryOptions,
+		createGummyQueryOptions,
+		createGummyRefetchOptions,
 		createSprayRefetchOptions,
 		createUserQueryOptions,
 		createVacationQueryOptions
@@ -31,17 +32,17 @@
 	let singleDay: SprayDB[] | undefined = $state([]);
 	let singleDayModal = $state() as HTMLDialogElement;
 
-	let sprayButtonStatus: 'default' | 'loading' | 'success' = $state('default');
+	let gummyButtonStatus: 'default' | 'loading' | 'success' = $state('default');
 
-	const sprays = createQuery(createSprayQueryOptions);
+	const gummies = createQuery(createGummyQueryOptions);
 	const user = createQuery(createUserQueryOptions);
 	const vacations = createQuery(createVacationQueryOptions);
 	const tanstackClient = useQueryClient();
 
 	async function addSprayHandler() {
-		sprayButtonStatus = 'loading';
+		gummyButtonStatus = 'loading';
 
-		const result = await pb.collection('spray').create({
+		const result = await pb.collection('gummy').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: daysToNext
@@ -50,17 +51,17 @@
 		if (result.id) {
 			addToast('success', 'Added successfully!');
 
-			sprayButtonStatus = 'success';
+			gummyButtonStatus = 'success';
 
 			setTimeout(() => {
-				sprayButtonStatus = 'default';
+				gummyButtonStatus = 'default';
 			}, 3000);
 		}
 
-		await tanstackClient.refetchQueries(createSprayRefetchOptions());
+		await tanstackClient.refetchQueries(createGummyRefetchOptions());
 	}
 
-	let times = $derived.by(() => getCalendarEntries(sprays, 'Sprayed'));
+	let times = $derived.by(() => getCalendarEntries(gummies, 'Gummy'));
 	let vacationTimes = $derived.by(() => getCalendarEntries(vacations, 'Vacation', '✈️'));
 
 	let calendarOptions: Calendar.Options = $derived.by(() => {
@@ -78,16 +79,16 @@
 				return dayjs(date).format('MMMM YYYY');
 			},
 			dateClick: async (info) => {
-				if (sprays.isSuccess) {
-					singleDay = sprays.data.filter((day) => {
+				if (gummies.isSuccess) {
+					singleDay = gummies.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.date).get('date');
 					});
 					singleDayModal.showModal();
 				}
 			},
 			eventClick: async (info) => {
-				if (sprays.isSuccess) {
-					singleDay = sprays.data.filter((day) => {
+				if (gummies.isSuccess) {
+					singleDay = gummies.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.event.start).get('date');
 					});
 					singleDayModal.showModal();
@@ -99,7 +100,7 @@
 	function getStatusColorFromValue(val: number): string {
 		if (!daysToNext) return '';
 
-		if (val === 0) return '';
+		if (val === 0) return 'empty';
 
 		const day = 24;
 
@@ -114,23 +115,24 @@
 		return '';
 	}
 
-	let lastSpray: number | undefined = $derived.by(() => {
-		let lastSpray;
-		if (sprays.isSuccess) {
-			if (sprays.data && sprays.data.length > 0) {
-				const lastRecord = dayjs(sprays.data[0].time);
+	let lastGummy: number | undefined = $derived.by(() => {
+		let lastGummy;
+		if (gummies.isSuccess) {
+			if (gummies.data && gummies.data.length > 0) {
+				const lastGummyDate = dayjs(gummies.data[0].time);
 				const today = dayjs();
-				lastSpray = today.diff(lastRecord, 'hours', true);
-				return lastSpray;
+				lastGummy = today.diff(lastGummyDate, 'hours', true);
+				return lastGummy;
 			}
 		}
 	});
 
 	let status = $derived.by(() => {
-		if (!lastSpray) {
+		if (!lastGummy) {
 			return 'empty';
 		}
-		return getStatusColorFromValue(lastSpray);
+
+		return getStatusColorFromValue(lastGummy);
 	});
 
 	let currentTab = $state('overview');
@@ -140,14 +142,14 @@
 			return undefined;
 		}
 
-		return user.data?.defaultSprayInterval;
+		return user.data?.defaultGummyInterval;
 	});
 
 	// For Statuses
 
-	let sprayRecords: SprayRecord[] | undefined = $derived.by(() => {
-		if (sprays.isSuccess && sprays.data) {
-			return sprays.data.map((record, i, allRecords) => {
+	let gummyRecords: SprayRecord[] | undefined = $derived.by(() => {
+		if (gummies.isSuccess && gummies.data) {
+			return gummies.data.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
 				return { ...record, gap };
@@ -158,16 +160,16 @@
 	});
 
 	let longestGap: SprayRecord | undefined = $derived.by(() => {
-		if (sprayRecords.length <= 1) return;
-		const avoidMutatingOriginalArray = [...sprayRecords];
+		if (gummyRecords.length <= 1) return;
+		const avoidMutatingOriginalArray = [...gummyRecords];
 		const sorted = avoidMutatingOriginalArray.sort((a, b) => b.gap - a.gap);
 		return sorted[0];
 	});
 	let averageGap: number = $derived.by(() => {
-		const total = sprayRecords.reduce((accumulator, entry) => {
+		const total = gummyRecords.reduce((accumulator, entry) => {
 			return (accumulator += entry.gap);
 		}, 0);
-		const average = total / sprayRecords.length;
+		const average = total / gummyRecords.length;
 		return average;
 	});
 
@@ -175,23 +177,25 @@
 		const gaps: number[] = [];
 		const numberOfRecords = 10;
 		for (let i = 0; i < numberOfRecords; i++) {
-			if (!sprayRecords[i]) {
+			if (!gummyRecords[i]) {
 				gaps.unshift(0);
 			} else {
-				gaps.unshift(sprayRecords[i].gap);
+				gaps.unshift(gummyRecords[i].gap);
 			}
 		}
 		return gaps;
 	});
 
 	let gapsDates = $derived.by(() => {
+		if (!gummyRecords || gummyRecords.length === 0) return [];
+
 		const gapsDates: string[] = [];
 		const numberOfRecords = 10;
 		for (let i = 0; i < numberOfRecords; i++) {
-			if (!sprayRecords[i]) {
-				gapsDates.unshift('-');
+			if (!gummyRecords[i]) {
+				break;
 			} else {
-				gapsDates.unshift(dayjs(sprayRecords[i].time).format('D/M'));
+				gapsDates.unshift(dayjs(gummyRecords[i].time).format('D/M'));
 			}
 		}
 		return gapsDates;
@@ -236,7 +240,7 @@
 <PageWrapper title="Nosey" back={true} {pb}>
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
-			{#if sprays.isSuccess}
+			{#if gummies.isSuccess}
 				{#if status === 'green'}
 					<div class="avatar">
 						<div class="w-32 rounded-full bg-[#dbf0be]">
@@ -271,18 +275,18 @@
 			<button
 				class={[
 					'btn btn-lg flex w-full items-center gap-2 rounded-full',
-					sprayButtonStatus === 'default' && 'btn-primary',
-					sprayButtonStatus === 'loading' && 'btn-primary',
-					sprayButtonStatus === 'success' && 'btn-success'
+					gummyButtonStatus === 'default' && 'btn-primary',
+					gummyButtonStatus === 'loading' && 'btn-primary',
+					gummyButtonStatus === 'success' && 'btn-success'
 				]}
 				onclick={addSprayHandler}
 			>
-				{#if sprayButtonStatus === 'success'}
+				{#if gummyButtonStatus === 'success'}
 					<MaterialSymbolsCheck class="size-6" />Added!
-				{:else if sprayButtonStatus === 'loading'}
+				{:else if gummyButtonStatus === 'loading'}
 					<span class="loading loading-spinner loading-md"></span>
 				{:else}
-					Just Sprayed
+					Just Ate Gummy
 				{/if}
 			</button>
 		</div>
@@ -323,7 +327,7 @@
 				>
 					<div class="border-r-base-content/15 grid justify-items-center border-r p-4">
 						<div>Status</div>
-						{#if sprays.isSuccess}
+						{#if gummies.isSuccess}
 							{#if status}
 								<div
 									class="flex min-h-14 items-center justify-center gap-4 text-center text-2xl font-bold lg:min-h-20"
@@ -350,17 +354,17 @@
 						{/if}
 					</div>
 					<div class="grid justify-items-center p-4">
-						<div>Last Sprayed</div>
+						<div>Last Gummy</div>
 						<div class="text-center text-2xl font-bold">
-							{#if sprays.isSuccess}
-								{#if sprays.data.length > 0}
-									{@const formatted = dayjs(sprays.data[0].time).fromNow()}
+							{#if gummies.isSuccess}
+								{#if gummies.data.length > 0}
+									{@const formatted = dayjs(gummies.data[0].time).fromNow()}
 									{formatted}
 								{:else}
 									<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 								{/if}
 							{/if}
-							{#if sprays.isPending}
+							{#if gummies.isPending}
 								<div class="custom-loader"></div>
 							{/if}
 						</div>
@@ -368,7 +372,7 @@
 				</div>
 
 				<div class="border-base-content/5 bg-base-200/50 w-full rounded-lg border p-4 shadow">
-					<h2 class="text-md text-center">Dose Intervals</h2>
+					<h2 class="text-md text-center">Intervals</h2>
 					<div>
 						<canvas bind:this={lineChartEl}></canvas>
 					</div>
@@ -407,7 +411,7 @@
 					? 'grid'
 					: 'hidden'} w-full grid-cols-[minmax(0,1fr)] overflow-hidden px-4"
 			>
-				{#key sprays.data}
+				{#key gummies.data}
 					<Calendar plugins={[DayGrid, Interaction]} options={calendarOptions} />
 				{/key}
 			</div>

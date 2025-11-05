@@ -10,6 +10,8 @@
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import {
+		createGummyQueryOptions,
+		createGummyRefetchOptions,
 		createSprayQueryOptions,
 		createSprayRefetchOptions,
 		createTowelQueryOptions,
@@ -22,16 +24,22 @@
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import { getNotificationStatus } from '$lib/notification';
 	import { goto } from '$app/navigation';
+	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
+	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
+	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
+	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	let towelButtonStatus: 'default' | 'loading' | 'success' = $state('default');
-	let sprayButtonStatus: 'default' | 'loading' | 'success' = $state('default');
+	let towelButtonStatus: ButtonStatus = $state('default');
+	let sprayButtonStatus: ButtonStatus = $state('default');
+	let gummyButtonStatus: ButtonStatus = $state('default');
 
 	const towels = createQuery(createTowelQueryOptions);
 	const sprays = createQuery(createSprayQueryOptions);
+	const gummies = createQuery(createGummyQueryOptions);
 	const user = createQuery(createUserQueryOptions);
 	const tanstackClient = useQueryClient();
 
@@ -42,7 +50,7 @@
 		return '';
 	});
 
-	let daysToNext = $derived.by(() => {
+	let sprayDaysToNext = $derived.by(() => {
 		if (user.isPending) {
 			return undefined;
 		}
@@ -50,8 +58,22 @@
 		return user.data?.defaultSprayInterval;
 	});
 
+	let gummyDaysToNext = $derived.by(() => {
+		if (user.isPending) {
+			return undefined;
+		}
+
+		return user.data?.defaultGummyInterval;
+	});
+
 	let sprayLast: string = $derived.by(() => {
 		if (sprays.isSuccess && sprays.data.length > 0) return dayjs(sprays.data[0].time).fromNow();
+
+		return '';
+	});
+
+	let gummyLast: string = $derived.by(() => {
+		if (gummies.isSuccess && gummies.data.length > 0) return dayjs(gummies.data[0].time).fromNow();
 
 		return '';
 	});
@@ -82,7 +104,7 @@
 		const result = await pb.collection('spray').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: daysToNext
+			daysToNext: sprayDaysToNext
 		});
 
 		if (result.id) {
@@ -95,6 +117,27 @@
 		}
 
 		await tanstackClient.refetchQueries(createSprayRefetchOptions());
+	}
+
+	async function addGummyHandler() {
+		gummyButtonStatus = 'loading';
+
+		const result = await pb.collection('spray').create({
+			user: pb.authStore.record?.id,
+			time: dayjs.tz(new Date(), 'Asia/Singapore'),
+			daysToNext: gummyDaysToNext
+		});
+
+		if (result.id) {
+			addToast('success', 'Added successfully!');
+			gummyButtonStatus = 'success';
+
+			setTimeout(() => {
+				gummyButtonStatus = 'default';
+			}, 3000);
+		}
+
+		await tanstackClient.refetchQueries(createGummyRefetchOptions());
 	}
 
 	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
@@ -117,8 +160,8 @@
 					]}
 				>
 					<a href="/towelie" class="flex items-center">
-						<div class="flex grow items-center gap-8">
-							<StreamlineKameleonColorTowel class="size-16" />
+						<div class="flex grow items-center gap-4">
+							<PhTowelFill class="size-12" />
 							<!-- <h3 class="text-sm lg:text-base">Towel Washed</h3> -->
 							<div>
 								<p class="text-xl font-bold">Wash Towel</p>
@@ -174,8 +217,8 @@
 					]}
 				>
 					<a href="/nosey" class="flex items-center">
-						<div class="flex grow items-center gap-8">
-							<StreamlineKameleonColorMedicine class="size-16" />
+						<div class="flex grow items-center gap-4">
+							<IconParkSolidBottleOne class="size-12" />
 							<div>
 								<p class="text-xl font-bold">Spray Nose</p>
 								{#if sprays.isPending && !sprays.data}
@@ -223,13 +266,71 @@
 					</button>
 				</section>
 
+				<section
+					class={[
+						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
+						sprayNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-primary/10'
+					]}
+				>
+					<a href="/gummy" class="flex items-center">
+						<div class="flex grow items-center gap-4">
+							<MaterialSymbolsHealthAndSafety class="size-12" />
+							<div>
+								<p class="text-xl font-bold">Elderberry Gummy</p>
+								{#if gummies.isPending && !gummies.data}
+									<div class="custom-loader"></div>
+								{/if}
+								{#if gummies.error}
+									An error has occurred:
+									{gummies.error.message}
+								{/if}
+								{#if gummies.isSuccess}
+									<!-- {#if sprayNotification.show}
+										<span class="text-error font-medium tracking-tight">
+											{#if sprayNotification.level === 'overdue'}
+												Overdue
+											{:else if sprayNotification.level === 'due'}
+												Due
+											{/if}
+										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
+									{/if} --><span
+										>{gummyLast}</span
+									>
+								{/if}
+							</div>
+						</div>
+						<div class="flex h-full items-center">
+							<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
+								><MaterialSymbolsChevronRight class="size-6" /></button
+							>
+						</div>
+					</a>
+					<button
+						class={[
+							'btn btn-lg flex w-full items-center gap-2 rounded-full',
+							gummyButtonStatus === 'default' && 'btn-primary',
+							gummyButtonStatus === 'loading' && 'btn-primary',
+							gummyButtonStatus === 'success' && 'btn-success'
+						]}
+						onclick={addSprayHandler}
+					>
+						{#if gummyButtonStatus === 'success'}
+							<MaterialSymbolsCheck class="size-6" />Added!
+						{:else if gummyButtonStatus === 'loading'}
+							<span class="loading loading-spinner loading-md"></span>
+						{:else}
+							Just Ate Gummy
+						{/if}
+					</button>
+				</section>
+
 				<div class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
 					<a href="/count" class="flex items-center">
-						<div class="flex grow items-center gap-8">
-							<ReshotTimerOff class="size-16" />
+						<div class="flex grow items-center gap-4">
+							<MaterialSymbolsTimer class="size-12" />
 
 							<div>
-								<p class="text-xl font-bold">Stopwatch</p>
+								<p class="text-xl font-bold">Timer</p>
 							</div>
 						</div>
 						<div class="flex h-full items-center">
@@ -242,7 +343,7 @@
 						class="btn btn-lg btn-secondary flex w-full items-center gap-2 rounded-full"
 						onclick={() => goto('/count?start=true')}
 					>
-						Start Stopwatch
+						Start Timer
 					</button>
 				</div>
 			</div>

@@ -23,7 +23,8 @@
 				emailVisibility: true,
 				password: cleanPassword,
 				passwordConfirm: cleanPassword,
-				defaultSprayInterval: 3
+				defaultSprayInterval: 2,
+				defaultGummyInterval: 2
 			};
 
 			const record = await pb.collection('users').create(data);
