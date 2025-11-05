@@ -6,9 +6,14 @@
 	import PageWrapper from '$lib/PageWrapper.svelte';
 	import { pb } from '$lib/pb';
 	import { Capacitor } from '@capacitor/core';
+	import { createUserQueryOptions } from '$lib/queries';
+	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import { page } from '$app/state';
+	import { beforeNavigate } from '$app/navigation';
 	dayjs.extend(duration);
 
-	let user: UserDB | undefined = $state();
+	const user = createQuery(createUserQueryOptions);
+	const tanstackClient = useQueryClient();
 
 	const tickingSoundPath = '/soft-ticking.mp3';
 
@@ -73,6 +78,7 @@
 		clearInterval(timerInterval);
 		totalSec = 0;
 		pauseTarget = 0;
+		target = 5;
 
 		started = false;
 	}
@@ -92,27 +98,23 @@
 	}
 
 	let playSound = $derived.by(() => {
-		if (user && user.mute) {
-			return false;
+		if (user.isSuccess && !user.data.mute) {
+			return true;
 		}
-		return true;
+		return false;
 	});
 	let audioPlayer: HTMLAudioElement | undefined = $state();
 
 	onMount(async () => {
-		if (pb.authStore.isValid && pb.authStore.record) {
-			user = await pb.collection('users').getOne(pb.authStore.record.id);
-		}
-
 		if (Capacitor.getPlatform() !== 'android') {
 			audioPlayer = new Audio(tickingSoundPath);
 		}
 
-		// return async () => {
-		// 	if (timerInterval) {
-		// 		clearInterval(timerInterval);
-		// 	}
-		// };
+		if (page.url.searchParams.get('start')) {
+			setTimeout(() => start(), 700);
+		}
+
+		beforeNavigate(() => stop());
 	});
 
 	function doubleDigits(num: number): string {

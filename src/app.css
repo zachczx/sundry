@@ -7,12 +7,17 @@
 	color-scheme: light;
 
 	--color-primary: #0069ff;
+	--color-secondary: #002a66;
+
 	--color-neutral: #001534;
 	--color-neutral-content: #fafafa;
 
 	--color-info: #e9ff00;
 	--color-success: #5cb85c;
 	--color-success-content: #fafafa;
+
+	--color-error: #ff2c2c;
+	--color-error-content: #fafafa;
 }
 
 @theme {

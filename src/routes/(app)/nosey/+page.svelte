@@ -228,11 +228,9 @@
 	<title>Nosey</title>
 </svelte:head>
 
-<PageWrapper title="Nosey" back={true} {pb} noPadding={true}>
-	<main
-		class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center lg:pt-8"
-	>
-		<div class="grid w-full content-start justify-items-center gap-4 px-4 pt-8">
+<PageWrapper title="Nosey" back={true} {pb}>
+	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
+		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if sprays.isSuccess}
 				{#if status === 'green'}
 					<div class="avatar">

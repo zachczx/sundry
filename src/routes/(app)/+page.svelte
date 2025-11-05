@@ -21,6 +21,7 @@
 	import StreamlineKameleonColorTowel from '$lib/assets/towsey-icons/StreamlineKameleonColorTowel.svelte';
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import { getNotificationStatus } from '$lib/notification';
+	import { goto } from '$app/navigation';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -112,7 +113,7 @@
 				<section
 					class={[
 						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
-						towelNotification.show ? 'bg-error/30 outline-error/70 outline' : 'bg-primary/10'
+						towelNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-primary/10'
 					]}
 				>
 					<a href="/towelie" class="flex items-center">
@@ -120,15 +121,6 @@
 							<StreamlineKameleonColorTowel class="size-16" />
 							<!-- <h3 class="text-sm lg:text-base">Towel Washed</h3> -->
 							<div>
-								{#if towelNotification.show}
-									<span class="btn btn-error btn-xs mb-2 rounded-full">
-										{#if towelNotification.level === 'overdue'}
-											Overdue
-										{:else if towelNotification.level === 'due'}
-											Due
-										{/if}
-									</span>
-								{/if}
 								<p class="text-xl font-bold">Wash Towel</p>
 								{#if towels.isPending && !towels.data}
 									<div class="custom-loader"></div>
@@ -136,8 +128,17 @@
 								{#if towels.error}
 									Error: {towels.error.message}
 								{/if}
+
 								{#if towels.isSuccess}
-									{towelLast}
+									{#if towelNotification.show}
+										<span class="text-error font-medium tracking-tight">
+											{#if towelNotification.level === 'overdue'}
+												Overdue
+											{:else if towelNotification.level === 'due'}
+												Due
+											{/if}
+										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
+									{/if}<span>{towelLast}</span>
 								{/if}
 							</div>
 						</div>
@@ -169,23 +170,13 @@
 				<section
 					class={[
 						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
-						sprayNotification.show ? 'bg-error/30 outline-error/70 outline' : 'bg-primary/10'
+						sprayNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-primary/10'
 					]}
 				>
 					<a href="/nosey" class="flex items-center">
 						<div class="flex grow items-center gap-8">
 							<StreamlineKameleonColorMedicine class="size-16" />
-							<!-- <h3 class="text-sm lg:text-base">Nose Sprayed</h3> -->
 							<div>
-								{#if sprayNotification.show}
-									<span class="btn btn-error btn-xs mb-2 rounded-full">
-										{#if sprayNotification.level === 'overdue'}
-											Overdue
-										{:else if sprayNotification.level === 'due'}
-											Due
-										{/if}
-									</span>
-								{/if}
 								<p class="text-xl font-bold">Spray Nose</p>
 								{#if sprays.isPending && !sprays.data}
 									<div class="custom-loader"></div>
@@ -195,7 +186,15 @@
 									{sprays.error.message}
 								{/if}
 								{#if sprays.isSuccess}
-									{sprayLast}
+									{#if sprayNotification.show}
+										<span class="text-error font-medium tracking-tight">
+											{#if sprayNotification.level === 'overdue'}
+												Overdue
+											{:else if sprayNotification.level === 'due'}
+												Due
+											{/if}
+										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
+									{/if}<span>{sprayLast}</span>
 								{/if}
 							</div>
 						</div>
@@ -224,17 +223,13 @@
 					</button>
 				</section>
 
-				<a
-					href="/count"
-					class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4"
-				>
-					<div class="flex items-center">
+				<div class="bg-primary/10 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
+					<a href="/count" class="flex items-center">
 						<div class="flex grow items-center gap-8">
 							<ReshotTimerOff class="size-16" />
 
 							<div>
 								<p class="text-xl font-bold">Stopwatch</p>
-								Tap to start timer.
 							</div>
 						</div>
 						<div class="flex h-full items-center">
@@ -242,8 +237,14 @@
 								><MaterialSymbolsChevronRight class="size-6" /></button
 							>
 						</div>
-					</div></a
-				>
+					</a>
+					<button
+						class="btn btn-lg btn-secondary flex w-full items-center gap-2 rounded-full"
+						onclick={() => goto('/count?start=true')}
+					>
+						Start Stopwatch
+					</button>
+				</div>
 			</div>
 		</div>
 	</main>
