@@ -37,7 +37,7 @@
 
 	let towelRecords: TowelRecord[] | undefined = $derived.by(() => {
 		if (towels.isSuccess) {
-			return towels.data.map((record, i, allRecords) => {
+			return towels.data?.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				if (!nextRecord) {
 					return { ...record, gap: 0 };
@@ -163,30 +163,30 @@
 		let towelDirty;
 
 		if (towelRecords && towelRecords.length > 0) {
-			if (!vacations.isSuccess) {
+			if (vacations.isSuccess) {
 				const lastWashDate = dayjs(towelRecords[0].time);
-				const today = dayjs();
-				/**
-				 * https://stackoverflow.com/questions/36560806/the-left-hand-side-of-an-arithmetic-operation-must-be-of-type-any-number-or
-				 */
-				towelDirty = today.diff(lastWashDate, 'hours', true);
-				return towelDirty;
+				const now = dayjs();
+
+				// 1. Calculate the raw difference in hours
+				const rawDiffHours = now.diff(lastWashDate, 'hours', true);
+
+				// 2. Calculate vacation hours between last wash and now
+				const vacationHours = calculateVacationOverlap(now, lastWashDate, vacations.data, 'hours');
+
+				// 3. Subtract vacation time
+				towelDirty = rawDiffHours - vacationHours;
+
+				// Ensure it's not negative
+				return Math.max(0, towelDirty);
 			}
 
 			const lastWashDate = dayjs(towelRecords[0].time);
-			const now = dayjs();
-
-			// 1. Calculate the raw difference in hours
-			const rawDiffHours = now.diff(lastWashDate, 'hours', true);
-
-			// 2. Calculate vacation hours between last wash and now
-			const vacationHours = calculateVacationOverlap(now, lastWashDate, vacations.data, 'hours');
-
-			// 3. Subtract vacation time
-			towelDirty = rawDiffHours - vacationHours;
-
-			// Ensure it's not negative
-			return Math.max(0, towelDirty);
+			const today = dayjs();
+			/**
+			 * https://stackoverflow.com/questions/36560806/the-left-hand-side-of-an-arithmetic-operation-must-be-of-type-any-number-or
+			 */
+			towelDirty = today.diff(lastWashDate, 'hours', true);
+			return towelDirty;
 		}
 	});
 	let spinner = $state(false);
@@ -250,19 +250,19 @@
 
 		await tanstackClient.refetchQueries(createTowelRefetchOptions());
 	}
+
+	$inspect(status);
 </script>
 
 <svelte:head>
 	<title>Towelie</title>
 </svelte:head>
 
-<PageWrapper title="Towelie" {pb} back={true} noPadding={true}>
-	<div
-		class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center lg:pt-8"
-	>
-		<div class="grid w-full content-start justify-items-center gap-4 px-4 pt-8">
+<PageWrapper title="Towelie" {pb} back={true}>
+	<div class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
+		<div class="grid w-full content-start justify-items-center gap-4">
 			{#key towelRecords}
-				{@const status = 'green'}
+				{@const status = getStatusColorFromValue(towelDirty ?? 0)}
 				{#if status === 'green'}
 					<div class="avatar">
 						<div class="w-32 rounded-full bg-[#dbf0be] p-4">
