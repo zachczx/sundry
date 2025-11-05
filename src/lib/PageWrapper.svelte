@@ -128,7 +128,7 @@
 							'px-4 py-2',
 							currentPage === 'towelie' && 'rounded-full bg-white/30 font-bold',
 							currentPage !== 'towelie' && 'rounded-full hover:bg-white/20'
-						]}>Towelie</a
+						]}>Towel</a
 					>
 				</li>
 
@@ -139,7 +139,7 @@
 							'px-4 py-2',
 							currentPage === 'nosey' && 'rounded-full bg-white/30 font-bold',
 							currentPage !== 'nosey' && 'rounded-full hover:bg-white/20'
-						]}>Nosey</a
+						]}>Spray</a
 					>
 				</li>
 
@@ -212,12 +212,12 @@
 
 		<a href="/towelie" class={[currentPage === 'towelie' && 'text-primary font-semibold']}>
 			<PhTowelFill class="size-[1.5em]" />
-			<span class="text-sm tracking-wider">Towelie</span>
+			<span class="text-sm tracking-wider">Towel</span>
 		</a>
 
 		<a href="/nosey" class={[currentPage === 'nosey' && 'text-primary font-semibold']}>
 			<IconParkSolidBottleOne class="size-[1.5em]" />
-			<span class="text-sm tracking-wider">Nosey</span>
+			<span class="text-sm tracking-wider">Spray</span>
 		</a>
 
 		<a href="/gummy" class={[currentPage === 'gummy' && 'text-primary font-semibold']}>
