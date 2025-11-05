@@ -114,9 +114,9 @@
 	let lastSpray: number | undefined = $derived.by(() => {
 		let lastSpray;
 		if (sprays.isSuccess) {
-			const lastWashDate = dayjs(sprays.data[0].time);
+			const lastRecord = dayjs(sprays.data[0].time);
 			const today = dayjs();
-			lastSpray = today.diff(lastWashDate, 'hours', true);
+			lastSpray = today.diff(lastRecord, 'hours', true);
 			return lastSpray;
 		}
 	});
@@ -401,19 +401,6 @@
 				{#key sprays.data}
 					<Calendar plugins={[DayGrid, Interaction]} options={calendarOptions} />
 				{/key}
-			</div>
-
-			<div class="{currentTab === 'settings' ? 'grid' : 'hidden'} w-full px-4">
-				<fieldset class="fieldset">
-					<legend class="fieldset-legend">Days Between Doses</legend>
-					<select bind:value={daysToNext} class="select">
-						<option value={1}>1</option>
-						<option value={2}>2</option>
-						<option value={3}>3</option>
-						<option value={4}>4</option>
-						<option value={5}>5</option>
-					</select>
-				</fieldset>
 			</div>
 		</div>
 	</main>
