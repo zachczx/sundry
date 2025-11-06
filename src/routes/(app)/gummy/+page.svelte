@@ -24,6 +24,7 @@
 	} from '$lib/queries';
 	import { getCalendarEntries } from '$lib/calendar';
 	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
+	import CustomDateModal from '$lib/CustomDateModal.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -289,6 +290,10 @@
 					Just Ate Gummy
 				{/if}
 			</button>
+
+			<div class="flex justify-start">
+				<CustomDateModal collectionName="gummy" {tanstackClient} {daysToNext} />
+			</div>
 		</div>
 
 		<div class="grid w-full content-start gap-8 pt-4 pb-8">
