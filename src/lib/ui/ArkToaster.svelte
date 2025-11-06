@@ -97,21 +97,22 @@
 
 			&[data-type='error'] {
 				background: var(--color-error);
-				color: white;
+				color: var(--color-error-content);
 			}
 
 			&[data-type='info'] {
-				background: var(--color-secondary);
-				color: white;
+				background: var(--color-info);
+				color: var(--color-info-content);
 			}
 
 			&[data-type='warning'] {
-				background: orange;
+				background: var(--color-warning);
+				color: var(--color-warning-content);
 			}
 
 			&[data-type='success'] {
 				background: var(--color-success);
-				color: white;
+				color: var(--color-success-content);
 			}
 		}
 		/* [data-scope='toast'][data-part='close-trigger'] {

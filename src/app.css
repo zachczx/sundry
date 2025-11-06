@@ -1,23 +1,37 @@
 @import 'tailwindcss';
 @plugin 'daisyui';
 @plugin 'daisyui/theme' {
-	name: winter;
+	name: caramellatte;
 	default: true;
 	prefersdark: false;
 	color-scheme: light;
 
-	--color-primary: #0069ff;
-	--color-secondary: #002a66;
+	--color-primary: #3d6b5e;
+	--color-primary-content: #f2f2f2;
+	--color-secondary: #4d6666;
+	--color-secondary-content: #f2f2f2;
 
 	--color-neutral: #001534;
 	--color-neutral-content: #fafafa;
 
-	--color-info: #e9ff00;
-	--color-success: #5cb85c;
-	--color-success-content: #fafafa;
+	--color-accent: #d47b63;
+	--color-accent-content: #f2f2f2;
 
-	--color-error: #ff2c2c;
+	--color-neutral: #5a4d47;
+	--color-neutral-content: #f2f2f2;
+
+	--color-warning: #b8873d;
+	--color-warning-content: #f2f2f2;
+	--color-info: #4a6b7a;
+	--color-info-content: #f2f2f2;
+	--color-success: #4a6b42;
+	--color-success-content: #fafafa;
+	--color-error: #a55744;
 	--color-error-content: #fafafa;
+
+	--color-base-100: #f5f1e8;
+	--color-base-200: #e8e0d0;
+	--color-base-content: #2d2520;
 }
 
 @theme {

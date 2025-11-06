@@ -1,19 +1,5 @@
-// {
-// 	"name": "towelie",
-// 	"main": ".svelte-kit/cloudflare/_worker.js",
-// 	"compatibility_date": "2025-01-01",
-// 	"assets": {
-// 		"binding": "ASSETS",
-// 		"directory": ".svelte-kit/cloudflare"
-// 	},
-// 	"observability": {
-// 		"enabled": true,
-// 		"head_sampling_rate": 1
-// 	}
-// }
-
 {
-  "name": "towsey",
+  "name": "sundry",
   "compatibility_date": "2025-01-01",
   "assets": {
     "directory": "./build/"

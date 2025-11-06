@@ -1,7 +1,7 @@
 {
-	"name": "Towsey",
-	"short_name": "Towsey",
-	"description": "Manage your towels and nasal sprays.",
+	"name": "Sundry",
+	"short_name": "Sundry",
+	"description": "Track the little things.",
 	"start_url": "/",
 	"display": "standalone",
 	"icons": [
