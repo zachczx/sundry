@@ -78,7 +78,7 @@
 	<div
 		id="topnav"
 		class={[
-			'navbar border-b-base-300/50 bg-neutral text-neutral-content fixed top-0 z-1 min-h-14 items-center border-b pe-4',
+			'navbar border-b-base-300/50 bg-base-nav text-primary-content fixed top-0 z-1 min-h-14 items-center border-b pe-4',
 			back ? 'lg:ps-4' : 'ps-4'
 		]}
 	>

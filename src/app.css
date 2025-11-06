@@ -37,6 +37,7 @@
 
 @theme {
 	--font-body: 'Quicksand Variable', sans-serif;
+	--color-base-nav: #3d3935;
 }
 
 @layer base {

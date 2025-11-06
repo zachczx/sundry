@@ -211,7 +211,7 @@
 						label: '',
 						data: gaps,
 						fill: false,
-						borderColor: 'oklch(56.86% 0.255 257.57)',
+						borderColor: '#3d6b5e',
 						tension: 0.1,
 						showLine: true
 					}
