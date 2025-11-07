@@ -1,8 +1,4 @@
 <script lang="ts">
-	import Red from '$lib/images/nosey_red.webp?w=150&enhanced';
-	import Orange from '$lib/images/nosey_orange.webp?w=150&enhanced';
-	import Yellow from '$lib/images/nosey_olive.webp?w=150&enhanced';
-	import Green from '$lib/images/nosey_green.webp?w=150&enhanced';
 	import { pb } from '$lib/pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
@@ -10,20 +6,16 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import { Calendar, DayGrid, Interaction } from '@event-calendar/core';
 	import PageWrapper from '$lib/PageWrapper.svelte';
-	import { addToast } from '$lib/ui/ArkToaster.svelte';
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import Chart from 'chart.js/auto';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import { onMount } from 'svelte';
 	import {
 		createGummyQueryOptions,
 		createGummyRefetchOptions,
-		createSprayRefetchOptions,
 		createUserQueryOptions,
 		createVacationQueryOptions
 	} from '$lib/queries';
 	import { getCalendarEntries } from '$lib/calendar';
-	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
 	import CustomDateModal from '$lib/CustomDateModal.svelte';
 	import TwoColumnCard from '$lib/ui/TwoColumnCard.svelte';
 	import StatusDescriptions from '$lib/ui/StatusDescriptions.svelte';
@@ -37,34 +29,18 @@
 	let singleDay: GummyDB[] | undefined = $state([]);
 	let singleDayModal = $state() as HTMLDialogElement;
 
-	let gummyButtonStatus: ButtonState = $state('default');
-
 	const gummies = createQuery(createGummyQueryOptions);
 	const user = createQuery(createUserQueryOptions);
 	const vacations = createQuery(createVacationQueryOptions);
 	const tanstackClient = useQueryClient();
 
-	async function addSprayHandler() {
-		gummyButtonStatus = 'loading';
-
-		const result = await pb.collection('gummy').create({
+	const query = async () =>
+		await pb.collection('gummy').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: daysToNext
 		});
-
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-
-			gummyButtonStatus = 'success';
-
-			setTimeout(() => {
-				gummyButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createGummyRefetchOptions());
-	}
+	const refetch = async () => await tanstackClient.refetchQueries(createGummyRefetchOptions());
 
 	let times = $derived.by(() => getCalendarEntries(gummies, 'Gummy'));
 	let vacationTimes = $derived.by(() => getCalendarEntries(vacations, 'Vacation', '✈️'));
@@ -245,7 +221,7 @@
 				<StatusHeroImage {status} />
 			{/if}
 
-			<ActionButton handler={addSprayHandler} status={gummyButtonStatus} text="Just Ate Gummy" />
+			<ActionButton {query} {refetch} text="Just Ate Gummy" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="gummy" {tanstackClient} {daysToNext} />

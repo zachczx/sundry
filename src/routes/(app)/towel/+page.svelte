@@ -4,7 +4,6 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { addToast } from '$lib/ui/ArkToaster.svelte';
 	import PageWrapper from '$lib/PageWrapper.svelte';
 	import Chart from 'chart.js/auto';
 	import { Calendar, DayGrid, Interaction } from '@event-calendar/core';
@@ -18,25 +17,15 @@
 	} from '$lib/queries';
 	import { getCalendarEntries } from '$lib/calendar';
 	import { getStatusColorFromValue } from '$lib/towels';
-	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
-	import MaterialSymbolsCalendarClock from '$lib/assets/svg/MaterialSymbolsCalendarClock.svelte';
-	import MaterialSymbolsNestClockFarsightAnalogOutline from '$lib/assets/svg/MaterialSymbolsNestClockFarsightAnalogOutline.svelte';
-	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
-	import MaterialSymbolsArrowRightAlt from '$lib/assets/svg/MaterialSymbolsArrowRightAlt.svelte';
 	import CustomDateModal from '$lib/CustomDateModal.svelte';
 	import TwoColumnCard from '$lib/ui/TwoColumnCard.svelte';
 	import StatusDescriptions from '$lib/ui/StatusDescriptions.svelte';
-	import MaterialSymbolsCheckCircle from '$lib/assets/svg/MaterialSymbolsCheckCircle.svelte';
-	import MaterialSymbolsExclamation from '$lib/assets/svg/MaterialSymbolsExclamation.svelte';
-	import AntDesignExclamationCircleFilled from '$lib/assets/svg/AntDesignExclamationCircleFilled.svelte';
 	import StatusHeroImage from '$lib/ui/StatusHeroImage.svelte';
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
-
-	let towelButtonStatus: 'default' | 'loading' | 'success' = $state('default');
 
 	const vacations = createQuery(createVacationQueryOptions);
 	const towels = createQuery(createTowelQueryOptions);
@@ -228,25 +217,13 @@
 		return getStatusColorFromValue(towelDirty ?? 0);
 	});
 
-	async function addTowelHandler() {
-		towelButtonStatus = 'loading';
-
-		const result = await pb.collection('towel').create({
+	const query = async () =>
+		await pb.collection('towel').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore')
 		});
 
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-			towelButtonStatus = 'success';
-
-			setTimeout(() => {
-				towelButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createTowelRefetchOptions());
-	}
+	const refetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
 </script>
 
 <PageWrapper title="Towel" {pb} back={true}>
@@ -256,7 +233,7 @@
 				<StatusHeroImage {status} />
 			{/key}
 
-			<ActionButton handler={addTowelHandler} status={towelButtonStatus} text="Just Washed" />
+			<ActionButton {query} {refetch} text="Just Washed" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="towel" {tanstackClient} />

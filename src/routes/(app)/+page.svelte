@@ -29,8 +29,8 @@
 	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
 	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
 	import ActionButton from '$lib/ui/ActionButton.svelte';
-	import type { MouseEventHandler } from 'svelte/elements';
 	import type { Component } from 'svelte';
+	import type { RecordModel } from 'pocketbase';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -81,67 +81,28 @@
 		return '';
 	});
 
-	async function addTowelHandler() {
-		towelButtonStatus = 'loading';
-
-		const result = await pb.collection('towel').create({
+	const towelQuery = async () =>
+		await pb.collection('towel').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore')
 		});
+	const towelRefetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
 
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-			towelButtonStatus = 'success';
-
-			setTimeout(() => {
-				towelButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createTowelRefetchOptions());
-	}
-
-	async function addSprayHandler() {
-		sprayButtonStatus = 'loading';
-
-		const result = await pb.collection('spray').create({
+	const sprayQuery = async () =>
+		await pb.collection('spray').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: sprayDaysToNext
 		});
+	const sprayRefetch = async () => await tanstackClient.refetchQueries(createSprayRefetchOptions());
 
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-			sprayButtonStatus = 'success';
-
-			setTimeout(() => {
-				sprayButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createSprayRefetchOptions());
-	}
-
-	async function addGummyHandler() {
-		gummyButtonStatus = 'loading';
-
-		const result = await pb.collection('spray').create({
+	const gummyQuery = async () =>
+		await pb.collection('spray').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: gummyDaysToNext
 		});
-
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-			gummyButtonStatus = 'success';
-
-			setTimeout(() => {
-				gummyButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createGummyRefetchOptions());
-	}
+	const gummyRefetch = async () => await tanstackClient.refetchQueries(createGummyRefetchOptions());
 
 	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
 	let towelNotification = $derived.by(() => getNotificationStatus(towels));
@@ -164,7 +125,8 @@
 					icon: PhTowelFill,
 					last: towelLast,
 					button: {
-						handler: addTowelHandler,
+						query: towelQuery,
+						refetch: towelRefetch,
 						status: towelButtonStatus,
 						text: 'Just Washed'
 					}
@@ -178,7 +140,8 @@
 					icon: IconParkSolidBottleOne,
 					last: sprayLast,
 					button: {
-						handler: addSprayHandler,
+						query: sprayQuery,
+						refetch: sprayRefetch,
 						status: sprayButtonStatus,
 						text: 'Just Sprayed'
 					}
@@ -192,7 +155,8 @@
 					icon: MaterialSymbolsHealthAndSafety,
 					last: gummyLast,
 					button: {
-						handler: addGummyHandler,
+						query: gummyQuery,
+						refetch: gummyRefetch,
 						status: gummyButtonStatus,
 						text: 'Just Ate Gummy'
 					}
@@ -233,7 +197,8 @@
 	route: string;
 	last: string;
 	button: {
-		handler: MouseEventHandler<HTMLButtonElement>;
+		query: () => Promise<RecordModel>;
+		refetch: () => Promise<void>;
 		status: ButtonState;
 		text: string;
 	};
@@ -276,8 +241,8 @@
 			</div>
 		</a>
 		<ActionButton
-			handler={options.button.handler}
-			status={options.button.status}
+			query={options.button.query}
+			refetch={options.button.refetch}
 			text={options.button.text}
 		/>
 	</section>

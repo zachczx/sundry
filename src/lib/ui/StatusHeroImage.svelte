@@ -7,7 +7,7 @@
 </script>
 
 {#if status !== 'empty'}
-	<div class="avatar relative mb-4">
+	<div class="avatar relative mt-2 mb-4">
 		<div class="w-40 rounded-full shadow-md">
 			<enhanced:img
 				src={hero}

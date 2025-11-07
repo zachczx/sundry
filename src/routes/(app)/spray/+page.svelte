@@ -1,8 +1,4 @@
 <script lang="ts">
-	import Red from '$lib/images/nosey_red.webp?w=150&enhanced';
-	import Orange from '$lib/images/nosey_orange.webp?w=150&enhanced';
-	import Yellow from '$lib/images/nosey_olive.webp?w=150&enhanced';
-	import Green from '$lib/images/nosey_green.webp?w=150&enhanced';
 	import { pb } from '$lib/pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
@@ -10,11 +6,9 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import { Calendar, DayGrid, Interaction } from '@event-calendar/core';
 	import PageWrapper from '$lib/PageWrapper.svelte';
-	import { addToast } from '$lib/ui/ArkToaster.svelte';
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import Chart from 'chart.js/auto';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import { onMount } from 'svelte';
 	import {
 		createSprayQueryOptions,
 		createSprayRefetchOptions,
@@ -36,34 +30,19 @@
 	let singleDay: SprayDB[] | undefined = $state([]);
 	let singleDayModal = $state() as HTMLDialogElement;
 
-	let sprayButtonStatus: 'default' | 'loading' | 'success' = $state('default');
-
 	const sprays = createQuery(createSprayQueryOptions);
 	const user = createQuery(createUserQueryOptions);
 	const vacations = createQuery(createVacationQueryOptions);
 	const tanstackClient = useQueryClient();
 
-	async function addSprayHandler() {
-		sprayButtonStatus = 'loading';
-
-		const result = await pb.collection('spray').create({
+	const query = async () =>
+		await pb.collection('spray').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: daysToNext
 		});
 
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-
-			sprayButtonStatus = 'success';
-
-			setTimeout(() => {
-				sprayButtonStatus = 'default';
-			}, 3000);
-		}
-
-		await tanstackClient.refetchQueries(createSprayRefetchOptions());
-	}
+	const refetch = async () => await tanstackClient.refetchQueries(createSprayRefetchOptions());
 
 	let times = $derived.by(() => getCalendarEntries(sprays, 'Sprayed'));
 	let vacationTimes = $derived.by(() => getCalendarEntries(vacations, 'Vacation', '✈️'));
@@ -241,7 +220,7 @@
 				<StatusHeroImage {status} />
 			{/if}
 
-			<ActionButton handler={addSprayHandler} status={sprayButtonStatus} text="Just Sprayed" />
+			<ActionButton {query} {refetch} text="Just Sprayed" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="spray" {tanstackClient} {daysToNext} />
