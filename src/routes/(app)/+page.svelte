@@ -28,6 +28,9 @@
 	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
 	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
 	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
+	import ActionButton from '$lib/ui/ActionButton.svelte';
+	import type { MouseEventHandler } from 'svelte/elements';
+	import type { Component } from 'svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -153,174 +156,47 @@
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<div class="grid gap-8 py-4">
-				<section
-					class={[
-						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
-						towelNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
-					]}
-				>
-					<a href="/towel" class="flex items-center">
-						<div class="flex grow items-center gap-4">
-							<PhTowelFill class="size-12 opacity-75" />
-							<!-- <h3 class="text-sm lg:text-base">Towel Washed</h3> -->
-							<div>
-								<p class="text-xl font-bold">Wash Towel</p>
-								{#if towels.isPending && !towels.data}
-									<div class="custom-loader"></div>
-								{/if}
-								{#if towels.error}
-									Error: {towels.error.message}
-								{/if}
+				{@render actionCard({
+					title: 'Wash Towel',
+					query: towels,
+					notification: towelNotification,
+					route: '/towel',
+					icon: PhTowelFill,
+					last: towelLast,
+					button: {
+						handler: addTowelHandler,
+						status: towelButtonStatus,
+						text: 'Just Washed'
+					}
+				})}
 
-								{#if towels.isSuccess}
-									{#if towelNotification.show}
-										<span class="text-error font-medium tracking-tight">
-											{#if towelNotification.level === 'overdue'}
-												Overdue
-											{:else if towelNotification.level === 'due'}
-												Due
-											{/if}
-										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
-									{/if}<span>{towelLast}</span>
-								{/if}
-							</div>
-						</div>
-						<div class="flex h-full items-center">
-							<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-								><MaterialSymbolsChevronRight class="size-6" /></button
-							>
-						</div>
-					</a>
-					<button
-						class={[
-							'btn btn-lg flex w-full items-center gap-2 rounded-full',
-							towelButtonStatus === 'default' && 'btn-primary',
-							towelButtonStatus === 'loading' && 'btn-primary',
-							towelButtonStatus === 'success' && 'btn-success'
-						]}
-						onclick={addTowelHandler}
-					>
-						{#if towelButtonStatus === 'success'}
-							<MaterialSymbolsCheck class="size-6" />Added!
-						{:else if towelButtonStatus === 'loading'}
-							<span class="loading loading-spinner loading-md"></span>
-						{:else}
-							Just Washed
-						{/if}
-					</button>
-				</section>
+				{@render actionCard({
+					title: 'Spray Nose',
+					query: sprays,
+					notification: sprayNotification,
+					route: '/spray',
+					icon: IconParkSolidBottleOne,
+					last: sprayLast,
+					button: {
+						handler: addSprayHandler,
+						status: sprayButtonStatus,
+						text: 'Just Sprayed'
+					}
+				})}
 
-				<section
-					class={[
-						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
-						sprayNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
-					]}
-				>
-					<a href="/spray" class="flex items-center">
-						<div class="flex grow items-center gap-4">
-							<IconParkSolidBottleOne class="size-12 opacity-75" />
-							<div>
-								<p class="text-xl font-bold">Spray Nose</p>
-								{#if sprays.isPending && !sprays.data}
-									<div class="custom-loader"></div>
-								{/if}
-								{#if sprays.error}
-									An error has occurred:
-									{sprays.error.message}
-								{/if}
-								{#if sprays.isSuccess}
-									{#if sprayNotification.show}
-										<span class="text-error font-medium tracking-tight">
-											{#if sprayNotification.level === 'overdue'}
-												Overdue
-											{:else if sprayNotification.level === 'due'}
-												Due
-											{/if}
-										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
-									{/if}<span>{sprayLast}</span>
-								{/if}
-							</div>
-						</div>
-						<div class="flex h-full items-center">
-							<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-								><MaterialSymbolsChevronRight class="size-6" /></button
-							>
-						</div>
-					</a>
-					<button
-						class={[
-							'btn btn-lg flex w-full items-center gap-2 rounded-full',
-							sprayButtonStatus === 'default' && 'btn-primary',
-							sprayButtonStatus === 'loading' && 'btn-primary',
-							sprayButtonStatus === 'success' && 'btn-success'
-						]}
-						onclick={addSprayHandler}
-					>
-						{#if sprayButtonStatus === 'success'}
-							<MaterialSymbolsCheck class="size-6" />Added!
-						{:else if sprayButtonStatus === 'loading'}
-							<span class="loading loading-spinner loading-md"></span>
-						{:else}
-							Just Sprayed
-						{/if}
-					</button>
-				</section>
-
-				<section
-					class={[
-						'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
-						gummyNotification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
-					]}
-				>
-					<a href="/gummy" class="flex items-center">
-						<div class="flex grow items-center gap-4">
-							<MaterialSymbolsHealthAndSafety class="size-12 opacity-75" />
-							<div>
-								<p class="text-xl font-bold">Elderberry Gummy</p>
-								{#if gummies.isPending && !gummies.data}
-									<div class="custom-loader"></div>
-								{/if}
-								{#if gummies.error}
-									An error has occurred:
-									{gummies.error.message}
-								{/if}
-								{#if gummies.isSuccess}
-									{#if gummyNotification.show}
-										<span class="text-error font-medium tracking-tight">
-											{#if gummyNotification.level === 'overdue'}
-												Overdue
-											{:else if gummyNotification.level === 'due'}
-												Due
-											{/if}
-										</span>&nbsp;&nbsp;•&nbsp;&nbsp;
-									{/if}<span>{gummyLast}</span>
-								{/if}
-							</div>
-						</div>
-						<div class="flex h-full items-center">
-							<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-								><MaterialSymbolsChevronRight class="size-6" /></button
-							>
-						</div>
-					</a>
-					<button
-						class={[
-							'btn btn-lg flex w-full items-center gap-2 rounded-full',
-							gummyButtonStatus === 'default' && 'btn-primary',
-							gummyButtonStatus === 'loading' && 'btn-primary',
-							gummyButtonStatus === 'success' && 'btn-success'
-						]}
-						onclick={addSprayHandler}
-					>
-						{#if gummyButtonStatus === 'success'}
-							<MaterialSymbolsCheck class="size-6" />Added!
-						{:else if gummyButtonStatus === 'loading'}
-							<span class="loading loading-spinner loading-md"></span>
-						{:else}
-							Just Ate Gummy
-						{/if}
-					</button>
-				</section>
+				{@render actionCard({
+					title: 'Elderberry Gummy',
+					query: gummies,
+					notification: gummyNotification,
+					route: '/gummy',
+					icon: MaterialSymbolsHealthAndSafety,
+					last: gummyLast,
+					button: {
+						handler: addGummyHandler,
+						status: gummyButtonStatus,
+						text: 'Just Ate Gummy'
+					}
+				})}
 
 				<div class="bg-base-100 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
 					<a href="/count" class="flex items-center">
@@ -348,3 +224,61 @@
 		</div>
 	</main>
 </PageWrapper>
+
+{#snippet actionCard(options: {
+	title: string;
+	query: Query;
+	notification: NotificationStatus;
+	icon: Component;
+	route: string;
+	last: string;
+	button: {
+		handler: MouseEventHandler<HTMLButtonElement>;
+		status: ButtonState;
+		text: string;
+	};
+})}
+	<section
+		class={[
+			'border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4',
+			options.notification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
+		]}
+	>
+		<a href={options.route} class="flex items-center">
+			<div class="flex grow items-center gap-4">
+				<options.icon class="size-12 opacity-75" />
+				<div>
+					<p class="text-xl font-bold">{options.title}</p>
+					{#if options.query.isPending && !options.query.data}
+						<div class="custom-loader"></div>
+					{/if}
+					{#if options.query.error}
+						An error has occurred:
+						{options.query.error.message}
+					{/if}
+					{#if options.query.isSuccess}
+						{#if options.notification.show}
+							<span class="text-error font-medium tracking-tight">
+								{#if options.notification.level === 'overdue'}
+									Overdue
+								{:else if options.notification.level === 'due'}
+									Due
+								{/if}
+							</span>&nbsp;&nbsp;•&nbsp;&nbsp;
+						{/if}<span>{options.last}</span>
+					{/if}
+				</div>
+			</div>
+			<div class="flex h-full items-center">
+				<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
+					><MaterialSymbolsChevronRight class="size-6" /></button
+				>
+			</div>
+		</a>
+		<ActionButton
+			handler={options.button.handler}
+			status={options.button.status}
+			text={options.button.text}
+		/>
+	</section>
+{/snippet}
