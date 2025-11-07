@@ -34,7 +34,7 @@
 		pb,
 		children,
 		title,
-		back,
+		back = true,
 		largeScreenCenter
 	}: {
 		pb: Client;

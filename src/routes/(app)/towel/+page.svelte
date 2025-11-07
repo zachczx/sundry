@@ -31,9 +31,16 @@
 	const towels = createQuery(createTowelQueryOptions);
 	const tanstackClient = useQueryClient();
 
-	let towelRecords: TowelRecord[] | undefined = $derived.by(() => {
+	/**
+	 * Using $state + $effect instead of $derived due to TanStack Query store
+	 * not properly triggering Svelte 5's fine-grained reactivity on async data changes
+	 */
+
+	let towelRecords: TowelRecord[] = $state([]);
+
+	$effect(() => {
 		if (towels.isSuccess) {
-			return towels.data?.map((record, i, allRecords) => {
+			towelRecords = towels.data?.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				if (!nextRecord) {
 					return { ...record, gap: 0 };
@@ -56,9 +63,9 @@
 				// Ensure gap is never negative
 				return { ...record, gap: Math.max(0, finalGap) };
 			});
+		} else {
+			towelRecords = [];
 		}
-
-		return [];
 	});
 
 	let longestGap: TowelRecord | undefined = $derived.by(() => {
@@ -79,9 +86,7 @@
 		const gaps: number[] = [];
 		const numberOfRecords = 10;
 		for (let i = 0; i < numberOfRecords; i++) {
-			if (!towelRecords[i]) {
-				gaps.unshift(0);
-			} else {
+			if (towelRecords[i]) {
 				gaps.unshift(towelRecords[i].gap);
 			}
 		}

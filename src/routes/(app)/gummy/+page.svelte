@@ -126,18 +126,22 @@
 		return user.data?.defaultGummyInterval;
 	});
 
-	// For Statuses
+	/**
+	 * Using $state + $effect instead of $derived due to TanStack Query store
+	 * not properly triggering Svelte 5's fine-grained reactivity on async data changes
+	 */
+	let gummyRecords: GummyRecord[] = $state([]);
 
-	let gummyRecords: GummyRecord[] | undefined = $derived.by(() => {
+	$effect(() => {
 		if (gummies.isSuccess && gummies.data) {
-			return gummies.data.map((record, i, allRecords) => {
+			gummyRecords = gummies.data.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
 				return { ...record, gap };
 			});
+		} else {
+			gummyRecords = [];
 		}
-
-		return [];
 	});
 
 	let longestGap: GummyRecord | undefined = $derived.by(() => {
@@ -157,10 +161,9 @@
 	let gaps = $derived.by(() => {
 		const gaps: number[] = [];
 		const numberOfRecords = 10;
+
 		for (let i = 0; i < numberOfRecords; i++) {
-			if (!gummyRecords[i]) {
-				gaps.unshift(0);
-			} else {
+			if (gummyRecords[i]) {
 				gaps.unshift(gummyRecords[i].gap);
 			}
 		}
@@ -168,14 +171,11 @@
 	});
 
 	let gapsDates = $derived.by(() => {
-		if (!gummyRecords || gummyRecords.length === 0) return [];
-
 		const gapsDates: string[] = [];
 		const numberOfRecords = 10;
+
 		for (let i = 0; i < numberOfRecords; i++) {
-			if (!gummyRecords[i]) {
-				break;
-			} else {
+			if (gummyRecords[i]) {
 				gapsDates.unshift(dayjs(gummyRecords[i].time).format('D/M'));
 			}
 		}
@@ -206,7 +206,7 @@
 			});
 		}
 
-		if (lineChart && gapsDates && gaps) {
+		if (lineChart && gapsDates.length > 0 && gaps.length > 0) {
 			lineChart.data.labels = [...gapsDates];
 			lineChart.data.datasets[0].data = gaps;
 			lineChart.update();
