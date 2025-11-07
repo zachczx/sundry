@@ -255,9 +255,9 @@
 			{#key towelRecords}
 				<StatusHeroImage {status} />
 			{/key}
-			<form class="w-full">
-				<ActionButton handler={addTowelHandler} status={towelButtonStatus} text="Just Washed" />
-			</form>
+
+			<ActionButton handler={addTowelHandler} status={towelButtonStatus} text="Just Washed" />
+
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="towel" {tanstackClient} />
 			</div>
