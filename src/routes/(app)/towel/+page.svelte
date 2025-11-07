@@ -299,10 +299,10 @@
 						{#key towelRecords}
 							{#if status}
 								{@const descriptions = {
-									green: 'Squeaky Clean',
-									yellow: 'Still Fresh',
-									orange: 'Kinda Funky',
-									red: 'Wash Me!'
+									green: 'Clean',
+									yellow: 'Alright',
+									orange: 'Funky',
+									red: 'Wash now!'
 								}}
 								<StatusDescriptions {status} {descriptions} />
 							{:else}
