@@ -128,7 +128,7 @@
 						query: towelQuery,
 						refetch: towelRefetch,
 						status: towelButtonStatus,
-						text: 'Just Washed'
+						text: 'Washed'
 					}
 				})}
 
@@ -143,7 +143,7 @@
 						query: sprayQuery,
 						refetch: sprayRefetch,
 						status: sprayButtonStatus,
-						text: 'Just Sprayed'
+						text: 'Sprayed'
 					}
 				})}
 
@@ -158,7 +158,7 @@
 						query: gummyQuery,
 						refetch: gummyRefetch,
 						status: gummyButtonStatus,
-						text: 'Just Ate Gummy'
+						text: 'Ate'
 					}
 				})}
 

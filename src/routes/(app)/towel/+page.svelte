@@ -233,7 +233,7 @@
 				<StatusHeroImage {status} />
 			{/key}
 
-			<ActionButton {query} {refetch} text="Just Washed" />
+			<ActionButton {query} {refetch} text="Washed" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="towel" {tanstackClient} />

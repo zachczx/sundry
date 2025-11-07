@@ -220,7 +220,7 @@
 				<StatusHeroImage {status} />
 			{/if}
 
-			<ActionButton {query} {refetch} text="Just Sprayed" />
+			<ActionButton {query} {refetch} text="Sprayed" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="spray" {tanstackClient} {daysToNext} />

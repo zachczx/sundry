@@ -221,7 +221,7 @@
 				<StatusHeroImage {status} />
 			{/if}
 
-			<ActionButton {query} {refetch} text="Just Ate Gummy" />
+			<ActionButton {query} {refetch} text="Ate" />
 
 			<div class="flex justify-start">
 				<CustomDateModal collectionName="gummy" {tanstackClient} {daysToNext} />
