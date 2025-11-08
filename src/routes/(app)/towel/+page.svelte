@@ -223,7 +223,7 @@
 	const refetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
 </script>
 
-<PageWrapper title="Towel" {pb} back={true}>
+<PageWrapper title="Towel" {pb}>
 	<div class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#key towelRecords}

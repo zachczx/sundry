@@ -112,7 +112,7 @@
 	}
 </script>
 
-<PageWrapper title="Profile" back={true} {pb} largeScreenCenter={true}>
+<PageWrapper title="Profile" {pb} largeScreenCenter={true}>
 	<div
 		class="lg:bg-base-200 grid w-full rounded-2xl max-lg:h-full max-lg:grid-rows-[1fr_auto] lg:h-min lg:max-w-lg lg:justify-self-center lg:p-8 lg:shadow-md"
 	>
