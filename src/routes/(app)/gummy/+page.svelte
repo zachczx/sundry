@@ -126,22 +126,15 @@
 		return user.data?.defaultGummyInterval;
 	});
 
-	/**
-	 * Using $state + $effect instead of $derived due to TanStack Query store
-	 * not properly triggering Svelte 5's fine-grained reactivity on async data changes
-	 */
-	let gummyRecords: GummyRecord[] = $state([]);
-
-	$effect(() => {
+	let gummyRecords = $derived.by(() => {
 		if (gummies.isSuccess && gummies.data) {
-			gummyRecords = gummies.data.map((record, i, allRecords) => {
+			return gummies.data.map((record, i, allRecords) => {
 				const nextRecord = allRecords[i + 1];
 				const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
 				return { ...record, gap };
 			});
-		} else {
-			gummyRecords = [];
 		}
+		return [];
 	});
 
 	let longestGap: GummyRecord | undefined = $derived.by(() => {
