@@ -21,13 +21,14 @@
 	import StatusDescriptions from '$lib/ui/StatusDescriptions.svelte';
 	import StatusHeroImage from '$lib/ui/StatusHeroImage.svelte';
 	import ActionButton from '$lib/ui/ActionButton.svelte';
+	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
 	let singleDay: GummyDB[] | undefined = $state([]);
-	let singleDayModal = $state() as HTMLDialogElement;
+	let modal = $state<HTMLDialogElement>();
 
 	const gummies = createQuery(createGummyQueryOptions);
 	const user = createQuery(createUserQueryOptions);
@@ -64,7 +65,7 @@
 					singleDay = gummies.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.date).get('date');
 					});
-					singleDayModal.showModal();
+					modal?.showModal();
 				}
 			},
 			eventClick: async (info) => {
@@ -72,7 +73,7 @@
 					singleDay = gummies.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.event.start).get('date');
 					});
-					singleDayModal.showModal();
+					modal?.showModal();
 				}
 			}
 		};
@@ -175,7 +176,7 @@
 		return gapsDates;
 	});
 
-	let lineChartEl = $state() as HTMLCanvasElement;
+	let lineChartEl = $state<HTMLCanvasElement>();
 	let lineChart: Chart | undefined = $state();
 
 	$effect(() => {
@@ -333,32 +334,7 @@
 </PageWrapper>
 <span class="ec ec-time-grid ec-title hidden"></span>
 
-<dialog bind:this={singleDayModal} class="modal">
-	<div class="modal-box">
-		{#if singleDay && singleDay.length > 0}
-			{@const theDay = dayjs(singleDay[0].time).format('D MMM YYYY')}
-			<h3 class="text-lg font-bold">{theDay}</h3>
-			<div class="py-4">
-				<ul class="list-disc">
-					{#each singleDay as day}
-						{@const formatted = dayjs(day.time).format('h:mma')}
-						<li class="flex items-center gap-2">
-							<MaterialSymbolsCheck class="text-success size-[1.3em]" />
-							{formatted}
-						</li>
-					{/each}
-				</ul>
-			</div>
-		{:else}
-			<h3 class="text-lg font-bold">Nothing here!</h3>
-		{/if}
-		<div class="modal-action">
-			<form method="dialog">
-				<button class="btn">Close</button>
-			</form>
-		</div>
-	</div>
-</dialog>
+<SingleDayModal {modal} {singleDay} />
 
 <style>
 	:global {

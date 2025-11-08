@@ -18,10 +18,6 @@
 		createTowelRefetchOptions,
 		createUserQueryOptions
 	} from '$lib/queries';
-	import ReshotTimerOff from '$lib/assets/towsey-icons/ReshotTimerOff.svelte';
-	import StreamlineKameleonColorMedicine from '$lib/assets/towsey-icons/StreamlineKameleonColorMedicine.svelte';
-	import StreamlineKameleonColorTowel from '$lib/assets/towsey-icons/StreamlineKameleonColorTowel.svelte';
-	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import { getNotificationStatus } from '$lib/notification';
 	import { goto } from '$app/navigation';
 	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
@@ -108,10 +104,6 @@
 	let towelNotification = $derived.by(() => getNotificationStatus(towels));
 	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
 </script>
-
-<svelte:head>
-	<title>Towsey</title>
-</svelte:head>
 
 <PageWrapper title="Sundry" back={false} {pb}>
 	<main class="h-full">
