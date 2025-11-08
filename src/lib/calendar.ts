@@ -24,7 +24,7 @@ export function getCalendarEntries(
 					start: start.toDate(),
 					end: end.toDate(),
 					title: icon ? `— ${icon} ${title}` : `— ${title}`,
-					backgroundColor: '#2a2a2a'
+					backgroundColor: 'var(--color-neutral)' // vacation color
 				});
 			} else {
 				const t = dayjs.utc(r.time);

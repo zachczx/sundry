@@ -7,7 +7,6 @@
 	import PageWrapper from '$lib/PageWrapper.svelte';
 	import Chart from 'chart.js/auto';
 	import { Calendar, DayGrid, Interaction } from '@event-calendar/core';
-	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 	import { calculateVacationOverlap } from '$lib/overlap';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import {
@@ -111,7 +110,7 @@
 			view: 'dayGridMonth',
 			events: [...towelTimes, ...vacationTimes],
 			selectBackgroundColor: 'red',
-			eventBackgroundColor: '#0054cc',
+			eventBackgroundColor: 'var(--color-primary)',
 			firstDay: 1,
 			titleFormat: (date) => {
 				const month = dayjs(date).get('month');
@@ -347,42 +346,3 @@
 </PageWrapper>
 
 <SingleDayModal {modal} {singleDay} />
-
-<style>
-	:global {
-		.ec.ec-day-grid {
-			/* max-width: 90vw; */
-			width: 100%;
-		}
-
-		.ec-title {
-			font-size: 1.25rem;
-			font-weight: 600 !important;
-		}
-
-		.ec-today {
-			background-color: var(--color-primary-content) !important;
-		}
-
-		.ec-day {
-			&:hover {
-				background-color: rgba(242, 189, 205, 0.3);
-				.ec-day-head {
-					font-weight: 600 !important;
-				}
-				color: var(--color-primary);
-			}
-		}
-
-		.ec-bg-events {
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		.ec-header {
-			border-top-left-radius: 10px !important;
-			border-top-right-radius: 10px !important;
-		}
-	}
-</style>

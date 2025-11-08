@@ -52,7 +52,7 @@
 			view: 'dayGridMonth',
 			events: [...times, ...vacationTimes],
 			selectBackgroundColor: 'red',
-			eventBackgroundColor: '#4a4a7d',
+			eventBackgroundColor: 'var(--color-primary)',
 			firstDay: 1,
 			titleFormat: (date) => {
 				const month = dayjs(date).get('month');
@@ -66,7 +66,7 @@
 					singleDay = sprays.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.date).get('date');
 					});
-					modal.showModal();
+					modal?.showModal();
 				}
 			},
 			eventClick: async (info) => {
@@ -74,7 +74,7 @@
 					singleDay = sprays.data.filter((day) => {
 						return dayjs(day.time).get('date') == dayjs(info.event.start).get('date');
 					});
-					modal.showModal();
+					modal?.showModal();
 				}
 			}
 		};
@@ -332,45 +332,5 @@
 		</div>
 	</main>
 </PageWrapper>
-<span class="ec ec-time-grid ec-title hidden"></span>
 
 <SingleDayModal {modal} {singleDay} />
-
-<style>
-	:global {
-		.ec.ec-day-grid {
-			/* max-width: 90vw; */
-			width: 100%;
-		}
-
-		.ec-title {
-			font-size: 1.25rem;
-			font-weight: 600 !important;
-		}
-
-		.ec-today {
-			background-color: var(--color-primary-content) !important;
-		}
-
-		.ec-day {
-			&:hover {
-				background-color: rgba(242, 189, 205, 0.3);
-				.ec-day-head {
-					font-weight: 600 !important;
-				}
-				color: var(--color-primary);
-			}
-		}
-
-		.ec-bg-events {
-			&:hover {
-				cursor: pointer;
-			}
-		}
-
-		.ec-header {
-			border-top-left-radius: 10px !important;
-			border-top-right-radius: 10px !important;
-		}
-	}
-</style>
