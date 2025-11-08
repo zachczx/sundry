@@ -98,5 +98,7 @@
 }
 
 @utility btn {
-	border: 0px;
+	&:not(.btn-outline) {
+		border: 0px;
+	}
 }
