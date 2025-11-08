@@ -7,7 +7,7 @@
 		singleDay
 	}: {
 		modal: HTMLDialogElement | undefined;
-		singleDay: SprayDB[] | TowelDB[] | GummyDB[] | undefined;
+		singleDay: SprayDB[] | TowelDB[] | GummyDB[] | DoggoChewableDB[] | undefined;
 	} = $props();
 </script>
 

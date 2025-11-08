@@ -42,6 +42,21 @@ interface GummyRecord extends GummyDB {
 	gap: number;
 }
 
+interface DoggoChewableDB {
+	collectionId: string;
+	collectionName: 'gummy';
+	id: string;
+	time: string;
+	created: string;
+	updated: string;
+	user: string;
+	monthsToNext: number;
+}
+
+interface DoggoChewableRecord extends DoggoChewableDB {
+	gap: number;
+}
+
 type Characters = 'frankenstein' | 'robot' | 'furnando';
 
 interface UserDB {
@@ -56,6 +71,8 @@ interface UserDB {
 	mute: boolean;
 	sprayInterval: number;
 	gummyInterval: number;
+	doggoChewableIntervalMonths: number;
+	doggoBathInterval: number;
 	created: string;
 	updated: string;
 }

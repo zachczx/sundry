@@ -24,7 +24,9 @@
 				password: cleanPassword,
 				passwordConfirm: cleanPassword,
 				sprayInterval: 2,
-				gummyInterval: 2
+				gummyInterval: 2,
+				doggoNexgardIntervalMonths: 1,
+				doggoBathInterval: 14
 			};
 
 			const record = await pb.collection('users').create(data);

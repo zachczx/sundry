@@ -1,18 +1,19 @@
 <script lang="ts">
 	import { QueryClient, useQueryClient } from '@tanstack/svelte-query';
-	import { pb } from './pb';
+	import { pb } from '../pb';
 	import dayjs from 'dayjs';
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import { addToast } from './ui/ArkToaster.svelte';
+	import { addToast } from './ArkToaster.svelte';
 	import {
+		createDoggoChewableRefetchOptions,
 		createGummyRefetchOptions,
 		createSprayRefetchOptions,
 		createTowelRefetchOptions
-	} from './queries';
-	import MaterialSymbolsCheck from './assets/svg/MaterialSymbolsCheck.svelte';
-	import MaterialSymbolsArrowRightAlt from './assets/svg/MaterialSymbolsArrowRightAlt.svelte';
+	} from '../queries';
+	import MaterialSymbolsCheck from '../assets/svg/MaterialSymbolsCheck.svelte';
+	import MaterialSymbolsArrowRightAlt from '../assets/svg/MaterialSymbolsArrowRightAlt.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -21,10 +22,12 @@
 	let {
 		collectionName,
 		daysToNext,
+		monthsToNext,
 		tanstackClient
 	}: {
-		collectionName: 'towel' | 'spray' | 'gummy';
+		collectionName: 'towel' | 'spray' | 'gummy' | 'doggoChewable' | 'doggoBath';
 		daysToNext?: number;
+		monthsToNext?: number;
 		tanstackClient: QueryClient;
 	} = $props();
 
@@ -68,6 +71,24 @@
 			}
 
 			await tanstackClient.refetchQueries(createTowelRefetchOptions());
+		} else if (collectionName === 'doggoChewable') {
+			const result = await pb.collection(collectionName).create({
+				user: pb.authStore.record?.id,
+				time: dayjs.tz(timestamp, 'Asia/Singapore'),
+				monthsToNext: monthsToNext
+			});
+
+			if (result.id) {
+				dialog.close();
+				addToast('success', 'Added successfully!');
+				buttonStatus = 'success';
+
+				setTimeout(() => {
+					buttonStatus = 'default';
+				}, 3000);
+			}
+
+			await tanstackClient.refetchQueries(createDoggoChewableRefetchOptions());
 		} else {
 			const result = await pb.collection(collectionName).create({
 				user: pb.authStore.record?.id,
@@ -136,6 +157,9 @@
 				{/if}
 				{#if collectionName === 'gummy'}
 					Add Gummy
+				{/if}
+				{#if collectionName === 'doggoChewable'}
+					Add Feed
 				{/if}
 			{/if}
 		</button>
