@@ -143,7 +143,7 @@
 		<form method="dialog">
 			<!-- if there is a button in form, it will close the modal -->
 			<div class="flex justify-center">
-				<button class="btn btn-lg btn-ghost rounded-full">Close</button>
+				<button class="btn btn-lg btn-ghost mt-4 rounded-full">Close</button>
 			</div>
 		</form>
 	</div>
