@@ -11,7 +11,7 @@
 	} = $props();
 </script>
 
-<dialog bind:this={modal} class="modal">
+<dialog bind:this={modal} class="modal modal-bottom sm:modal-middle">
 	<div class="modal-box">
 		{#if singleDay && singleDay.length > 0}
 			{@const theDay = dayjs(singleDay[0].time).format('D MMM YYYY')}
