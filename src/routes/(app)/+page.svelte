@@ -254,7 +254,7 @@
 				<h2 class="text-base-content/70 text-lg font-bold">Quick Links</h2>
 				<div class="flex items-center gap-4">
 					<a
-						href="/count"
+						href="/household/count"
 						class="border-base-300 grid aspect-square w-24 content-center justify-items-center gap-0.5 rounded-3xl border p-4 text-xs font-semibold"
 					>
 						<MaterialSymbolsTimer class="size-7" />
