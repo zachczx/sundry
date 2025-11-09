@@ -1,11 +1,29 @@
 import dayjs from 'dayjs';
 import { dirtyTowelDays } from './logic';
 
+const defaultNotificationStatus: NotificationStatus = {
+	show: false,
+	level: 'ok'
+};
+
 export function getNotificationStatus(query: Query): NotificationStatus {
 	if (!query?.isSuccess || query.data?.length === 0) return defaultNotificationStatus;
 
 	const lastRecord = query.data?.[0] ?? null;
 	if (!lastRecord) return defaultNotificationStatus;
+
+	if (lastRecord.collectionName === 'doggoChewable') {
+		const nextDate = dayjs(lastRecord.time).add(lastRecord.monthsToNext, 'month');
+		const daysTillNextDate = nextDate.diff(dayjs(), 'day', true);
+
+		if (daysTillNextDate > 1) {
+			return defaultNotificationStatus;
+		} else if (daysTillNextDate <= 1 && daysTillNextDate > 0) {
+			return { show: true, level: 'due' };
+		} else {
+			return { show: true, level: 'overdue' };
+		}
+	}
 
 	const now = dayjs();
 	const leadTimeHours = 6;
@@ -33,11 +51,6 @@ export function getNotificationStatus(query: Query): NotificationStatus {
 
 	return defaultNotificationStatus;
 }
-
-const defaultNotificationStatus: NotificationStatus = {
-	show: false,
-	level: 'ok'
-};
 
 export function getNotificationCount(
 	sprayNotification: NotificationStatus,
