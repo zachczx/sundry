@@ -196,7 +196,7 @@
 	});
 </script>
 
-<PageWrapper title="Doggo Bath" {pb}>
+<PageWrapper title="Bath" {pb}>
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if doggoBaths.isSuccess}

@@ -101,7 +101,7 @@
 	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
 </script>
 
-<PageWrapper title="Sundry" back={false} {pb}>
+<PageWrapper title="Personal" back={false} {pb}>
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<div class="grid gap-8 py-4">
