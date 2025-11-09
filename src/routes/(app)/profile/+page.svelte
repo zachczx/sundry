@@ -157,7 +157,7 @@
 			<div class="mt-4 grid w-full content-start">
 				{#if currentTab === 'settings'}
 					<div class="px-1">
-						<div class="border-b-base-300 grid border-b py-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend">Days Per Towel Wash</legend>
 
 							<SegmentedControl items={5}>
@@ -204,7 +204,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b py-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend">Days Per Nasal Spray</legend>
 
 							<SegmentedControl items={5}>
@@ -251,7 +251,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b py-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend">Days Per Gummy</legend>
 
 							<SegmentedControl items={5}>
@@ -298,7 +298,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b py-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend">Months Per Pet Chewable</legend>
 
 							<SegmentedControl items={3}>
@@ -329,7 +329,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b py-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend">Days Per Pet Bath</legend>
 
 							<SegmentedControl items={5}>
@@ -376,7 +376,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 flex items-center border-b py-4 text-lg">
+						<div class="border-b-base-300 flex items-center border-b pt-2 pb-4 text-lg">
 							<legend class="fieldset-legend grow">Sound</legend>
 
 							<input
@@ -414,13 +414,13 @@
 						</ul>
 					</div>
 
-					<div class="border-b-base-300 border-b py-4 text-lg">
+					<div class="border-b-base-300 border-b pt-2 pb-4 text-lg">
 						<legend class="fieldset-legend">Start Date</legend>
 
 						<input type="date" name="vacationStart" class="input" bind:value={vacationStart} />
 					</div>
 
-					<div class="border-b-base-300 border-b py-4 text-lg">
+					<div class="border-b-base-300 border-b pt-2 pb-4 text-lg">
 						<legend class="fieldset-legend">End Date</legend>
 
 						<input type="date" name="vacationEnd" class="input" bind:value={vacationEnd} />
