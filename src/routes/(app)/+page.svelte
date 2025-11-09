@@ -32,6 +32,7 @@
 	import MaterialSymbolsPill from '$lib/assets/svg/MaterialSymbolsPill.svelte';
 	import MaterialSymbolsShower from '$lib/assets/svg/MaterialSymbolsShower.svelte';
 	import MaterialSymbolsFlight from '$lib/assets/svg/MaterialSymbolsFlight.svelte';
+	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -241,6 +242,11 @@
 						last: doggoChewableLast,
 						notification: doggoChewableNotification
 					})}
+				{/if}
+
+				{#if !doggoBathNotification.show && !doggoChewableNotification.show}
+					<EmptyState class="text-neutral h-24 justify-self-center opacity-25" />
+					<p class="-mt-0.5 text-center">All good!</p>
 				{/if}
 			</section>
 
