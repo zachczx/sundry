@@ -24,6 +24,7 @@
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 	import { DatePickerYearSelect } from '@ark-ui/svelte';
 	import { getDoggoChewableStatusColor } from '$lib/logic';
+	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -96,13 +97,7 @@
 		}
 	});
 
-	let status = $derived.by(() => {
-		if (!nextChewable) {
-			return 'empty';
-		}
-		console.log(nextChewable);
-		return getDoggoChewableStatusColor(nextChewable, monthsToNext);
-	});
+	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewables));
 
 	let currentTab = $state('overview');
 
@@ -203,7 +198,7 @@
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if doggoChewables.isSuccess}
-				<StatusHeroImage {status} />
+				<StatusHeroImage notification={doggoChewableNotification} />
 			{/if}
 
 			<ActionButton {query} {refetch} text="Fed" />
@@ -247,14 +242,14 @@
 				<TwoColumnCard leftTitle="Status" rightTitle="Last Fed">
 					{#snippet left()}
 						{#if doggoChewables.isSuccess}
-							{#if status}
+							{#if doggoChewableNotification}
 								{@const descriptions = {
 									green: 'Fed',
 									yellow: 'Good',
 									orange: 'Due',
 									red: 'Overdue'
 								}}
-								<StatusDescriptions {status} {descriptions} />
+								<StatusDescriptions notification={doggoChewableNotification} {descriptions} />
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}

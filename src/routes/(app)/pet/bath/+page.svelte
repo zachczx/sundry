@@ -23,6 +23,7 @@
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 	import { getDoggoBathStatusColor } from '$lib/logic';
+	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -94,22 +95,11 @@
 		}
 	});
 
-	let status = $derived.by(() => {
-		if (!nextDoggoBath) {
-			return 'empty';
-		}
-		return getDoggoBathStatusColor(nextDoggoBath, daysToNext);
-	});
+	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBaths));
 
 	let currentTab = $state('overview');
 
-	let daysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.doggoBathInterval;
-	});
+	let daysToNext = $derived.by(() => (user.isSuccess ? user.data?.doggoBathInterval : undefined));
 
 	/**
 	 * Using $state + $effect instead of $derived due to TanStack Query store
@@ -200,7 +190,7 @@
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if doggoBaths.isSuccess}
-				<StatusHeroImage {status} />
+				<StatusHeroImage notification={doggoBathNotification} />
 			{/if}
 
 			<ActionButton {query} {refetch} text="Fed" />
@@ -244,14 +234,14 @@
 				<TwoColumnCard leftTitle="Status" rightTitle="Last Fed">
 					{#snippet left()}
 						{#if doggoBaths.isSuccess}
-							{#if status}
+							{#if doggoBathNotification}
 								{@const descriptions = {
 									green: 'Bathed',
 									yellow: 'Bathed',
 									orange: 'Due',
 									red: 'Overdue'
 								}}
-								<StatusDescriptions {status} {descriptions} />
+								<StatusDescriptions notification={doggoBathNotification} {descriptions} />
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}

@@ -23,6 +23,7 @@
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 	import { dirtyTowelDays, getTowelStatusColor } from '$lib/logic';
+	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -213,12 +214,7 @@
 		}
 	});
 
-	let status = $derived.by(() => {
-		if (!towelDirty) {
-			return 'empty';
-		}
-		return getTowelStatusColor(towelDirty ?? 0);
-	});
+	let towelNotification = $derived.by(() => getNotificationStatus(towels));
 
 	let daysToNext = $derived.by(() => (user.isSuccess ? user.data?.towelInterval : undefined));
 
@@ -235,7 +231,7 @@
 	<div class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#key towelRecords}
-				<StatusHeroImage {status} />
+				<StatusHeroImage notification={towelNotification} />
 			{/key}
 
 			<ActionButton {query} {refetch} text="Washed" />
@@ -279,14 +275,14 @@
 				<TwoColumnCard leftTitle="Status" rightTitle="Last Washed">
 					{#snippet left()}
 						{#key towelRecords}
-							{#if status}
+							{#if towelNotification}
 								{@const descriptions = {
 									green: 'Clean',
 									yellow: 'Alright',
 									orange: 'Funky',
 									red: 'Wash now!'
 								}}
-								<StatusDescriptions {status} {descriptions} />
+								<StatusDescriptions notification={towelNotification} {descriptions} />
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}

@@ -23,6 +23,7 @@
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 	import { getGummyStatusColor } from '$lib/logic';
+	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -92,23 +93,11 @@
 		}
 	});
 
-	let status = $derived.by(() => {
-		if (!lastGummy) {
-			return 'empty';
-		}
-
-		return getGummyStatusColor(lastGummy, daysToNext);
-	});
+	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
 
 	let currentTab = $state('overview');
 
-	let daysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.gummyInterval;
-	});
+	let daysToNext = $derived.by(() => (user.isSuccess ? user.data?.gummyInterval : undefined));
 
 	/**
 	 * Using $state + $effect instead of $derived due to TanStack Query store
@@ -199,7 +188,7 @@
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if gummies.isSuccess}
-				<StatusHeroImage {status} />
+				<StatusHeroImage notification={gummyNotification} />
 			{/if}
 
 			<ActionButton {query} {refetch} text="Ate" />
@@ -243,14 +232,14 @@
 				<TwoColumnCard leftTitle="Status" rightTitle="Last Ate">
 					{#snippet left()}
 						{#if gummies.isSuccess}
-							{#if status}
+							{#if gummyNotification}
 								{@const descriptions = {
-									green: 'Dosed',
+									green: 'Ate',
 									yellow: 'Good',
 									orange: 'Due',
 									red: 'Overdue'
 								}}
-								<StatusDescriptions {status} {descriptions} />
+								<StatusDescriptions notification={gummyNotification} {descriptions} />
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}

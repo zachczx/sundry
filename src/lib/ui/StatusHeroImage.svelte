@@ -3,10 +3,10 @@
 	import AntDesignExclamationCircleFilled from '$lib/assets/svg/AntDesignExclamationCircleFilled.svelte';
 	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
 	import MaterialSymbolsCheckCircle from '$lib/assets/svg/MaterialSymbolsCheckCircle.svelte';
-	let { status }: { status: string } = $props();
+	let { notification }: { notification: NotificationStatus } = $props();
 </script>
 
-{#if status !== 'empty'}
+{#if notification}
 	<div class="avatar relative mt-2 mb-4">
 		<div class="w-40 rounded-full shadow-md">
 			<enhanced:img
@@ -18,11 +18,11 @@
 		<div
 			class="bg-base-100 absolute top-2 -right-4 flex size-14 items-center justify-center rounded-full"
 		>
-			{#if status === 'green' || status === 'yellow'}
+			{#if notification.level === 'ok'}
 				<MaterialSymbolsCheckCircle class="text-success size-13" />
-			{:else if status === 'orange'}
+			{:else if notification.level === 'due'}
 				<AntDesignExclamationCircleFilled class="text-warning size-13" />
-			{:else if status === 'red'}
+			{:else if notification.level === 'overdue'}
 				<AntDesignExclamationCircleFilled class="text-error size-13" />
 			{/if}
 		</div>

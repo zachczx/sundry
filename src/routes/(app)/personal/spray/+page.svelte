@@ -23,6 +23,7 @@
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
 	import { getSprayStatusColor } from '$lib/logic';
+	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -93,22 +94,11 @@
 		}
 	});
 
-	let status = $derived.by(() => {
-		if (!lastSpray) {
-			return 'empty';
-		}
-		return getSprayStatusColor(lastSpray, daysToNext);
-	});
+	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
 
 	let currentTab = $state('overview');
 
-	let daysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.sprayInterval;
-	});
+	let daysToNext = $derived.by(() => (user.isSuccess ? user.data?.sprayInterval : undefined));
 
 	/**
 	 * Using $state + $effect instead of $derived due to TanStack Query store
@@ -200,7 +190,7 @@
 	<main class="grid w-full max-w-xl content-start justify-items-center gap-4 justify-self-center">
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if sprays.isSuccess}
-				<StatusHeroImage {status} />
+				<StatusHeroImage notification={sprayNotification} />
 			{/if}
 
 			<ActionButton {query} {refetch} text="Sprayed" />
@@ -244,14 +234,14 @@
 				<TwoColumnCard leftTitle="Status" rightTitle="Last Sprayed">
 					{#snippet left()}
 						{#if sprays.isSuccess}
-							{#if status}
+							{#if sprayNotification}
 								{@const descriptions = {
-									green: 'Dosed',
+									green: 'Sprayed',
 									yellow: 'Good',
 									orange: 'Due',
 									red: 'Overdue'
 								}}
-								<StatusDescriptions {status} {descriptions} />
+								<StatusDescriptions notification={sprayNotification} {descriptions} />
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}
