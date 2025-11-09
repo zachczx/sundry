@@ -273,7 +273,7 @@
 				<input type="radio" bind:group={character} value="robot" name="character" />Robot
 			</label>
 			<label>
-				<input type="radio" bind:group={character} value="furnando" name="type" />Furnando
+				<input type="radio" bind:group={character} value="furnando" name="character" />Furnando
 			</label>
 		</div>
 	</div>
