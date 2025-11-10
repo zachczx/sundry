@@ -4,7 +4,7 @@
 	let { children, items }: { children: Snippet; items: number } = $props();
 </script>
 
-<div class="segmented-control grid-cols-{items}">
+<div class="segmented-control" style="grid-template-columns: repeat({items}, minmax(0, 1fr))">
 	{@render children()}
 </div>
 
@@ -12,7 +12,6 @@
 	:global {
 		.segmented-control {
 			display: grid;
-			/* grid-template-columns: repeat(2, minmax(0, 1fr)); */
 			cursor: pointer;
 			text-align: center;
 
