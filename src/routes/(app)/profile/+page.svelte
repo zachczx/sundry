@@ -157,54 +157,8 @@
 			<div class="mt-4 grid w-full content-start">
 				{#if currentTab === 'settings'}
 					<div class="px-1">
-						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
-							<legend class="fieldset-legend">Days Per Towel Wash</legend>
-
-							<SegmentedControl items={5}>
-								<label>
-									<input
-										type="radio"
-										bind:group={towelIntervalDays}
-										value={1}
-										name="towelIntervalDays"
-									/>1
-								</label>
-								<label>
-									<input
-										type="radio"
-										bind:group={towelIntervalDays}
-										value={2}
-										name="towelIntervalDays"
-									/>2
-								</label>
-								<label>
-									<input
-										type="radio"
-										bind:group={towelIntervalDays}
-										value={3}
-										name="towelIntervalDays"
-									/>3
-								</label>
-								<label>
-									<input
-										type="radio"
-										bind:group={towelIntervalDays}
-										value={4}
-										name="towelIntervalDays"
-									/>4
-								</label>
-								<label>
-									<input
-										type="radio"
-										bind:group={towelIntervalDays}
-										value={5}
-										name="towelIntervalDays"
-									/>5
-								</label>
-							</SegmentedControl>
-						</div>
-
-						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
+						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Personal</h2>
+						<div class="grid py-4 text-lg">
 							<legend class="fieldset-legend">Days Per Nasal Spray</legend>
 
 							<SegmentedControl items={5}>
@@ -251,7 +205,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
 							<legend class="fieldset-legend">Days Per Gummy</legend>
 
 							<SegmentedControl items={5}>
@@ -298,7 +252,58 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
+						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Household</h2>
+
+						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
+							<legend class="fieldset-legend">Days Per Towel Wash</legend>
+
+							<SegmentedControl items={5}>
+								<label>
+									<input
+										type="radio"
+										bind:group={towelIntervalDays}
+										value={1}
+										name="towelIntervalDays"
+									/>1
+								</label>
+								<label>
+									<input
+										type="radio"
+										bind:group={towelIntervalDays}
+										value={2}
+										name="towelIntervalDays"
+									/>2
+								</label>
+								<label>
+									<input
+										type="radio"
+										bind:group={towelIntervalDays}
+										value={3}
+										name="towelIntervalDays"
+									/>3
+								</label>
+								<label>
+									<input
+										type="radio"
+										bind:group={towelIntervalDays}
+										value={4}
+										name="towelIntervalDays"
+									/>4
+								</label>
+								<label>
+									<input
+										type="radio"
+										bind:group={towelIntervalDays}
+										value={5}
+										name="towelIntervalDays"
+									/>5
+								</label>
+							</SegmentedControl>
+						</div>
+
+						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Pet</h2>
+
+						<div class="grid py-4 text-lg">
 							<legend class="fieldset-legend">Months Per Pet Chewable</legend>
 
 							<SegmentedControl items={3}>
@@ -329,7 +334,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 grid border-b pt-2 pb-4 text-lg">
+						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
 							<legend class="fieldset-legend">Days Per Pet Bath</legend>
 
 							<SegmentedControl items={5}>
@@ -376,7 +381,7 @@
 							</SegmentedControl>
 						</div>
 
-						<div class="border-b-base-300 flex items-center border-b pt-2 pb-4 text-lg">
+						<div class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg">
 							<legend class="fieldset-legend grow">Sound</legend>
 
 							<input
@@ -414,13 +419,13 @@
 						</ul>
 					</div>
 
-					<div class="border-b-base-300 border-b pt-2 pb-4 text-lg">
+					<div class="border-b-base-300 border-b pt-4 pb-6 text-lg">
 						<legend class="fieldset-legend">Start Date</legend>
 
 						<input type="date" name="vacationStart" class="input" bind:value={vacationStart} />
 					</div>
 
-					<div class="border-b-base-300 border-b pt-2 pb-4 text-lg">
+					<div class="border-b-base-300 border-b pt-4 pb-6 text-lg">
 						<legend class="fieldset-legend">End Date</legend>
 
 						<input type="date" name="vacationEnd" class="input" bind:value={vacationEnd} />
