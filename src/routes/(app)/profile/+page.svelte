@@ -141,9 +141,8 @@
 			<div class="mt-4 grid w-full content-start">
 				{#if currentTab === 'settings'}
 					<div class="px-1">
-						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Personal</h2>
-						<form class="grid py-4 text-lg" {onchange}>
-							<legend class="fieldset-legend">Days Per Nasal Spray</legend>
+						<form class="border-b-base-300 grid border-b pt-2 pb-8 text-lg" {onchange}>
+							<legend class="fieldset-legend pb-4">Days Per Nasal Spray</legend>
 
 							<SegmentedControl items={5}>
 								<label>
@@ -189,8 +188,8 @@
 							</SegmentedControl>
 						</form>
 
-						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
-							<legend class="fieldset-legend">Days Per Gummy</legend>
+						<form class="border-b-base-300 grid border-b pt-4 pb-8 text-lg" {onchange}>
+							<legend class="fieldset-legend pb-4">Days Per Gummy</legend>
 
 							<SegmentedControl items={5}>
 								<label>
@@ -236,10 +235,8 @@
 							</SegmentedControl>
 						</form>
 
-						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Household</h2>
-
-						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
-							<legend class="fieldset-legend">Days Per Towel Wash</legend>
+						<form class="border-b-base-300 grid border-b pt-4 pb-8 text-lg" {onchange}>
+							<legend class="fieldset-legend pb-4">Days Per Towel Wash</legend>
 
 							<SegmentedControl items={5}>
 								<label>
@@ -285,10 +282,8 @@
 							</SegmentedControl>
 						</form>
 
-						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Pet</h2>
-
-						<form class="grid py-4 text-lg" {onchange}>
-							<legend class="fieldset-legend">Months Per Pet Chewable</legend>
+						<form class="border-b-base-300 grid border-b pt-4 pb-8 text-lg" {onchange}>
+							<legend class="fieldset-legend pb-4">Months Per Pet Chewable</legend>
 
 							<SegmentedControl items={3}>
 								<label>
@@ -318,8 +313,8 @@
 							</SegmentedControl>
 						</form>
 
-						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
-							<legend class="fieldset-legend">Days Per Pet Bath</legend>
+						<form class="border-b-base-300 grid border-b pt-4 pb-8 text-lg" {onchange}>
+							<legend class="fieldset-legend pb-4">Days Per Pet Bath</legend>
 
 							<SegmentedControl items={5}>
 								<label>
@@ -404,13 +399,13 @@
 					</div>
 
 					<div class="border-b-base-300 border-b pt-4 pb-6 text-lg">
-						<legend class="fieldset-legend">Start Date</legend>
+						<legend class="fieldset-legend pb-4">Start Date</legend>
 
 						<input type="date" name="vacationStart" class="input" bind:value={vacationStart} />
 					</div>
 
 					<div class="border-b-base-300 border-b pt-4 pb-6 text-lg">
-						<legend class="fieldset-legend">End Date</legend>
+						<legend class="fieldset-legend pb-4">End Date</legend>
 
 						<input type="date" name="vacationEnd" class="input" bind:value={vacationEnd} />
 					</div>
