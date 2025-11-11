@@ -14,6 +14,7 @@
 	} from '$lib/queries';
 	import { page } from '$app/state';
 	import SegmentedControl from '$lib/ui/SegmentedControl.svelte';
+	import type { ChangeEventHandler } from 'svelte/elements';
 
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
@@ -40,55 +41,9 @@
 		user.isSuccess ? user.data?.doggoBathIntervalDays : undefined
 	);
 
-	let mute = $derived.by(() => (user.isSuccess ? !user.data?.mute : undefined));
+	let sound = $derived.by(() => (user.isSuccess ? user.data?.sound : undefined));
 
 	let spinner = $state(false);
-
-	async function submitHandler() {
-		if (!user.isSuccess) return;
-		spinner = true;
-
-		try {
-			await pb.collection('users').update(user.data.id, {
-				towelIntervalDays: towelIntervalDays,
-				sprayIntervalDays: sprayIntervalDays,
-				gummyIntervalDays: gummyIntervalDays,
-				doggoChewableIntervalMonths: doggoChewableIntervalMonths,
-				doggoBathIntervalDays: doggoBathIntervalDays,
-				mute: mute === undefined ? false : !mute
-			});
-			addToast('success', 'Updated!');
-			spinner = false;
-
-			await tanstackClient.refetchQueries(createUserRefetchOptions());
-		} catch (err) {
-			console.log(err);
-		}
-	}
-
-	async function addVacationDateHandler() {
-		if (!user.isSuccess) return;
-		spinner = true;
-
-		try {
-			const start = dayjs.tz(vacationStart, 'Asia/Singapore');
-			const end = dayjs.tz(vacationEnd, 'Asia/Singapore');
-
-			const result = await pb.collection('vacation').create({
-				user: pb.authStore.record?.id,
-				startDateTime: start,
-				endDateTime: end
-			});
-			if (result.id) {
-				addToast('success', 'Added successfully!');
-				spinner = false;
-
-				await tanstackClient.refetchQueries(createVacationRefetchOptions());
-			}
-		} catch (err) {
-			console.log(err);
-		}
-	}
 
 	let currentTab = $state('settings');
 	let param = $derived(page.url.searchParams.get('p'));
@@ -116,6 +71,32 @@
 			return s.format('D') + ' – ' + e.format('D MMM YYYY');
 		}
 		return s.format('D MMM YYYY') + ' – ' + e.format('D MMM YYYY');
+	}
+
+	async function onchange(evt: Event) {
+		if (evt.target instanceof HTMLInputElement && pb.authStore.record?.id) {
+			const target = evt.target;
+			const name = target.name;
+
+			try {
+				const data: { [key: string]: string | boolean } = {};
+
+				if (name === 'sound') {
+					data[name] = target.checked ? true : false;
+				} else {
+					data[name] = target.value;
+				}
+
+				const response = await pb.collection('users').update(pb.authStore.record.id, data);
+
+				if (!response.status) {
+					addToast('success', 'Saved!');
+					await tanstackClient.refetchQueries(createUserRefetchOptions());
+				}
+			} catch (err) {
+				addToast('error', 'Error saving!');
+			}
+		}
 	}
 </script>
 
@@ -158,7 +139,7 @@
 				{#if currentTab === 'settings'}
 					<div class="px-1">
 						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Personal</h2>
-						<div class="grid py-4 text-lg">
+						<form class="grid py-4 text-lg" {onchange}>
 							<legend class="fieldset-legend">Days Per Nasal Spray</legend>
 
 							<SegmentedControl items={5}>
@@ -203,9 +184,9 @@
 									/>5
 								</label>
 							</SegmentedControl>
-						</div>
+						</form>
 
-						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
+						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
 							<legend class="fieldset-legend">Days Per Gummy</legend>
 
 							<SegmentedControl items={5}>
@@ -250,11 +231,11 @@
 									/>5
 								</label>
 							</SegmentedControl>
-						</div>
+						</form>
 
 						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Household</h2>
 
-						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
+						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
 							<legend class="fieldset-legend">Days Per Towel Wash</legend>
 
 							<SegmentedControl items={5}>
@@ -299,11 +280,11 @@
 									/>5
 								</label>
 							</SegmentedControl>
-						</div>
+						</form>
 
 						<h2 class="text-base-content/60 mt-6 text-xl font-bold uppercase">Pet</h2>
 
-						<div class="grid py-4 text-lg">
+						<form class="grid py-4 text-lg" {onchange}>
 							<legend class="fieldset-legend">Months Per Pet Chewable</legend>
 
 							<SegmentedControl items={3}>
@@ -332,9 +313,9 @@
 									/>Half-Yearly
 								</label>
 							</SegmentedControl>
-						</div>
+						</form>
 
-						<div class="border-b-base-300 grid border-b pt-4 pb-10 text-lg">
+						<form class="border-b-base-300 grid border-b pt-4 pb-10 text-lg" {onchange}>
 							<legend class="fieldset-legend">Days Per Pet Bath</legend>
 
 							<SegmentedControl items={5}>
@@ -379,18 +360,18 @@
 									/>30
 								</label>
 							</SegmentedControl>
-						</div>
+						</form>
 
-						<div class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg">
+						<form class="flex items-center pt-4 pb-6 text-lg" {onchange}>
 							<legend class="fieldset-legend grow">Sound</legend>
 
 							<input
 								type="checkbox"
-								name="mute"
+								name="sound"
 								class="toggle toggle-lg toggle-primary"
-								bind:checked={mute}
+								bind:checked={sound}
 							/>
-						</div>
+						</form>
 					</div>
 				{/if}
 
@@ -433,23 +414,6 @@
 				{/if}
 			</div>
 		</div>
-		{#if currentTab === 'settings'}
-			<button class="btn btn-lg btn-primary mt-8" onclick={() => submitHandler()}>
-				{#if !spinner}
-					Save Settings
-				{:else}
-					<span class="loading loading-md loading-spinner"></span>
-				{/if}
-			</button>
-		{:else if currentTab === 'vacations'}
-			<button class="btn btn-lg btn-primary mt-8" onclick={() => addVacationDateHandler()}>
-				{#if !spinner}
-					Add Vacation
-				{:else}
-					<span class="loading loading-md loading-spinner"></span>
-				{/if}
-			</button>
-		{/if}
 	</div>
 </PageWrapper>
 

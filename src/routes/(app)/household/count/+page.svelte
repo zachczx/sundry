@@ -99,7 +99,7 @@
 	}
 
 	let playSound = $derived.by(() => {
-		if (user.isSuccess && !user.data.mute) {
+		if (user.isSuccess && user.data.sound) {
 			return true;
 		}
 		return false;

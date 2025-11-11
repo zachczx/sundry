@@ -23,6 +23,7 @@
 				emailVisibility: true,
 				password: cleanPassword,
 				passwordConfirm: cleanPassword,
+				sound: true,
 				towelIntervalDays: 5,
 				sprayIntervalDays: 3,
 				gummyIntervalDays: 2,

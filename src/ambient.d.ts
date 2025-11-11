@@ -84,7 +84,7 @@ interface UserDB {
 	verified: boolean;
 	name: string;
 	avatar: string;
-	mute: boolean;
+	sound: boolean;
 	towelIntervalDays: number;
 	sprayIntervalDays: number;
 	gummyIntervalDays: number;
