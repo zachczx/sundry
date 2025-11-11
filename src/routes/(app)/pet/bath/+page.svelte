@@ -22,7 +22,6 @@
 	import StatusHeroImage from '$lib/ui/StatusHeroImage.svelte';
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
-	import { getDoggoBathStatusColor } from '$lib/logic';
 	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
@@ -238,12 +237,14 @@
 						{#if doggoBaths.isSuccess}
 							{#if doggoBathNotification}
 								{@const descriptions = {
-									green: 'Bathed',
-									yellow: 'Bathed',
-									orange: 'Due',
-									red: 'Overdue'
+									ok: 'Bathed',
+									due: 'Due',
+									overdue: 'Overdue'
 								}}
-								<StatusDescriptions notification={doggoBathNotification} {descriptions} />
+								<StatusDescriptions
+									notification={doggoBathNotification}
+									statusLabels={descriptions}
+								/>
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}

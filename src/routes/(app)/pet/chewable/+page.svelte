@@ -22,8 +22,6 @@
 	import StatusHeroImage from '$lib/ui/StatusHeroImage.svelte';
 	import ActionButton from '$lib/ui/ActionButton.svelte';
 	import SingleDayModal from '$lib/ui/SingleDayModal.svelte';
-	import { DatePickerYearSelect } from '@ark-ui/svelte';
-	import { getDoggoChewableStatusColor } from '$lib/logic';
 	import { getNotificationStatus } from '$lib/notification';
 
 	dayjs.extend(relativeTime);
@@ -240,12 +238,14 @@
 						{#if doggoChewables.isSuccess}
 							{#if doggoChewableNotification}
 								{@const descriptions = {
-									green: 'Fed',
-									yellow: 'Good',
-									orange: 'Due',
-									red: 'Overdue'
+									ok: 'Fed',
+									due: 'Due',
+									overdue: 'Overdue'
 								}}
-								<StatusDescriptions notification={doggoChewableNotification} {descriptions} />
+								<StatusDescriptions
+									notification={doggoChewableNotification}
+									statusLabels={descriptions}
+								/>
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
 							{/if}
