@@ -237,7 +237,7 @@
 				{/if}
 
 				{#if !doggoBathNotification.show && !doggoChewableNotification.show}
-					<EmptyState class="text-neutral h-24 justify-self-center opacity-25" />
+					<EmptyState class="text-neutral h-24 justify-self-center opacity-[0.15]" />
 					<p class="-mt-0.5 text-center">Nothing's coming up!</p>
 				{/if}
 			</section>
