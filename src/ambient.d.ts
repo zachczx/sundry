@@ -110,7 +110,7 @@ interface NotificationStatus {
 	level: 'ok' | 'due' | 'overdue';
 }
 
-type ButtonState = 'default' | 'loading' | 'success';
+type ButtonState = 'default' | 'loading' | 'success' | 'error';
 
 interface TrackerStatuses {
 	ok: string;

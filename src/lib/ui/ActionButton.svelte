@@ -5,6 +5,7 @@
 	import { addToast } from './ArkToaster.svelte';
 	import type { RefetchQueryFilters } from '@tanstack/svelte-query';
 	import type { Component } from 'svelte';
+	import MaterialSymbolsExclamation from '$lib/assets/svg/MaterialSymbolsExclamation.svelte';
 
 	let {
 		text,
@@ -25,18 +26,26 @@
 	async function addHandler() {
 		status = 'loading';
 
-		const result = await query();
+		try {
+			const result = await query();
 
-		if (result.id) {
-			addToast('success', 'Added successfully!');
-			status = 'success';
+			if (result.id) {
+				addToast('success', 'Added successfully!');
+				status = 'success';
 
+				setTimeout(() => {
+					status = 'default';
+				}, 3000);
+			}
+
+			await refetch();
+		} catch (err) {
+			status = 'error';
+			addToast('error', 'Error creating!');
 			setTimeout(() => {
 				status = 'default';
 			}, 3000);
 		}
-
-		await refetch();
 	}
 </script>
 
@@ -46,7 +55,8 @@
 			'btn btn-lg flex w-full items-center gap-2 rounded-full',
 			status === 'default' && 'btn-primary',
 			status === 'loading' && 'btn-primary',
-			status === 'success' && 'btn-success'
+			status === 'success' && 'btn-success',
+			status === 'error' && 'btn-error'
 		]}
 		onclick={addHandler}
 	>
@@ -56,7 +66,10 @@
 		{#if status === 'loading'}
 			<span class="loading loading-spinner loading-md"></span>
 		{/if}
-		{#if status !== 'success' && status !== 'loading'}
+		{#if status === 'error'}
+			Error!
+		{/if}
+		{#if status !== 'success' && status !== 'loading' && status !== 'error'}
 			{#if text}
 				{text}
 			{:else}
