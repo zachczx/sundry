@@ -100,19 +100,20 @@
 	 * not properly triggering Svelte 5's fine-grained reactivity on async data changes
 	 */
 
-	let records: TrackerRecord[] = $state([]);
-	$effect(() => {
+	let records: TrackerRecord[] = $derived.by(() => {
 		if (dbRecords.isSuccess && dbRecords.data) {
 			if (options.calculateGaps) {
-				records = options.calculateGaps(dbRecords.data, vacations.data ?? []);
+				return options.calculateGaps(dbRecords.data, vacations.data ?? []);
 			} else {
-				records = dbRecords.data.map((record, i, allRecords) => {
+				return dbRecords.data.map((record, i, allRecords) => {
 					const nextRecord = allRecords[i + 1];
 					const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
 					return { ...record, gap };
 				});
 			}
 		}
+
+		return [];
 	});
 
 	let longestGap: TrackerRecord | undefined = $derived.by(() => {
