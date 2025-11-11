@@ -55,12 +55,8 @@
 		return '';
 	});
 
-	let sprayDaysToNext = $derived.by(() =>
-		user.isSuccess ? user.data?.sprayIntervalDays : undefined
-	);
-
-	let gummyDaysToNext = $derived.by(() =>
-		user.isSuccess ? user.data?.gummyIntervalDays : undefined
+	let towelDaysToNext = $derived.by(() =>
+		user.isSuccess ? user.data?.towelIntervalDays : undefined
 	);
 
 	let sprayLast: string = $derived.by(() => {
@@ -69,16 +65,25 @@
 		return '';
 	});
 
+	let sprayDaysToNext = $derived.by(() =>
+		user.isSuccess ? user.data?.sprayIntervalDays : undefined
+	);
+
 	let gummyLast: string = $derived.by(() => {
 		if (gummies.isSuccess && gummies.data.length > 0) return dayjs(gummies.data[0].time).fromNow();
 
 		return '';
 	});
 
+	let gummyDaysToNext = $derived.by(() =>
+		user.isSuccess ? user.data?.gummyIntervalDays : undefined
+	);
+
 	const towelQuery = async () =>
 		await pb.collection('towel').create({
 			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore')
+			time: dayjs.tz(new Date(), 'Asia/Singapore'),
+			daysToNext: towelDaysToNext
 		});
 	const towelRefetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
 
@@ -91,7 +96,7 @@
 	const sprayRefetch = async () => await tanstackClient.refetchQueries(createSprayRefetchOptions());
 
 	const gummyQuery = async () =>
-		await pb.collection('spray').create({
+		await pb.collection('gummy').create({
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(new Date(), 'Asia/Singapore'),
 			daysToNext: gummyDaysToNext
