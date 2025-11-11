@@ -74,8 +74,9 @@
 	}
 
 	async function onchange(evt: Event) {
-		if (evt.target instanceof HTMLInputElement && pb.authStore.record?.id) {
-			const target = evt.target;
+		const target = evt.target;
+
+		if (target instanceof HTMLInputElement && pb.authStore.record?.id) {
 			const name = target.name;
 
 			try {
@@ -96,6 +97,8 @@
 			} catch (err) {
 				addToast('error', 'Error saving!');
 			}
+		} else {
+			addToast('error', 'Error saving!');
 		}
 	}
 </script>
