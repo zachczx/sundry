@@ -78,7 +78,7 @@
 						</div>
 					</a>
 					<button
-						class="btn btn-lg btn-secondary flex w-full items-center gap-2 rounded-full"
+						class="btn btn-lg btn-primary flex w-full items-center gap-2 rounded-full"
 						onclick={() => goto('/household/count?start=true')}
 					>
 						Start Timer
