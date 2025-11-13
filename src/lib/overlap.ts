@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 /**
  * Function for TrackerPage to calculate towel gaps
  */
-export function calculateTowelGapsWithVacation(records: TrackerDB[], vacations: VacationDB[]) {
+export function calculateRecordsGapsWithVacation(records: TrackerDB[], vacations: VacationDB[]) {
 	return records.map((record, i, allRecords) => {
 		const nextRecord = allRecords[i + 1];
 		if (!nextRecord) {

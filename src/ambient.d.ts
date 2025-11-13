@@ -148,8 +148,13 @@ type Query =
 	| CreateQueryResult<DoggoChewableDB[], Error>
 	| CreateQueryResult<DoggoBathDB[], Error>;
 
-type TrackerDB = TowelDB | SprayDB | GummyDB;
-type TrackerRecord = TowelRecord | SprayRecord | GummyRecord;
+type TrackerDB = TowelDB | SprayDB | GummyDB | DoggoBathDB | DoggoChewableDB;
+type TrackerRecord =
+	| TowelRecord
+	| SprayRecord
+	| GummyRecord
+	| DoggoBathRecord
+	| DoggoChewableRecord;
 
 type CollectionsTrackingTime = SprayDB | TowelDB | GummyDB | DoggoChewableDB | DoggoBathDB;
 

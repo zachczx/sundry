@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { calculateTowelGapsWithVacation } from '$lib/overlap';
+	import { calculateRecordsGapsWithVacation } from '$lib/overlap';
 	import { createTowelQueryOptions, createTowelRefetchOptions } from '$lib/queries';
 	import TrackerPage from '$lib/shell/TrackerPage.svelte';
 
@@ -14,7 +14,7 @@
 			query: createTowelQueryOptions,
 			refetch: createTowelRefetchOptions
 		},
-		calculateGaps: calculateTowelGapsWithVacation
+		calculateGaps: calculateRecordsGapsWithVacation
 	} satisfies TrackerPageOptions;
 </script>
 
