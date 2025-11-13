@@ -31,6 +31,7 @@
 	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
 	import MaterialSymbolsCleaningServices from '$lib/assets/svg/MaterialSymbolsCleaningServices.svelte';
 	import MaterialSymbolsPets from '$lib/assets/svg/MaterialSymbolsPets.svelte';
+	import { topLevelRoutes } from './nav';
 
 	let {
 		pb,
@@ -116,49 +117,18 @@
 		</div>
 		<div id="desktop-menu" class="navbar-center hidden lg:flex">
 			<ul class="menu menu-horizontal gap-8 px-1 text-lg">
-				<li>
-					<a
-						href="/"
-						class={[
-							'px-4 py-2',
-							currentSection === 'home' && 'rounded-full bg-white/30 font-bold',
-							currentSection !== 'home' && 'rounded-full hover:bg-white/20'
-						]}>Dashboard</a
-					>
-				</li>
-
-				<li>
-					<a
-						href="/personal"
-						class={[
-							'px-4 py-2',
-							currentSection === 'personal' && 'rounded-full bg-white/30 font-bold',
-							currentSection !== 'personal' && 'rounded-full hover:bg-white/20'
-						]}>Personal</a
-					>
-				</li>
-
-				<li>
-					<a
-						href="/household"
-						class={[
-							'px-4 py-2',
-							currentSection === 'household' && 'rounded-full bg-white/30 font-bold',
-							currentSection !== 'household' && 'rounded-full hover:bg-white/20'
-						]}>Household</a
-					>
-				</li>
-
-				<li>
-					<a
-						href="/pet"
-						class={[
-							'px-4 py-2',
-							currentSection === 'pet' && 'rounded-full bg-white/30 font-bold',
-							currentSection !== 'pet' && 'rounded-full hover:bg-white/20'
-						]}>Pet</a
-					>
-				</li>
+				{#each topLevelRoutes as route}
+					<li>
+						<a
+							href="/"
+							class={[
+								'px-4 py-2',
+								currentSection === route.id && 'rounded-full bg-white/30 font-bold',
+								currentSection !== route.id && 'rounded-full hover:bg-white/20'
+							]}>{route.label}</a
+						>
+					</li>
+				{/each}
 			</ul>
 		</div>
 		<div class="navbar-end">

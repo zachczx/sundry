@@ -3,31 +3,31 @@
 	import '../app.css';
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
 	import { onNavigate } from '$app/navigation';
-
-	const topLevelRoutes = ['/', '/personal', '/household', '/pet'];
+	import { topLevelRoutes } from '$lib/shell/nav';
 
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
 
 		let direction = 'forward';
 
-		// Bottom navbar
-		if (
-			topLevelRoutes.includes(navigation.from?.url.pathname ?? '') &&
-			topLevelRoutes.includes(navigation.to?.url.pathname ?? '')
-		) {
-			const fromIndex = topLevelRoutes.indexOf(navigation.from?.url.pathname ?? '');
-			const toIndex = topLevelRoutes.indexOf(navigation.to?.url.pathname ?? '');
+		const fromIndex = topLevelRoutes.findIndex(
+			(route) => route.href === navigation.from?.url.pathname
+		);
+		const toIndex = topLevelRoutes.findIndex((route) => route.href === navigation.to?.url.pathname);
+
+		if (fromIndex && toIndex) {
+			// Bottom navbar
 
 			if (toIndex < fromIndex) {
 				direction = 'back';
 			}
 		} else {
-			const from = navigation.from?.route.id;
-			const to = navigation.to?.route.id;
+			// 2nd level routes
+			const fromId = navigation.from?.route.id;
+			const toId = navigation.to?.route.id;
 
-			const fromLevel = from?.split('/');
-			const toLevel = to?.split('/');
+			const fromLevel = fromId?.split('/');
+			const toLevel = toId?.split('/');
 
 			if (fromLevel && toLevel) {
 				if (fromLevel.length > toLevel.length) {
