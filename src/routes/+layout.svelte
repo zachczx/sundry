@@ -15,7 +15,7 @@
 		);
 		const toIndex = topLevelRoutes.findIndex((route) => route.href === navigation.to?.url.pathname);
 
-		if (fromIndex && toIndex) {
+		if (fromIndex !== -1 && toIndex !== -1) {
 			// Bottom navbar
 
 			if (toIndex < fromIndex) {
