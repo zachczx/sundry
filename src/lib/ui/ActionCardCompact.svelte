@@ -6,6 +6,7 @@
 	import MaterialSymbolsCheckCircle from '$lib/assets/svg/MaterialSymbolsCheckCircle.svelte';
 	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import MaterialSymbolsArrowRightAlt from '$lib/assets/svg/MaterialSymbolsArrowRightAlt.svelte';
+	import dayjs from 'dayjs';
 
 	let { options }: { options: Options } = $props();
 
@@ -48,14 +49,16 @@
 				{/if}
 				{#if options.query.isSuccess}
 					{#if options.notification.show}
-						<span class="text-error font-medium tracking-tight">
-							{#if options.notification.level === 'overdue'}
-								Overdue
-							{:else if options.notification.level === 'due'}
-								Due
-							{/if}
-						</span>&nbsp;&nbsp;•&nbsp;&nbsp;
-					{/if}<span>{options.last}</span>
+						{#if options.notification.level === 'overdue'}
+							<span class="text-error font-medium tracking-tight">Overdue</span>
+						{:else if options.notification.level === 'due'}
+							<span class="text-error font-medium tracking-tight">Due</span>
+						{/if}
+					{:else}
+						<span class="font-medium tracking-tight"
+							>Next {dayjs(options.notification.next).fromNow()}</span
+						>
+					{/if}
 				{/if}
 			</div>
 		</a>
