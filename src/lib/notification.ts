@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 
-const defaultNotificationStatus: NotificationStatus = {
+export const defaultNotificationStatus: NotificationStatus = {
 	show: false,
 	level: 'ok'
 };
@@ -16,29 +16,32 @@ export function getNotificationStatus(query: Query): NotificationStatus {
 		const daysTillNextDate = nextDate.diff(dayjs(), 'day', true);
 
 		if (daysTillNextDate > 1) {
-			return defaultNotificationStatus;
+			return { ...defaultNotificationStatus, next: nextDate.toString() };
 		} else if (daysTillNextDate <= 1 && daysTillNextDate > 0) {
-			return { show: true, level: 'due' };
+			return { show: true, level: 'due', next: nextDate.toString() };
 		} else {
-			return { show: true, level: 'overdue' };
+			return { show: true, level: 'overdue', next: nextDate.toString() };
 		}
+	} else {
+		const now = dayjs();
+		const leadTimeHours = 6;
+
+		const intervalHours = lastRecord.daysToNext * 24;
+
+		const nextDate = dayjs(lastRecord.time).add(lastRecord.daysToNext, 'day');
+
+		const hoursSinceLastRecord = now.diff(dayjs(lastRecord.time), 'hour', true);
+		if (hoursSinceLastRecord >= intervalHours - leadTimeHours) {
+			const overdue = hoursSinceLastRecord > intervalHours;
+			return {
+				show: true,
+				level: overdue ? 'overdue' : 'due',
+				next: nextDate.toString()
+			};
+		}
+
+		return { ...defaultNotificationStatus, next: nextDate.toString() };
 	}
-
-	const now = dayjs();
-	const leadTimeHours = 6;
-
-	const intervalHours = lastRecord.daysToNext * 24;
-
-	const hoursSinceLastRecord = now.diff(dayjs(lastRecord.time), 'hour', true);
-	if (hoursSinceLastRecord >= intervalHours - leadTimeHours) {
-		const overdue = hoursSinceLastRecord > intervalHours;
-		return {
-			show: true,
-			level: overdue ? 'overdue' : 'due'
-		};
-	}
-
-	return defaultNotificationStatus;
 }
 
 export function getNotificationCount(

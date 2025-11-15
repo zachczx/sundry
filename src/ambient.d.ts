@@ -108,6 +108,7 @@ interface VacationDB {
 interface NotificationStatus {
 	show: boolean;
 	level: 'ok' | 'due' | 'overdue';
+	next?: string;
 }
 
 type ButtonState = 'default' | 'loading' | 'success' | 'error';
