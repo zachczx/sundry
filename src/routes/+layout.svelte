@@ -28,8 +28,7 @@
 	function getAnimationStatus(topLevelRoutes: TopLevelRoutes, navigation: OnNavigate) {
 		let direction = '';
 
-		const isRefreshingHome =
-			navigation.from?.url.pathname === '/' && navigation.to?.url.pathname === '/';
+		const isSamePage = navigation.from?.url.pathname === navigation.to?.url.pathname;
 
 		const isNoAnimation = topLevelRoutes.noAnimation.some(
 			(route) =>
@@ -37,7 +36,7 @@
 				navigation.to?.url.pathname.startsWith(route.href)
 		);
 
-		if (!isRefreshingHome && !isNoAnimation) {
+		if (!isSamePage && !isNoAnimation) {
 			const fromIndex = topLevelRoutes.animation.findIndex(
 				(route) => route.href === navigation.from?.url.pathname
 			);
