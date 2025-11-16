@@ -105,6 +105,37 @@ interface VacationDB {
 	endDateTime: string;
 }
 
+type IntervalUnit = 'day' | 'month' | 'year';
+
+interface LogsDB {
+	collectionId: string;
+	collectionName: 'logs';
+	id: string;
+	user: string;
+	tracker: CollectionName;
+	interval: number;
+	intervalUnit: IntervalUnit;
+	time: string;
+	oldId?: string | null;
+	created: string;
+	updated: string;
+}
+
+interface LogsRecord extends LogsDB {
+	gap: number;
+}
+
+interface TrackerDB {
+	id: string;
+	user: string;
+	name: CollectionName;
+	display: string;
+	interval: number;
+	intervalUnit: IntervalUnit;
+	created: string;
+	updated: string;
+}
+
 interface NotificationStatus {
 	show: boolean;
 	level: 'ok' | 'due' | 'overdue';
@@ -118,6 +149,7 @@ type CollectionName =
 	| 'spray'
 	| 'gummy'
 	| 'user'
+	| 'bedsheet'
 	| 'vacation'
 	| 'doggoBath'
 	| 'doggoChewable';
@@ -127,32 +159,32 @@ type CollectionName =
 interface TrackerPageOptions {
 	collectionName: CollectionName;
 	labels: { pageTitle: string; ctaButtonText: string };
-	queries: {
+	/* queries: {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		query: () => any;
+		query: (name: CollectionName) => any;
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		refetch: () => any;
-	};
-	calculateGaps?: (records: TrackerDB[], vacations: VacationDB[]) => TrackerRecord[];
+		refetch: (name: CollectionName) => any;
+	}; */
+	calculateGaps?: (records: LogsDB[], vacations: VacationDB[]) => LogsRecord[];
 }
 
-type Query =
-	| CreateQueryResult<SprayDB[], Error>
-	| CreateQueryResult<TowelDB[], Error>
-	| CreateQueryResult<GummyDB[], Error>
-	| CreateQueryResult<DoggoChewableDB[], Error>
-	| CreateQueryResult<DoggoBathDB[], Error>;
+// type Query =
+// | CreateQueryResult<SprayDB[], Error>
+// | CreateQueryResult<TowelDB[], Error>
+// | CreateQueryResult<GummyDB[], Error>
+// | CreateQueryResult<DoggoChewableDB[], Error>
+// | CreateQueryResult<DoggoBathDB[], Error>;
 
-type TrackerDB = TowelDB | SprayDB | GummyDB | DoggoBathDB | DoggoChewableDB;
-type TrackerRecord =
-	| TowelRecord
-	| SprayRecord
-	| GummyRecord
-	| DoggoBathRecord
-	| DoggoChewableRecord;
+// type TrackerDB = TowelDB | SprayDB | GummyDB | DoggoBathDB | DoggoChewableDB;
+// type TrackerRecord =
+// 	| TowelRecord
+// 	| SprayRecord
+// 	| GummyRecord
+// 	| DoggoBathRecord
+// 	| DoggoChewableRecord;
 
-type CollectionsTrackingTime = SprayDB | TowelDB | GummyDB | DoggoChewableDB | DoggoBathDB;
+// type CollectionsTrackingTime = SprayDB | TowelDB | GummyDB | DoggoChewableDB | DoggoBathDB;
 
-type Collections = CollectionsTrackingTime | VacationDB;
+type Collections = LogsDB | VacationDB;
 
 type CalendarRecord = Collections;

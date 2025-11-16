@@ -6,12 +6,7 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { addToast } from './ArkToaster.svelte';
-	import {
-		createDoggoChewableRefetchOptions,
-		createGummyRefetchOptions,
-		createSprayRefetchOptions,
-		createTowelRefetchOptions
-	} from '../queries';
+	import { convertCollectionNameToId } from '../queries';
 	import MaterialSymbolsCheck from '../assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsArrowRightAlt from '../assets/svg/MaterialSymbolsArrowRightAlt.svelte';
 
@@ -21,13 +16,13 @@
 
 	let {
 		collectionName,
-		daysToNext,
-		monthsToNext,
+		interval,
+		intervalUnit,
 		tanstackClient
 	}: {
 		collectionName: CollectionName;
-		daysToNext?: number;
-		monthsToNext?: number;
+		interval: number | undefined;
+		intervalUnit: string | undefined;
 		tanstackClient: QueryClient;
 	} = $props();
 
@@ -54,51 +49,26 @@
 	async function addHandler() {
 		buttonStatus = 'loading';
 
-		if (collectionName === 'doggoChewable') {
-			const result = await pb.collection(collectionName).create({
-				user: pb.authStore.record?.id,
-				time: dayjs.tz(timestamp, 'Asia/Singapore'),
-				monthsToNext: monthsToNext
-			});
+		const result = await pb.collection('logs').create({
+			tracker: convertCollectionNameToId(collectionName),
+			user: pb.authStore.record?.id,
+			time: dayjs.tz(timestamp, 'Asia/Singapore'),
+			interval: interval,
+			intervalUnit: intervalUnit
+		});
 
-			if (result.id) {
-				dialog.close();
-				addToast('success', 'Added successfully!');
-				buttonStatus = 'success';
+		if (result.id) {
+			dialog.close();
+			addToast('success', 'Added successfully!');
+			buttonStatus = 'success';
 
-				setTimeout(() => {
-					buttonStatus = 'default';
-				}, 3000);
-			}
-
-			await tanstackClient.refetchQueries(createDoggoChewableRefetchOptions());
-		} else {
-			const result = await pb.collection(collectionName).create({
-				user: pb.authStore.record?.id,
-				time: dayjs.tz(timestamp, 'Asia/Singapore'),
-				daysToNext: daysToNext
-			});
-
-			if (result.id) {
-				dialog.close();
-				addToast('success', 'Added successfully!');
-				buttonStatus = 'success';
-
-				setTimeout(() => {
-					buttonStatus = 'default';
-				}, 3000);
-			}
-
-			if (collectionName === 'towel') {
-				await tanstackClient.refetchQueries(createTowelRefetchOptions());
-			}
-			if (collectionName === 'spray') {
-				await tanstackClient.refetchQueries(createSprayRefetchOptions());
-			}
-			if (collectionName === 'gummy') {
-				await tanstackClient.refetchQueries(createGummyRefetchOptions());
-			}
+			setTimeout(() => {
+				buttonStatus = 'default';
+			}, 3000);
 		}
+
+		// TODO add refetch queries
+		// await tanstackClient.refetchQueries(createDoggoChewableRefetchOptions());
 	}
 </script>
 

@@ -1,24 +1,83 @@
 import { queryOptions, type RefetchQueryFilters } from '@tanstack/svelte-query';
 import { pb } from './pb';
+import dayjs from 'dayjs';
 
 const staleTime = 5 * 60 * 1000;
 
-export function createTowelQueryOptions() {
+export function logsQueryOptions(name: CollectionName) {
 	return queryOptions({
-		queryKey: ['towels', pb.authStore?.record?.id],
-		queryFn: async (): Promise<TowelDB[]> =>
-			await pb.collection('towel').getFullList({ sort: '-time' }),
+		queryKey: ['log-' + name, pb.authStore?.record?.id],
+		queryFn: async (): Promise<LogsDB[]> =>
+			await pb.collection('logs').getFullList({
+				filter: `user="${pb.authStore?.record?.id}" && tracker.name="${name}"`,
+				sort: '-time'
+			}),
 		staleTime: staleTime
 	});
 }
 
-export function createSprayQueryOptions() {
+export function logsRefetchOptions(name: CollectionName): RefetchQueryFilters {
+	return {
+		queryKey: ['log-' + name, pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+export async function createLogsQuery(options: {
+	collectionName: CollectionName;
+	interval: number | undefined;
+	intervalUnit: IntervalUnit | undefined;
+}) {
+	const response = await pb.collection('logs').create({
+		tracker: convertCollectionNameToId(options.collectionName),
+		user: pb.authStore.record?.id,
+		time: dayjs.tz(new Date(), 'Asia/Singapore'),
+		interval: options.interval,
+		intervalUnit: options.intervalUnit
+	});
+
+	return response;
+}
+
+export function notificationQueryOptions(name: CollectionName) {
 	return queryOptions({
-		queryKey: ['sprays', pb.authStore?.record?.id],
-		queryFn: async (): Promise<SprayDB[]> =>
-			await pb.collection('spray').getFullList({ sort: '-time' }),
+		queryKey: ['notif-' + name, pb.authStore?.record?.id],
+		queryFn: async (): Promise<LogsDB> =>
+			await pb
+				.collection('logs')
+				.getFirstListItem(`user="${pb.authStore?.record?.id}" && tracker.name="${name}"`, {
+					sort: '-time'
+				}),
 		staleTime: staleTime
 	});
+}
+
+export function notificationRefetchOptions(name: CollectionName): RefetchQueryFilters {
+	return {
+		queryKey: ['notif-' + name, pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+export function trackerQueryOptions(name: CollectionName) {
+	return queryOptions({
+		queryKey: ['tracker-' + name, pb.authStore?.record?.id],
+		queryFn: async (): Promise<TrackerDB> =>
+			await pb
+				.collection('trackers')
+				.getFirstListItem(`user="${pb.authStore?.record?.id}" && name="${name}"`),
+		staleTime: staleTime
+	});
+}
+
+export function trackerRefetchOptions(name: CollectionName): RefetchQueryFilters {
+	return {
+		queryKey: ['tracker-' + name, pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
 }
 
 export function createUserQueryOptions() {
@@ -30,6 +89,37 @@ export function createUserQueryOptions() {
 	});
 }
 
+export function createUserRefetchOptions(): RefetchQueryFilters {
+	return {
+		queryKey: ['users', pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+export function convertCollectionNameToId(name: CollectionName): string | null {
+	switch (name) {
+		case 'bedsheet':
+			return 'vk58159wczyxmus';
+
+		case 'doggoBath':
+			return 'hhz09lsfj1o5mbp';
+
+		case 'doggoChewable':
+			return 'h3e3xkbmoxma6dv';
+
+		case 'gummy':
+			return '8t9hsvqah63rs7h';
+
+		case 'spray':
+			return '381t91o03thrvyd';
+
+		case 'towel':
+			return 'vvd9jnl0uw8qnie';
+	}
+	return null;
+}
+
 export function createVacationQueryOptions() {
 	return queryOptions({
 		queryKey: ['vacations', pb.authStore?.record?.id],
@@ -39,81 +129,6 @@ export function createVacationQueryOptions() {
 	});
 }
 
-export function createGummyQueryOptions() {
-	return queryOptions({
-		queryKey: ['gummies', pb.authStore?.record?.id],
-		queryFn: async (): Promise<GummyDB[]> =>
-			await pb.collection('gummy').getFullList({ sort: '-time' }),
-		staleTime: staleTime
-	});
-}
-
-export function createDoggoChewableQueryOptions() {
-	return queryOptions({
-		queryKey: ['doggoChewables', pb.authStore?.record?.id],
-		queryFn: async (): Promise<DoggoChewableDB[]> =>
-			await pb.collection('doggoChewable').getFullList({ sort: '-time' }),
-		staleTime: staleTime
-	});
-}
-
-export function createDoggoBathQueryOptions() {
-	return queryOptions({
-		queryKey: ['doggoBaths', pb.authStore?.record?.id],
-		queryFn: async (): Promise<DoggoBathDB[]> =>
-			await pb.collection('doggoBath').getFullList({ sort: '-time' }),
-		staleTime: staleTime
-	});
-}
-
-export function createTowelRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['towels', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
-export function createSprayRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['sprays', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
-export function createGummyRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['gummies', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
-export function createDoggoChewableRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['doggoChewables', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
-export function createDoggoBathRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['doggoBaths', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
-export function createUserRefetchOptions(): RefetchQueryFilters {
-	return {
-		queryKey: ['users', pb.authStore?.record?.id],
-		type: 'active',
-		exact: true
-	};
-}
-
 export function createVacationRefetchOptions(): RefetchQueryFilters {
 	return {
 		queryKey: ['vacations', pb.authStore?.record?.id],
@@ -121,3 +136,90 @@ export function createVacationRefetchOptions(): RefetchQueryFilters {
 		exact: true
 	};
 }
+
+// Legacy
+
+// export function createTowelQueryOptions() {
+// 	return queryOptions({
+// 		queryKey: ['towels', pb.authStore?.record?.id],
+// 		queryFn: async (): Promise<TowelDB[]> =>
+// 			await pb.collection('towel').getFullList({ sort: '-time' }),
+// 		staleTime: staleTime
+// 	});
+// }
+
+// export function createSprayQueryOptions() {
+// 	return queryOptions({
+// 		queryKey: ['sprays', pb.authStore?.record?.id],
+// 		queryFn: async (): Promise<SprayDB[]> =>
+// 			await pb.collection('spray').getFullList({ sort: '-time' }),
+// 		staleTime: staleTime
+// 	});
+// }
+
+// export function createGummyQueryOptions() {
+// 	return queryOptions({
+// 		queryKey: ['gummies', pb.authStore?.record?.id],
+// 		queryFn: async (): Promise<GummyDB[]> =>
+// 			await pb.collection('gummy').getFullList({ sort: '-time' }),
+// 		staleTime: staleTime
+// 	});
+// }
+
+// export function createDoggoChewableQueryOptions() {
+// 	return queryOptions({
+// 		queryKey: ['doggoChewables', pb.authStore?.record?.id],
+// 		queryFn: async (): Promise<DoggoChewableDB[]> =>
+// 			await pb.collection('doggoChewable').getFullList({ sort: '-time' }),
+// 		staleTime: staleTime
+// 	});
+// }
+
+// export function createDoggoBathQueryOptions() {
+// 	return queryOptions({
+// 		queryKey: ['doggoBaths', pb.authStore?.record?.id],
+// 		queryFn: async (): Promise<DoggoBathDB[]> =>
+// 			await pb.collection('doggoBath').getFullList({ sort: '-time' }),
+// 		staleTime: staleTime
+// 	});
+// }
+
+// export function createTowelRefetchOptions(): RefetchQueryFilters {
+// 	return {
+// 		queryKey: ['towels', pb.authStore?.record?.id],
+// 		type: 'active',
+// 		exact: true
+// 	};
+// }
+
+// export function createSprayRefetchOptions(): RefetchQueryFilters {
+// 	return {
+// 		queryKey: ['sprays', pb.authStore?.record?.id],
+// 		type: 'active',
+// 		exact: true
+// 	};
+// }
+
+// export function createGummyRefetchOptions(): RefetchQueryFilters {
+// 	return {
+// 		queryKey: ['gummies', pb.authStore?.record?.id],
+// 		type: 'active',
+// 		exact: true
+// 	};
+// }
+
+// export function createDoggoChewableRefetchOptions(): RefetchQueryFilters {
+// 	return {
+// 		queryKey: ['doggoChewables', pb.authStore?.record?.id],
+// 		type: 'active',
+// 		exact: true
+// 	};
+// }
+
+// export function createDoggoBathRefetchOptions(): RefetchQueryFilters {
+// 	return {
+// 		queryKey: ['doggoBaths', pb.authStore?.record?.id],
+// 		type: 'active',
+// 		exact: true
+// 	};
+// }

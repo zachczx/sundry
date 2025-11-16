@@ -9,7 +9,13 @@
 	import PageWrapper from '$lib/shell/PageWrapper.svelte';
 	import Chart from 'chart.js/auto';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import { createUserQueryOptions, createVacationQueryOptions } from '$lib/queries';
+	import {
+		trackerQueryOptions,
+		createVacationQueryOptions,
+		createLogsQuery,
+		logsRefetchOptions,
+		logsQueryOptions
+	} from '$lib/queries';
 	import { getCalendarEntries } from '$lib/calendar';
 	import CustomDateModal from '$lib/ui/CustomDateModal.svelte';
 	import StatusDescriptions from '$lib/ui/StatusDescriptions.svelte';
@@ -26,22 +32,27 @@
 
 	let { options }: { options: TrackerPageOptions } = $props();
 
-	let singleDay: TrackerDB[] | undefined = $state([]);
+	let singleDay: LogsDB[] | undefined = $state([]);
 	let modal = $state<HTMLDialogElement>();
 
-	const dbRecords = createQuery<TrackerDB[]>(options.queries.query);
-	const user = createQuery(createUserQueryOptions);
-	const vacations = createQuery(createVacationQueryOptions);
 	const tanstackClient = useQueryClient();
+	const dbRecords = createQuery(() => logsQueryOptions(options.collectionName));
+	const vacations = createQuery(createVacationQueryOptions);
+	const tracker = createQuery(() => trackerQueryOptions(options.collectionName));
+	let interval = $derived.by(() => (tracker.isSuccess ? tracker.data?.interval : undefined));
+	let intervalUnit = $derived.by(() =>
+		tracker.isSuccess ? tracker.data?.intervalUnit : undefined
+	);
 
-	const query = async () =>
-		await pb.collection(options.collectionName).create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: daysToNext
+	const query = () =>
+		createLogsQuery({
+			collectionName: options.collectionName,
+			interval: interval,
+			intervalUnit: intervalUnit
 		});
 
-	const refetch = async () => await tanstackClient.refetchQueries(options.queries.refetch());
+	const refetch = async () =>
+		await tanstackClient.refetchQueries(logsRefetchOptions(options.collectionName));
 
 	let times = $derived.by(() => getCalendarEntries(dbRecords, options.labels.ctaButtonText));
 	let vacationTimes = $derived.by(() => getCalendarEntries(vacations, 'Vacation', '✈️'));
@@ -97,44 +108,48 @@
 
 	let currentTab = $state<TabPages>('overview');
 
-	let daysToNext = $derived.by(() => (user.isSuccess ? user.data?.sprayIntervalDays : undefined));
-
 	/**
 	 * Using $state + $effect instead of $derived due to TanStack Query store
 	 * not properly triggering Svelte 5's fine-grained reactivity on async data changes
 	 */
 
-	let records: TrackerRecord[] = $derived.by(() => {
+	let records: LogsRecord[] | undefined = $state([]);
+
+	$effect(() => {
 		if (dbRecords.isSuccess && dbRecords.data) {
 			if (options.calculateGaps) {
-				return options.calculateGaps(dbRecords.data, vacations.data ?? []);
+				records = options.calculateGaps(dbRecords.data, vacations.data ?? []);
 			} else {
-				return dbRecords.data.map((record, i, allRecords) => {
+				records = dbRecords.data.map((record, i, allRecords) => {
 					const nextRecord = allRecords[i + 1];
 					const gap = nextRecord ? dayjs(record.time).diff(nextRecord.time, 'day', true) : 0;
 					return { ...record, gap };
 				});
 			}
 		}
-
-		return [];
 	});
 
-	let longestGap: TrackerRecord | undefined = $derived.by(() => {
-		if (records.length <= 1) return;
+	let longestGap: LogsRecord | undefined = $derived.by(() => {
+		if (!records || records?.length <= 1) return;
+
 		const avoidMutatingOriginalArray = [...records];
 		const sorted = avoidMutatingOriginalArray.sort((a, b) => b.gap - a.gap);
 		return sorted[0];
 	});
+
 	let averageGap: number = $derived.by(() => {
-		const total = records.reduce((accumulator, entry) => {
+		if (!records || records?.length <= 1) return 0;
+
+		const total = records?.reduce((accumulator, entry) => {
 			return (accumulator += entry.gap);
 		}, 0);
-		const average = total / records.length;
+		const average = total / records?.length;
 		return average;
 	});
 
 	let gaps = $derived.by(() => {
+		if (!records || records?.length <= 1) return [];
+
 		const gaps: number[] = [];
 		const numberOfRecords = 10;
 		for (let i = 0; i < numberOfRecords; i++) {
@@ -146,6 +161,8 @@
 	});
 
 	let gapsDates = $derived.by(() => {
+		if (!records || records?.length <= 1) return [];
+
 		const gapsDates: string[] = [];
 		const numberOfRecords = 10;
 		for (let i = 0; i < numberOfRecords; i++) {
@@ -190,12 +207,12 @@
 	});
 
 	const dayjsCalendarOptions = {
-		sameDay: '[Today], h:mma', // The same day ( Today at 2:30 AM )
-		nextDay: '[Tomorrow], h:mma', // The next day ( Tomorrow at 2:30 AM )
-		nextWeek: 'dddd, h:mma', // The next week ( Sunday at 2:30 AM )
-		lastDay: '[Yesterday], h:mma', // The day before ( Yesterday at 2:30 AM )
-		lastWeek: '[Last] dddd, h:mma', // Last week ( Last Monday at 2:30 AM )
-		sameElse: 'DD/MM/YYYY' // Everything else ( 17/10/2011 )
+		sameDay: '[Today], h:mma',
+		nextDay: '[Tomorrow], h:mma',
+		nextWeek: 'dddd, h:mma',
+		lastDay: '[Yesterday], h:mma',
+		lastWeek: '[Last] dddd, h:mma',
+		sameElse: 'D MMM YYYY'
 	};
 </script>
 
@@ -209,7 +226,12 @@
 			<ActionButton {query} {refetch} text={options.labels.ctaButtonText} />
 
 			<div class="flex justify-start">
-				<CustomDateModal collectionName={options.collectionName} {tanstackClient} {daysToNext} />
+				<CustomDateModal
+					collectionName={options.collectionName}
+					{tanstackClient}
+					{interval}
+					{intervalUnit}
+				/>
 			</div>
 		</div>
 
@@ -271,21 +293,13 @@
 
 				<TwoColumnCard leftTitle="Frequency" rightTitle="Last">
 					{#snippet left()}
-						{#if user.isSuccess}
-							{@const collectionName = dbRecords.data?.[0].collectionName}
+						{#if tracker.isSuccess}
+							{@const plural = tracker.data.interval > 1 ? true : false}
+							{@const collectionName = dbRecords.data?.[0].tracker}
 							<p>
-								{#if collectionName === 'spray'}
-									{user.data.sprayIntervalDays} days
-								{:else if collectionName === 'towel'}
-									{user.data.towelIntervalDays} days
-								{:else if collectionName === 'gummy'}
-									{user.data.gummyIntervalDays} days
-								{:else if collectionName === 'doggoBath'}
-									{user.data.doggoBathIntervalDays} days
-								{:else if collectionName === 'doggoChewable'}
-									{user.data.doggoChewableIntervalMonths}
-									{#if user.data.doggoChewableIntervalMonths === 1}month{:else}months{/if}
-								{/if}
+								{tracker.data.interval}&nbsp;{plural
+									? tracker.data.intervalUnit + 's'
+									: tracker.data.intervalUnit}
 							</p>
 							<p class="text-base-content/70 text-base font-normal">once</p>
 						{/if}

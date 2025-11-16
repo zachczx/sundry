@@ -30,8 +30,8 @@
 
 		try {
 			const result = await query();
-
-			if (result.id) {
+			console.log(result);
+			if (result) {
 				addToast('success', 'Added successfully!');
 				status = 'success';
 
@@ -42,6 +42,7 @@
 
 			await refetch();
 		} catch (err) {
+			console.log(err);
 			status = 'error';
 			addToast('error', 'Error creating!');
 			setTimeout(() => {

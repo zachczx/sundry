@@ -1,3 +1,4 @@
+import type { CreateQueryResult } from '@tanstack/svelte-query';
 import dayjs from 'dayjs';
 
 export const defaultNotificationStatus: NotificationStatus = {
@@ -5,14 +6,23 @@ export const defaultNotificationStatus: NotificationStatus = {
 	level: 'ok'
 };
 
-export function getNotificationStatus(query: Query): NotificationStatus {
-	if (!query?.isSuccess || query.data?.length === 0) return defaultNotificationStatus;
+export function getNotificationStatus(
+	query: CreateQueryResult<LogsDB, Error> | CreateQueryResult<LogsDB[], Error>
+): NotificationStatus {
+	if (!query?.isSuccess) return defaultNotificationStatus;
 
-	const lastRecord = query.data?.[0] ?? null;
+	let lastRecord;
+
+	if (Array.isArray(query.data)) {
+		lastRecord = query.data[0] ?? null;
+	} else {
+		lastRecord = query.data ?? null;
+	}
+
 	if (!lastRecord) return defaultNotificationStatus;
 
-	if (lastRecord.collectionName === 'doggoChewable') {
-		const nextDate = dayjs(lastRecord.time).add(lastRecord.monthsToNext, 'month');
+	if (lastRecord.intervalUnit === 'month') {
+		const nextDate = dayjs(lastRecord.time).add(lastRecord.interval, 'month');
 		const daysTillNextDate = nextDate.diff(dayjs(), 'day', true);
 
 		if (daysTillNextDate > 1) {
@@ -26,9 +36,9 @@ export function getNotificationStatus(query: Query): NotificationStatus {
 		const now = dayjs();
 		const leadTimeHours = 6;
 
-		const intervalHours = lastRecord.daysToNext * 24;
+		const intervalHours = lastRecord.interval * 24;
 
-		const nextDate = dayjs(lastRecord.time).add(lastRecord.daysToNext, 'day');
+		const nextDate = dayjs(lastRecord.time).add(lastRecord.interval, 'day');
 
 		const hoursSinceLastRecord = now.diff(dayjs(lastRecord.time), 'hour', true);
 		if (hoursSinceLastRecord >= intervalHours - leadTimeHours) {

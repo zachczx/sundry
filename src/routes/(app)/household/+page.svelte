@@ -7,7 +7,12 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import { createTowelQueryOptions, createTowelRefetchOptions } from '$lib/queries';
+	import {
+		logsQueryOptions,
+		logsRefetchOptions,
+		createLogsQuery,
+		trackerQueryOptions
+	} from '$lib/queries';
 	import { getNotificationStatus } from '$lib/notification';
 	import { goto } from '$app/navigation';
 
@@ -21,7 +26,21 @@
 
 	let towelButtonStatus: ButtonState = $state('default');
 
-	const towels = createQuery(createTowelQueryOptions);
+	const towels = createQuery(() => logsQueryOptions('towel'));
+	const towelTracker = createQuery(() => trackerQueryOptions('towel'));
+	let towelInterval = $derived.by(() =>
+		towelTracker.isSuccess ? towelTracker.data?.interval : undefined
+	);
+	let towelIntervalUnit = $derived.by(() =>
+		towelTracker.isSuccess ? towelTracker.data?.intervalUnit : undefined
+	);
+	const createTowelRecord = () =>
+		createLogsQuery({
+			collectionName: 'towel',
+			interval: towelInterval,
+			intervalUnit: towelIntervalUnit
+		});
+	const towelRefetch = async () => await tanstackClient.refetchQueries(logsRefetchOptions('towel'));
 	const tanstackClient = useQueryClient();
 
 	let towelLast: string = $derived.by(() => {
@@ -30,13 +49,6 @@
 		}
 		return '';
 	});
-
-	const towelQuery = async () =>
-		await pb.collection('towel').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore')
-		});
-	const towelRefetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
 
 	let towelNotification = $derived.by(() => getNotificationStatus(towels));
 </script>
@@ -54,7 +66,7 @@
 						icon: PhTowelFill,
 						last: towelLast,
 						button: {
-							query: towelQuery,
+							query: createTowelRecord,
 							refetch: towelRefetch,
 							status: towelButtonStatus,
 							text: 'Washed'

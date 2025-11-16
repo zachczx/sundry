@@ -25,25 +25,56 @@
 
 	const tanstackClient = useQueryClient();
 
-	let towelIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.towelIntervalDays : undefined
-	);
-	let sprayIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.sprayIntervalDays : undefined
-	);
-	let gummyIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.gummyIntervalDays : undefined
-	);
-	let doggoChewableIntervalMonths = $derived.by(() =>
-		user.isSuccess ? user.data?.doggoChewableIntervalMonths : undefined
-	);
-	let doggoBathIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.doggoBathIntervalDays : undefined
-	);
+	const trackers = createQuery(() => ({
+		queryKey: ['profile', pb.authStore?.record?.id],
+		queryFn: async (): Promise<TrackerDB[]> =>
+			await pb.collection('trackers').getFullList({ filter: `user="${pb.authStore?.record?.id}"` })
+	}));
 
-	let sound = $derived.by(() => (user.isSuccess ? user.data?.sound : undefined));
+	let towelInterval = $derived.by(() => {
+		if (trackers.isSuccess) {
+			const rec = trackers.data?.find((item) => item.name === 'towel');
+			if (rec) {
+				return rec.interval;
+			}
+		}
+	});
 
-	let spinner = $state(false);
+	let sprayInterval = $derived.by(() => {
+		if (trackers.isSuccess) {
+			const rec = trackers.data?.find((item) => item.name === 'spray');
+			if (rec) {
+				return rec.interval;
+			}
+		}
+	});
+
+	let gummyInterval = $derived.by(() => {
+		if (trackers.isSuccess) {
+			const rec = trackers.data?.find((item) => item.name === 'gummy');
+			if (rec) {
+				return rec.interval;
+			}
+		}
+	});
+
+	let doggoChewableInterval = $derived.by(() => {
+		if (trackers.isSuccess) {
+			const rec = trackers.data?.find((item) => item.name === 'doggoChewable');
+			if (rec) {
+				return rec.interval;
+			}
+		}
+	});
+
+	let doggoBathInterval = $derived.by(() => {
+		if (trackers.isSuccess) {
+			const rec = trackers.data?.find((item) => item.name === 'doggoBath');
+			if (rec) {
+				return rec.interval;
+			}
+		}
+	});
 
 	let currentTab = $state('settings');
 	let param = $derived(page.url.searchParams.get('p'));
@@ -53,10 +84,6 @@
 			currentTab = 'vacations';
 		}
 	});
-
-	let vacationStart = $state('');
-	let vacationEnd = $state('');
-	let vacationsModal = $state() as HTMLDialogElement;
 
 	function formatTime(startDateTime: string, endDateTime: string) {
 		if (!startDateTime || !endDateTime) return;
@@ -78,17 +105,14 @@
 
 		if (target instanceof HTMLInputElement && pb.authStore.record?.id) {
 			const name = target.name;
+			const recordId = trackers.data?.find((item) => item.name === name)?.id ?? '';
 
 			try {
-				const data: { [key: string]: string | boolean } = {};
+				const data = {
+					interval: target.value
+				};
 
-				if (name === 'sound') {
-					data[name] = target.checked ? true : false;
-				} else {
-					data[name] = target.value;
-				}
-
-				const response = await pb.collection('users').update(pb.authStore.record.id, data);
+				const response = await pb.collection('trackers').update(recordId, data);
 
 				if (!response.status) {
 					addToast('success', 'Saved!');
@@ -116,44 +140,19 @@
 
 						<SegmentedControl items={5}>
 							<label>
-								<input
-									type="radio"
-									bind:group={sprayIntervalDays}
-									value={1}
-									name="sprayIntervalDays"
-								/>1
+								<input type="radio" bind:group={sprayInterval} value={1} name="spray" />1
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={sprayIntervalDays}
-									value={2}
-									name="sprayIntervalDays"
-								/>2
+								<input type="radio" bind:group={sprayInterval} value={2} name="spray" />2
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={sprayIntervalDays}
-									value={3}
-									name="sprayIntervalDays"
-								/>3
+								<input type="radio" bind:group={sprayInterval} value={3} name="spray" />3
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={sprayIntervalDays}
-									value={4}
-									name="sprayIntervalDays"
-								/>4
+								<input type="radio" bind:group={sprayInterval} value={4} name="spray" />4
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={sprayIntervalDays}
-									value={5}
-									name="sprayIntervalDays"
-								/>5
+								<input type="radio" bind:group={sprayInterval} value={5} name="spray" />5
 							</label>
 						</SegmentedControl>
 					</form>
@@ -163,44 +162,19 @@
 
 						<SegmentedControl items={5}>
 							<label>
-								<input
-									type="radio"
-									bind:group={gummyIntervalDays}
-									value={1}
-									name="gummyIntervalDays"
-								/>1
+								<input type="radio" bind:group={gummyInterval} value={1} name="gummy" />1
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={gummyIntervalDays}
-									value={2}
-									name="gummyIntervalDays"
-								/>2
+								<input type="radio" bind:group={gummyInterval} value={2} name="gummy" />2
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={gummyIntervalDays}
-									value={3}
-									name="gummyIntervalDays"
-								/>3
+								<input type="radio" bind:group={gummyInterval} value={3} name="gummy" />3
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={gummyIntervalDays}
-									value={4}
-									name="gummyIntervalDays"
-								/>4
+								<input type="radio" bind:group={gummyInterval} value={4} name="gummy" />4
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={gummyIntervalDays}
-									value={5}
-									name="gummyIntervalDays"
-								/>5
+								<input type="radio" bind:group={gummyInterval} value={5} name="gummy" />5
 							</label>
 						</SegmentedControl>
 					</form>
@@ -210,44 +184,19 @@
 
 						<SegmentedControl items={5}>
 							<label>
-								<input
-									type="radio"
-									bind:group={towelIntervalDays}
-									value={1}
-									name="towelIntervalDays"
-								/>1
+								<input type="radio" bind:group={towelInterval} value={1} name="towel" />1
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={towelIntervalDays}
-									value={2}
-									name="towelIntervalDays"
-								/>2
+								<input type="radio" bind:group={towelInterval} value={2} name="towel" />2
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={towelIntervalDays}
-									value={3}
-									name="towelIntervalDays"
-								/>3
+								<input type="radio" bind:group={towelInterval} value={3} name="towel" />3
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={towelIntervalDays}
-									value={4}
-									name="towelIntervalDays"
-								/>4
+								<input type="radio" bind:group={towelInterval} value={4} name="towel" />4
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={towelIntervalDays}
-									value={5}
-									name="towelIntervalDays"
-								/>5
+								<input type="radio" bind:group={towelInterval} value={5} name="towel" />5
 							</label>
 						</SegmentedControl>
 					</form>
@@ -259,25 +208,25 @@
 							<label>
 								<input
 									type="radio"
-									bind:group={doggoChewableIntervalMonths}
+									bind:group={doggoChewableInterval}
 									value={1}
-									name="doggoChewableIntervalMonths"
+									name="doggoChewable"
 								/>Monthly
 							</label>
 							<label>
 								<input
 									type="radio"
-									bind:group={doggoChewableIntervalMonths}
+									bind:group={doggoChewableInterval}
 									value={3}
-									name="doggoChewableIntervalMonths"
+									name="doggoChewable"
 								/>Quarterly
 							</label>
 							<label>
 								<input
 									type="radio"
-									bind:group={doggoChewableIntervalMonths}
+									bind:group={doggoChewableInterval}
 									value={6}
-									name="doggoChewableIntervalMonths"
+									name="doggoChewable"
 								/>Half-Yearly
 							</label>
 						</SegmentedControl>
@@ -288,44 +237,19 @@
 
 						<SegmentedControl items={5}>
 							<label>
-								<input
-									type="radio"
-									bind:group={doggoBathIntervalDays}
-									value={3}
-									name="doggoBathIntervalDays"
-								/>3
+								<input type="radio" bind:group={doggoBathInterval} value={3} name="doggoBath" />3
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={doggoBathIntervalDays}
-									value={5}
-									name="doggoBathIntervalDays"
-								/>5
+								<input type="radio" bind:group={doggoBathInterval} value={5} name="doggoBath" />5
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={doggoBathIntervalDays}
-									value={7}
-									name="doggoBathIntervalDays"
-								/>7
+								<input type="radio" bind:group={doggoBathInterval} value={7} name="doggoBath" />7
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={doggoBathIntervalDays}
-									value={14}
-									name="doggoBathIntervalDays"
-								/>14
+								<input type="radio" bind:group={doggoBathInterval} value={14} name="doggoBath" />14
 							</label>
 							<label>
-								<input
-									type="radio"
-									bind:group={doggoBathIntervalDays}
-									value={30}
-									name="doggoBathIntervalDays"
-								/>30
+								<input type="radio" bind:group={doggoBathInterval} value={30} name="doggoBath" />30
 							</label>
 						</SegmentedControl>
 					</form>

@@ -5,99 +5,70 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import {
-		createGummyQueryOptions,
-		createGummyRefetchOptions,
-		createSprayQueryOptions,
-		createSprayRefetchOptions,
-		createTowelQueryOptions,
-		createTowelRefetchOptions,
-		createUserQueryOptions
+		createLogsQuery,
+		logsQueryOptions,
+		logsRefetchOptions,
+		trackerQueryOptions
 	} from '$lib/queries';
 	import { getNotificationStatus } from '$lib/notification';
-	import { goto } from '$app/navigation';
 	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
 	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
-	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
-	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
 	import ActionCard from '$lib/ui/ActionCard.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	let towelButtonStatus: ButtonState = $state('default');
 	let sprayButtonStatus: ButtonState = $state('default');
 	let gummyButtonStatus: ButtonState = $state('default');
 
-	const towels = createQuery(createTowelQueryOptions);
-	const sprays = createQuery(createSprayQueryOptions);
-	const gummies = createQuery(createGummyQueryOptions);
-	const user = createQuery(createUserQueryOptions);
-	const tanstackClient = useQueryClient();
-
-	let towelLast: string = $derived.by(() => {
-		if (towels.isSuccess && towels.data.length > 0) {
-			return dayjs(towels.data[0].time).fromNow();
-		}
-		return '';
-	});
-
-	let sprayDaysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.sprayIntervalDays;
-	});
-
-	let gummyDaysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.gummyIntervalDays;
-	});
-
+	const sprays = createQuery(() => logsQueryOptions('spray'));
+	const sprayTracker = createQuery(() => trackerQueryOptions('spray'));
+	let sprayInterval = $derived.by(() =>
+		sprayTracker.isSuccess ? sprayTracker.data?.interval : undefined
+	);
+	let sprayIntervalUnit = $derived.by(() =>
+		sprayTracker.isSuccess ? sprayTracker.data?.intervalUnit : undefined
+	);
 	let sprayLast: string = $derived.by(() => {
 		if (sprays.isSuccess && sprays.data.length > 0) return dayjs(sprays.data[0].time).fromNow();
 
 		return '';
 	});
+	const createSprayRecord = () =>
+		createLogsQuery({
+			collectionName: 'spray',
+			interval: sprayInterval,
+			intervalUnit: sprayIntervalUnit
+		});
+	const sprayRefetch = async () => await tanstackClient.refetchQueries(logsRefetchOptions('spray'));
 
+	const gummies = createQuery(() => logsQueryOptions('gummy'));
+	const gummyTracker = createQuery(() => trackerQueryOptions('gummy'));
+	let gummyInterval = $derived.by(() =>
+		gummyTracker.isSuccess ? gummyTracker.data?.interval : undefined
+	);
+	let gummyIntervalUnit = $derived.by(() =>
+		gummyTracker.isSuccess ? gummyTracker.data?.intervalUnit : undefined
+	);
 	let gummyLast: string = $derived.by(() => {
 		if (gummies.isSuccess && gummies.data.length > 0) return dayjs(gummies.data[0].time).fromNow();
 
 		return '';
 	});
-
-	const towelQuery = async () =>
-		await pb.collection('towel').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore')
+	const createGummyRecord = () =>
+		createLogsQuery({
+			collectionName: 'gummy',
+			interval: gummyInterval,
+			intervalUnit: gummyIntervalUnit
 		});
-	const towelRefetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
+	const gummyRefetch = async () => await tanstackClient.refetchQueries(logsRefetchOptions('gummy'));
 
-	const sprayQuery = async () =>
-		await pb.collection('spray').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: sprayDaysToNext
-		});
-	const sprayRefetch = async () => await tanstackClient.refetchQueries(createSprayRefetchOptions());
-
-	const gummyQuery = async () =>
-		await pb.collection('spray').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: gummyDaysToNext
-		});
-	const gummyRefetch = async () => await tanstackClient.refetchQueries(createGummyRefetchOptions());
+	const tanstackClient = useQueryClient();
 
 	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
-	let towelNotification = $derived.by(() => getNotificationStatus(towels));
 	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
 </script>
 
@@ -114,7 +85,7 @@
 						icon: IconParkSolidBottleOne,
 						last: sprayLast,
 						button: {
-							query: sprayQuery,
+							query: createSprayRecord,
 							refetch: sprayRefetch,
 							status: sprayButtonStatus,
 							text: 'Sprayed'
@@ -131,7 +102,7 @@
 						icon: MaterialSymbolsHealthAndSafety,
 						last: gummyLast,
 						button: {
-							query: gummyQuery,
+							query: createGummyRecord,
 							refetch: gummyRefetch,
 							status: gummyButtonStatus,
 							text: 'Ate'
