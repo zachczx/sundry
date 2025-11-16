@@ -7,29 +7,52 @@
 	import MaterialSymbolsAdd from '$lib/assets/svg/MaterialSymbolsAdd.svelte';
 	import MaterialSymbolsArrowRightAlt from '$lib/assets/svg/MaterialSymbolsArrowRightAlt.svelte';
 	import dayjs from 'dayjs';
+	import { createQuery, useQueryClient, type CreateQueryResult } from '@tanstack/svelte-query';
+	import {
+		createLogsQuery,
+		logsQueryOptions,
+		logsRefetchOptions,
+		trackerQueryOptions
+	} from '$lib/queries';
+	import { getNotificationStatus } from '$lib/notification';
 
 	let { options }: { options: Options } = $props();
 
 	interface Options {
 		title: string;
-		query: Query;
-		notification: NotificationStatus;
+		collectionName: CollectionName;
 		icon: Component;
 		route: string;
-		last: string;
 		button: {
-			query: () => Promise<RecordModel>;
-			refetch: () => Promise<void>;
 			status: ButtonState;
 			text: string;
 		};
 	}
+
+	const tanstackClient = useQueryClient();
+	const logs = createQuery(() => logsQueryOptions(options.collectionName));
+	const notification = $derived.by(() => getNotificationStatus(logs));
+
+	const tracker = createQuery(() => trackerQueryOptions(options.collectionName));
+	let interval = $derived.by(() => (tracker.isSuccess ? tracker.data?.interval : undefined));
+	let intervalUnit = $derived.by(() =>
+		tracker.isSuccess ? tracker.data?.intervalUnit : undefined
+	);
+	const query = () =>
+		createLogsQuery({
+			collectionName: options.collectionName,
+			interval: interval,
+			intervalUnit: intervalUnit
+		});
+
+	const refetch = async () =>
+		await tanstackClient.refetchQueries(logsRefetchOptions(options.collectionName));
 </script>
 
 <section
 	class={[
 		'border-base-300 grid min-h-18 gap-4 rounded-3xl border px-4 py-2',
-		options.notification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
+		notification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
 	]}
 >
 	<div class="flex items-center">
@@ -40,23 +63,22 @@
 					{options.title}
 					<MaterialSymbolsArrowRightAlt class="size-[1em]" />
 				</p>
-				{#if options.query.isPending && !options.query.data}
+				{#if logs.isPending && !logs.data}
 					<div class="custom-loader"></div>
 				{/if}
-				{#if options.query.error}
+				{#if logs.error}
 					An error has occurred:
-					{options.query.error.message}
+					{logs.error.message}
 				{/if}
-				{#if options.query.isSuccess}
-					{#if options.notification.show}
-						{#if options.notification.level === 'overdue'}
+				{#if logs.isSuccess}
+					{#if notification.show}
+						{#if notification.level === 'overdue'}
 							<span class="text-error font-medium tracking-tight">Overdue</span>
-						{:else if options.notification.level === 'due'}
+						{:else if notification.level === 'due'}
 							<span class="text-error font-medium tracking-tight">Due</span>
 						{/if}
 					{:else}
-						<span class="font-medium tracking-tight"
-							>Next {dayjs(options.notification.next).fromNow()}</span
+						<span class="font-medium tracking-tight">Next {dayjs(notification.next).fromNow()}</span
 						>
 					{/if}
 				{/if}
@@ -64,11 +86,11 @@
 		</a>
 		<div class="flex h-full items-center">
 			<ActionButton
-				query={options.button.query}
-				refetch={options.button.refetch}
+				{query}
+				{refetch}
 				text={options.button.text}
 				compact={true}
-				color={options.notification.level === 'overdue' || options.notification.level === 'due'
+				color={notification.level === 'overdue' || notification.level === 'due'
 					? 'primary'
 					: 'neutral'}
 				icon={MaterialSymbolsAdd}

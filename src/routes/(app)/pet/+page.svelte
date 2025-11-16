@@ -5,27 +5,14 @@
 	import utc from 'dayjs/plugin/utc';
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
-	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import {
-		createDoggoBathQueryOptions,
-		createDoggoBathRefetchOptions,
-		createDoggoChewableQueryOptions,
-		createDoggoChewableRefetchOptions,
-		createGummyQueryOptions,
-		createGummyRefetchOptions,
-		createSprayQueryOptions,
-		createSprayRefetchOptions,
-		createTowelQueryOptions,
-		createTowelRefetchOptions,
-		createUserQueryOptions
+		createLogsQuery,
+		logsQueryOptions,
+		logsRefetchOptions,
+		trackerQueryOptions
 	} from '$lib/queries';
 	import { getNotificationStatus } from '$lib/notification';
-	import { goto } from '$app/navigation';
-	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
-	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
-	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
-	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
 	import ActionCard from '$lib/ui/ActionCard.svelte';
 	import MaterialSymbolsShower from '$lib/assets/svg/MaterialSymbolsShower.svelte';
 	import MaterialSymbolsPill from '$lib/assets/svg/MaterialSymbolsPill.svelte';
@@ -37,26 +24,41 @@
 	let doggoBathButtonStatus: ButtonState = $state('default');
 	let doggoChewableButtonStatus: ButtonState = $state('default');
 
-	const doggoBaths = createQuery(createDoggoBathQueryOptions);
-	const doggoChewables = createQuery(createDoggoChewableQueryOptions);
-	const user = createQuery(createUserQueryOptions);
+	const doggoBaths = createQuery(() => logsQueryOptions('doggoBath'));
+	const doggoBathTracker = createQuery(() => trackerQueryOptions('doggoBath'));
+	let doggoBathInterval = $derived.by(() =>
+		doggoBathTracker.isSuccess ? doggoBathTracker.data?.interval : undefined
+	);
+	let doggoBathIntervalUnit = $derived.by(() =>
+		doggoBathTracker.isSuccess ? doggoBathTracker.data?.intervalUnit : undefined
+	);
+	const createDoggoBathRecord = () =>
+		createLogsQuery({
+			collectionName: 'doggoBath',
+			interval: doggoBathInterval,
+			intervalUnit: doggoBathIntervalUnit
+		});
+	const doggoBathRefetch = async () =>
+		await tanstackClient.refetchQueries(logsRefetchOptions('doggoBath'));
+
+	const doggoChewables = createQuery(() => logsQueryOptions('doggoChewable'));
+	const doggoChewableTracker = createQuery(() => trackerQueryOptions('doggoChewable'));
+	let doggoChewableInterval = $derived.by(() =>
+		doggoChewableTracker.isSuccess ? doggoChewableTracker.data?.interval : undefined
+	);
+	let doggoChewableIntervalUnit = $derived.by(() =>
+		doggoChewableTracker.isSuccess ? doggoChewableTracker.data?.intervalUnit : undefined
+	);
+	const createDoggoChewableRecord = () =>
+		createLogsQuery({
+			collectionName: 'doggoChewable',
+			interval: doggoChewableInterval,
+			intervalUnit: doggoChewableIntervalUnit
+		});
+	const doggoChewableRefetch = async () =>
+		await tanstackClient.refetchQueries(logsRefetchOptions('doggoChewable'));
+
 	const tanstackClient = useQueryClient();
-
-	let doggoBathDaysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.doggoBathIntervalDays;
-	});
-
-	let doggoChewableMonthsToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
-
-		return user.data?.doggoChewableIntervalMonths;
-	});
 
 	let doggoBathLast: string = $derived.by(() => {
 		if (doggoBaths.isSuccess && doggoBaths.data.length > 0)
@@ -71,24 +73,6 @@
 
 		return '';
 	});
-
-	const doggoBathCreateQuery = async () =>
-		await pb.collection('doggoBath').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: doggoBathDaysToNext
-		});
-	const doggoBathRefetch = async () =>
-		await tanstackClient.refetchQueries(createDoggoBathRefetchOptions());
-
-	const doggoChewableCreateQuery = async () =>
-		await pb.collection('doggoChewable').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			monthsToNext: doggoChewableMonthsToNext
-		});
-	const doggoChewableRefetch = async () =>
-		await tanstackClient.refetchQueries(createDoggoChewableRefetchOptions());
 
 	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBaths));
 	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewables));
@@ -107,7 +91,7 @@
 						icon: MaterialSymbolsShower,
 						last: doggoBathLast,
 						button: {
-							query: doggoBathCreateQuery,
+							query: createDoggoBathRecord,
 							refetch: doggoBathRefetch,
 							status: doggoBathButtonStatus,
 							text: 'Bathed'
@@ -124,7 +108,7 @@
 						icon: MaterialSymbolsPill,
 						last: doggoChewableLast,
 						button: {
-							query: doggoChewableCreateQuery,
+							query: createDoggoChewableRecord,
 							refetch: doggoChewableRefetch,
 							status: doggoChewableButtonStatus,
 							text: 'Fed'

@@ -7,17 +7,7 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import {
-		createDoggoBathQueryOptions,
-		createDoggoChewableQueryOptions,
-		createGummyQueryOptions,
-		createGummyRefetchOptions,
-		createSprayQueryOptions,
-		createSprayRefetchOptions,
-		createTowelQueryOptions,
-		createTowelRefetchOptions,
-		createUserQueryOptions
-	} from '$lib/queries';
+	import { createUserQueryOptions, logsQueryOptions } from '$lib/queries';
 	import { getNotificationStatus } from '$lib/notification';
 	import { goto } from '$app/navigation';
 	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
@@ -42,121 +32,63 @@
 	let sprayButtonStatus: ButtonState = $state('default');
 	let gummyButtonStatus: ButtonState = $state('default');
 
-	const towels = createQuery(createTowelQueryOptions);
-	const sprays = createQuery(createSprayQueryOptions);
-	const gummies = createQuery(createGummyQueryOptions);
 	const user = createQuery(createUserQueryOptions);
 	const tanstackClient = useQueryClient();
 
-	let towelLast: string = $derived.by(() => {
-		if (towels.isSuccess && towels.data.length > 0) {
-			return dayjs(towels.data[0].time).fromNow();
-		}
-		return '';
-	});
-
-	let towelDaysToNext = $derived.by(() =>
-		user.isSuccess ? user.data?.towelIntervalDays : undefined
-	);
-
-	let sprayLast: string = $derived.by(() => {
-		if (sprays.isSuccess && sprays.data.length > 0) return dayjs(sprays.data[0].time).fromNow();
-
-		return '';
-	});
-
-	let sprayDaysToNext = $derived.by(() =>
-		user.isSuccess ? user.data?.sprayIntervalDays : undefined
-	);
-
-	let gummyLast: string = $derived.by(() => {
-		if (gummies.isSuccess && gummies.data.length > 0) return dayjs(gummies.data[0].time).fromNow();
-
-		return '';
-	});
-
-	let gummyDaysToNext = $derived.by(() =>
-		user.isSuccess ? user.data?.gummyIntervalDays : undefined
-	);
-
-	const towelQuery = async () =>
-		await pb.collection('towel').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: towelDaysToNext
-		});
-	const towelRefetch = async () => await tanstackClient.refetchQueries(createTowelRefetchOptions());
-
-	const sprayQuery = async () =>
-		await pb.collection('spray').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: sprayDaysToNext
-		});
-	const sprayRefetch = async () => await tanstackClient.refetchQueries(createSprayRefetchOptions());
-
-	const gummyQuery = async () =>
-		await pb.collection('gummy').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: gummyDaysToNext
-		});
-	const gummyRefetch = async () => await tanstackClient.refetchQueries(createGummyRefetchOptions());
-
-	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
-	let towelNotification = $derived.by(() => getNotificationStatus(towels));
-	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
+	// let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
+	// let towelNotification = $derived.by(() => getNotificationStatus(towels));
+	// let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
 
 	// Upcoming
-	const doggoBaths = createQuery(createDoggoBathQueryOptions);
-	const doggoChewables = createQuery(createDoggoChewableQueryOptions);
+	// const doggoBaths = createQuery(createDoggoBathQueryOptions);
+	// const doggoChewables = createQuery(createDoggoChewableQueryOptions);
 
-	let doggoBathDaysToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
+	// let doggoBathDaysToNext = $derived.by(() => {
+	// 	if (user.isPending) {
+	// 		return undefined;
+	// 	}
 
-		return user.data?.doggoBathIntervalDays;
-	});
+	// 	return user.data?.doggoBathIntervalDays;
+	// });
 
-	let doggoChewableMonthsToNext = $derived.by(() => {
-		if (user.isPending) {
-			return undefined;
-		}
+	// let doggoChewableMonthsToNext = $derived.by(() => {
+	// 	if (user.isPending) {
+	// 		return undefined;
+	// 	}
 
-		return user.data?.doggoChewableIntervalMonths;
-	});
+	// 	return user.data?.doggoChewableIntervalMonths;
+	// });
 
-	let doggoBathLast: string = $derived.by(() => {
-		if (doggoBaths.isSuccess && doggoBaths.data.length > 0)
-			return dayjs(doggoBaths.data[0].time).fromNow();
+	// let doggoBathLast: string = $derived.by(() => {
+	// 	if (doggoBaths.isSuccess && doggoBaths.data.length > 0)
+	// 		return dayjs(doggoBaths.data[0].time).fromNow();
 
-		return '';
-	});
+	// 	return '';
+	// });
 
-	let doggoChewableLast: string = $derived.by(() => {
-		if (doggoChewables.isSuccess && doggoChewables.data.length > 0)
-			return dayjs(doggoChewables.data[0].time).fromNow();
+	// let doggoChewableLast: string = $derived.by(() => {
+	// 	if (doggoChewables.isSuccess && doggoChewables.data.length > 0)
+	// 		return dayjs(doggoChewables.data[0].time).fromNow();
 
-		return '';
-	});
+	// 	return '';
+	// });
 
-	const doggoBathCreateQuery = async () =>
-		await pb.collection('doggoBath').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: doggoBathDaysToNext
-		});
+	// const doggoBathCreateQuery = async () =>
+	// 	await pb.collection('doggoBath').create({
+	// 		user: pb.authStore.record?.id,
+	// 		time: dayjs.tz(new Date(), 'Asia/Singapore'),
+	// 		daysToNext: doggoBathDaysToNext
+	// 	});
 
-	const doggoChewableCreateQuery = async () =>
-		await pb.collection('doggoChewable').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			monthsToNext: doggoChewableMonthsToNext
-		});
+	// const doggoChewableCreateQuery = async () =>
+	// 	await pb.collection('doggoChewable').create({
+	// 		user: pb.authStore.record?.id,
+	// 		time: dayjs.tz(new Date(), 'Asia/Singapore'),
+	// 		monthsToNext: doggoChewableMonthsToNext
+	// 	});
 
-	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBaths));
-	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewables));
+	// let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBaths));
+	// let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewables));
 </script>
 
 <PageWrapper title="Sundry" back={false} {pb}>
@@ -166,15 +98,11 @@
 				<h2 class="text-base-content/70 text-lg font-bold">Key Actions</h2>
 				<ActionCardCompact
 					options={{
+						collectionName: 'towel',
 						title: 'Wash Towel',
-						query: towels,
-						notification: towelNotification,
 						route: '/household/towel',
 						icon: PhTowelFill,
-						last: towelLast,
 						button: {
-							query: towelQuery,
-							refetch: towelRefetch,
 							status: towelButtonStatus,
 							text: 'Washed'
 						}
@@ -183,15 +111,11 @@
 
 				<ActionCardCompact
 					options={{
+						collectionName: 'spray',
 						title: 'Spray Nose',
-						query: sprays,
-						notification: sprayNotification,
 						route: '/personal/spray',
 						icon: IconParkSolidBottleOne,
-						last: sprayLast,
 						button: {
-							query: sprayQuery,
-							refetch: sprayRefetch,
 							status: sprayButtonStatus,
 							text: 'Sprayed'
 						}
@@ -200,15 +124,11 @@
 
 				<ActionCardCompact
 					options={{
+						collectionName: 'gummy',
 						title: 'Elderberry Gummy',
-						query: gummies,
-						notification: gummyNotification,
 						route: '/personal/gummy',
 						icon: MaterialSymbolsHealthAndSafety,
-						last: gummyLast,
 						button: {
-							query: gummyQuery,
-							refetch: gummyRefetch,
 							status: gummyButtonStatus,
 							text: 'Ate'
 						}
@@ -216,7 +136,7 @@
 				></ActionCardCompact>
 			</section>
 
-			<section class="grid gap-4 py-2">
+			<!-- <section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">Upcoming</h2>
 
 				{#if doggoBathNotification.show}
@@ -245,7 +165,7 @@
 					<EmptyState class="text-neutral h-24 justify-self-center opacity-[0.15]" />
 					<p class="-mt-0.5 text-center">Nothing's coming up!</p>
 				{/if}
-			</section>
+			</section> -->
 
 			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">Quick Links</h2>
@@ -278,19 +198,13 @@
 	</main>
 </PageWrapper>
 
-{#snippet upcomingCard(options: {
+<!-- {#snippet upcomingCard(options: {
 	title: string;
 	query: Query;
 	notification: NotificationStatus;
 	icon: Component;
 	route: string;
 	last: string;
-	// button: {
-	// 	query: () => Promise<RecordModel>;
-	// 	refetch: () => Promise<void>;
-	// 	status: ButtonState;
-	// 	text: string;
-	// };
 })}
 	<section
 		class={[
@@ -333,4 +247,4 @@
 			</div>
 		</a>
 	</section>
-{/snippet}
+{/snippet} -->

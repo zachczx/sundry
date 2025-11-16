@@ -26,22 +26,6 @@
 
 	const tanstackClient = useQueryClient();
 
-	let towelIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.towelIntervalDays : undefined
-	);
-	let sprayIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.sprayIntervalDays : undefined
-	);
-	let gummyIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.gummyIntervalDays : undefined
-	);
-	let doggoChewableIntervalMonths = $derived.by(() =>
-		user.isSuccess ? user.data?.doggoChewableIntervalMonths : undefined
-	);
-	let doggoBathIntervalDays = $derived.by(() =>
-		user.isSuccess ? user.data?.doggoBathIntervalDays : undefined
-	);
-
 	let sound = $derived.by(() => (user.isSuccess ? user.data?.sound : undefined));
 
 	let spinner = $state(false);
@@ -78,16 +62,10 @@
 		const target = evt.target;
 
 		if (target instanceof HTMLInputElement && pb.authStore.record?.id) {
-			const name = target.name;
-
 			try {
-				const data: { [key: string]: string | boolean } = {};
-
-				if (name === 'sound') {
-					data[name] = target.checked ? true : false;
-				} else {
-					data[name] = target.value;
-				}
+				const data = {
+					sound: target.checked ? true : false
+				};
 
 				const response = await pb.collection('users').update(pb.authStore.record.id, data);
 
@@ -146,7 +124,7 @@
 				</form>
 			</div>
 		</div>
-		<div class="mb-4 text-lg">
+		<div class="text-lg">
 			<a href="/logout" class="btn btn-neutral btn-lg w-full rounded-full">Logout</a>
 		</div>
 	</div>
