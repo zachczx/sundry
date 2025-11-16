@@ -18,6 +18,8 @@ Thumbs.db
 !.env.example
 !.env.test
 
+*.old
+
 # CapacitorJS Files
 android
 
