@@ -1,5 +1,6 @@
 import type { CreateQueryResult } from '@tanstack/svelte-query';
 import dayjs from 'dayjs';
+import { idToTracker } from './queries';
 
 export const defaultNotificationStatus: NotificationStatus = {
 	show: false,
@@ -21,6 +22,8 @@ export function getNotificationStatus(
 
 	if (!lastRecord) return defaultNotificationStatus;
 
+	const notifDetails = getNotificationLabel(lastRecord);
+
 	if (lastRecord.intervalUnit === 'month') {
 		const nextDate = dayjs(lastRecord.time).add(lastRecord.interval, 'month');
 		const daysTillNextDate = nextDate.diff(dayjs(), 'day', true);
@@ -28,9 +31,19 @@ export function getNotificationStatus(
 		if (daysTillNextDate > 1) {
 			return { ...defaultNotificationStatus, next: nextDate.toString() };
 		} else if (daysTillNextDate <= 1 && daysTillNextDate > 0) {
-			return { show: true, level: 'due', next: nextDate.toString() };
+			return {
+				show: true,
+				level: 'due',
+				next: nextDate.toString(),
+				...notifDetails
+			};
 		} else {
-			return { show: true, level: 'overdue', next: nextDate.toString() };
+			return {
+				show: true,
+				level: 'overdue',
+				next: nextDate.toString(),
+				...notifDetails
+			};
 		}
 	} else {
 		const now = dayjs();
@@ -46,32 +59,32 @@ export function getNotificationStatus(
 			return {
 				show: true,
 				level: overdue ? 'overdue' : 'due',
-				next: nextDate.toString()
+				next: nextDate.toString(),
+				...notifDetails
 			};
 		}
 
-		return { ...defaultNotificationStatus, next: nextDate.toString() };
+		return {
+			...defaultNotificationStatus,
+			next: nextDate.toString(),
+			...notifDetails
+		};
 	}
 }
 
-export function getNotificationCount(
-	sprayNotification: NotificationStatus,
-	towelNotification: NotificationStatus,
-	gummyNotification: NotificationStatus
-): number {
-	let count = 0;
-
-	if (sprayNotification.show) {
-		count += 1;
+function getNotificationLabel(record: LogsDB) {
+	switch (idToTracker(record.tracker)) {
+		case 'spray':
+			return { label: 'Spray your nose!', href: '/personal/spray' };
+		case 'towel':
+			return { label: 'Wash your towel!', href: '/household/towel' };
+		case 'gummy':
+			return { label: 'Eat your gummy!', href: '/personal/gummy' };
+		case 'bedsheet':
+			return { label: 'Change your bedsheet!', href: '/household/bedsheet' };
+		case 'doggoBath':
+			return { label: 'Bathe your doggo!', href: '/pet/bath' };
+		case 'doggoChewable':
+			return { label: 'Feed your doggo chewable!', href: '/pet/chewable' };
 	}
-
-	if (towelNotification.show) {
-		count += 1;
-	}
-
-	if (gummyNotification.show) {
-		count += 1;
-	}
-
-	return count;
 }

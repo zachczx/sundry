@@ -30,7 +30,7 @@ export async function createLogsQuery(options: {
 	intervalUnit: IntervalUnit | undefined;
 }) {
 	const response = await pb.collection('logs').create({
-		tracker: convertCollectionNameToId(options.collectionName),
+		tracker: trackerToId(options.collectionName),
 		user: pb.authStore.record?.id,
 		time: dayjs.tz(new Date(), 'Asia/Singapore'),
 		interval: options.interval,
@@ -97,27 +97,40 @@ export function createUserRefetchOptions(): RefetchQueryFilters {
 	};
 }
 
-export function convertCollectionNameToId(name: CollectionName): string | null {
+const trackers = {
+	bedsheet: 'vk58159wczyxmus',
+	doggoBath: 'hhz09lsfj1o5mbp',
+	doggoChewable: 'h3e3xkbmoxma6dv',
+	gummy: '8t9hsvqah63rs7h',
+	spray: '381t91o03thrvyd',
+	towel: 'vvd9jnl0uw8qnie'
+};
+
+export function trackerToId(name: CollectionName): string | null {
 	switch (name) {
 		case 'bedsheet':
-			return 'vk58159wczyxmus';
-
+			return trackers.bedsheet;
 		case 'doggoBath':
-			return 'hhz09lsfj1o5mbp';
-
+			return trackers.doggoBath;
 		case 'doggoChewable':
-			return 'h3e3xkbmoxma6dv';
-
+			return trackers.doggoChewable;
 		case 'gummy':
-			return '8t9hsvqah63rs7h';
-
+			return trackers.gummy;
 		case 'spray':
-			return '381t91o03thrvyd';
-
+			return trackers.spray;
 		case 'towel':
-			return 'vvd9jnl0uw8qnie';
+			return trackers.towel;
+		default:
+			return null;
 	}
-	return null;
+}
+
+export function idToTracker(id: string): string | undefined {
+	const finder = Object.entries(trackers).find((item) => id === item[1]);
+
+	if (finder) return finder[0];
+
+	return undefined;
 }
 
 export function createVacationQueryOptions() {

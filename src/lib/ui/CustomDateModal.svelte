@@ -6,7 +6,7 @@
 	import timezone from 'dayjs/plugin/timezone';
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { addToast } from './ArkToaster.svelte';
-	import { convertCollectionNameToId } from '../queries';
+	import { trackerToId } from '../queries';
 	import MaterialSymbolsCheck from '../assets/svg/MaterialSymbolsCheck.svelte';
 	import MaterialSymbolsArrowRightAlt from '../assets/svg/MaterialSymbolsArrowRightAlt.svelte';
 
@@ -50,7 +50,7 @@
 		buttonStatus = 'loading';
 
 		const result = await pb.collection('logs').create({
-			tracker: convertCollectionNameToId(collectionName),
+			tracker: trackerToId(collectionName),
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(timestamp, 'Asia/Singapore'),
 			interval: interval,

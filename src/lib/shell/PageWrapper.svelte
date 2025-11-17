@@ -10,9 +10,9 @@
 	import MaterialSymbolsCheckCircle from '$lib/assets/svg/MaterialSymbolsCheckCircle.svelte';
 	import MaterialSymbolsNotificationImportant from '$lib/assets/svg/MaterialSymbolsNotificationImportant.svelte';
 	import { notificationQueryOptions } from '$lib/queries';
-	import { createQuery } from '@tanstack/svelte-query';
+	import { createQuery, type CreateQueryResult } from '@tanstack/svelte-query';
 
-	import { getNotificationCount, getNotificationStatus } from '$lib/notification';
+	import { getNotificationStatus } from '$lib/notification';
 
 	import { topLevelRoutes } from './nav';
 
@@ -52,7 +52,6 @@
 		return '';
 	});
 
-	// const categories = ['towel', 'spray', 'gummy', 'bedsheet', 'doggoBath', 'doggoChewable'];
 	const towels = createQuery(() => notificationQueryOptions('towel'));
 	const sprays = createQuery(() => notificationQueryOptions('spray'));
 	const gummies = createQuery(() => notificationQueryOptions('gummy'));
@@ -60,12 +59,36 @@
 	const doggoBaths = createQuery(() => notificationQueryOptions('doggoBath'));
 	const doggoChewables = createQuery(() => notificationQueryOptions('doggoChewable'));
 
-	let sprayNotification = $derived.by(() => getNotificationStatus(sprays));
-	let towelNotification = $derived.by(() => getNotificationStatus(towels));
-	let gummyNotification = $derived.by(() => getNotificationStatus(gummies));
-	let bedsheetNotification = $derived.by(() => getNotificationStatus(bedsheets));
-	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBaths));
-	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewables));
+	interface CollectionNotification {
+		name: CollectionName;
+		logs: CreateQueryResult<LogsDB, Error>;
+		notif: NotificationStatus;
+	}
+
+	let notifications = $derived.by(() => {
+		let collections: CollectionNotification[] = [
+			{ name: 'towel', logs: towels, notif: getNotificationStatus(towels) },
+			{ name: 'spray', logs: sprays, notif: getNotificationStatus(sprays) },
+			{ name: 'gummy', logs: gummies, notif: getNotificationStatus(gummies) },
+			{ name: 'bedsheet', logs: bedsheets, notif: getNotificationStatus(bedsheets) },
+			{ name: 'doggoBath', logs: doggoBaths, notif: getNotificationStatus(doggoBaths) },
+			{ name: 'doggoChewable', logs: doggoChewables, notif: getNotificationStatus(doggoChewables) }
+		];
+
+		const notifCount = collections.reduce((total, item) => {
+			if (item.notif.show) {
+				return (total += 1);
+			}
+			return total;
+		}, 0);
+
+		return {
+			count: notifCount,
+			collections: collections
+		};
+	});
+
+	type Notifications = typeof notifications;
 </script>
 
 <svelte:head>
@@ -132,27 +155,13 @@
 		</div>
 		<div class="navbar-end">
 			<div id="mobile-hamburger" class="dropdown flex items-center lg:hidden">
-				{@render notification(
-					sprayNotification,
-					towelNotification,
-					gummyNotification,
-					bedsheetNotification,
-					doggoBathNotification,
-					doggoChewableNotification
-				)}
+				{@render notification(notifications)}
 				<a href="/profile" class="btn btn-ghost -me-4"
 					><MaterialSymbolsSettings class="size-[1.5em]" /></a
 				>
 			</div>
 			<div id="desktop-logout" class="hidden items-center text-sm lg:flex">
-				{@render notification(
-					sprayNotification,
-					towelNotification,
-					gummyNotification,
-					bedsheetNotification,
-					doggoBathNotification,
-					doggoChewableNotification
-				)}
+				{@render notification(notifications)}
 				{#if pb.authStore.isValid}
 					<a href="/profile" class="btn btn-ghost"><MaterialSymbolsSettings class="size-6" /></a><a
 						href="/logout"
@@ -194,59 +203,56 @@
 	</nav>
 </div>
 
-{#snippet notification(
-	sprayNotification: NotificationStatus,
-	towelNotification: NotificationStatus,
-	gummyNotification: NotificationStatus,
-	bedsheetNotification: NotificationStatus,
-	doggoBathNotification: NotificationStatus,
-	doggoChewableNotification: NotificationStatus
-)}
+{#snippet notification(notifications: Notifications)}
 	<div class="dropdown dropdown-end">
 		<div tabindex="0" role="button" class="btn btn-ghost drawer-button px-2 py-0">
-			{#if !sprayNotification.show && !towelNotification.show}
+			{#if notifications.count === 0}
 				<MaterialSymbolsNotifications class="size-6" />
 			{:else}
-				{@const count = getNotificationCount(
-					sprayNotification,
-					towelNotification,
-					gummyNotification
-				)}
 				<MaterialSymbolsNotificationImportant class="size-6" />
 				<span class="absolute top-1 right-1 z-2 size-4 rounded-full bg-red-600 text-xs"
-					>{count}</span
+					>{notifications.count}</span
 				>
 			{/if}
 		</div>
 		<ul
 			class="dropdown-content menu rounded-box bg-base-100 text-md text-base-content z-1 w-72 p-2 shadow-lg"
 		>
-			{#if !sprayNotification.show && !towelNotification.show && !gummyNotification.show}
+			{#if notifications.count === 0}
 				<li>
 					<div class="flex items-center justify-center gap-2">
 						<MaterialSymbolsCheckCircle class="size-[1.3em]" /><span>No pending items</span>
 					</div>
 				</li>
+			{:else}
+				{#each notifications.collections as collection}
+					{#if collection.notif.show}
+						<li>
+							<a href={collection.notif.href} class="flex items-center">
+								<div class="flex grow items-center gap-2">
+									<MaterialSymbolsWarning class="size-[1.3em]" />{collection.notif.label}
+								</div>
+								<div>
+									<MaterialSymbolsChevronRight class="size-5 opacity-50" />
+								</div>
+							</a>
+						</li>
+					{/if}
+				{/each}
+			{/if}
+			<!-- {#if !sprayNotification.show && !towelNotification.show && !gummyNotification.show}
+				
 			{/if}
 
 			{#if sprayNotification.show}
-				<li>
-					<a href="/personal/spray" class="flex items-center">
-						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Spray your nose!
-						</div>
-						<div>
-							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
-						</div>
-					</a>
-				</li>
+				
 			{/if}
 
 			{#if towelNotification.show}
 				<li>
 					<a href="/household/towel" class="flex items-center">
 						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Wash your towel!
+							<MaterialSymbolsWarning class="size-[1.3em]" />
 						</div>
 						<div>
 							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
@@ -259,7 +265,7 @@
 				<li>
 					<a href="/personal/gummy" class="flex items-center">
 						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Eat your gummy!
+							<MaterialSymbolsWarning class="size-[1.3em]" />
 						</div>
 						<div>
 							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
@@ -272,7 +278,7 @@
 				<li>
 					<a href="/household/bedsheet" class="flex items-center">
 						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Change your bedsheet!
+							<MaterialSymbolsWarning class="size-[1.3em]" />
 						</div>
 						<div>
 							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
@@ -285,7 +291,7 @@
 				<li>
 					<a href="/pet/bath" class="flex items-center">
 						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Bathe your doggo!
+							<MaterialSymbolsWarning class="size-[1.3em]" />
 						</div>
 						<div>
 							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
@@ -298,14 +304,14 @@
 				<li>
 					<a href="/pet/chewable" class="flex items-center">
 						<div class="flex grow items-center gap-2">
-							<MaterialSymbolsWarning class="size-[1.3em]" />Feed your doggo chewable!
+							<MaterialSymbolsWarning class="size-[1.3em]" />
 						</div>
 						<div>
 							<MaterialSymbolsChevronRight class="size-5 opacity-50" />
 						</div>
 					</a>
 				</li>
-			{/if}
+			{/if} -->
 		</ul>
 	</div>
 {/snippet}

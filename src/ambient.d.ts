@@ -140,6 +140,8 @@ interface NotificationStatus {
 	show: boolean;
 	level: 'ok' | 'due' | 'overdue';
 	next?: string;
+	label?: string | undefined;
+	href?: string | undefined;
 }
 
 type ButtonState = 'default' | 'loading' | 'success' | 'error';
