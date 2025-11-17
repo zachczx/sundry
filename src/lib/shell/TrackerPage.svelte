@@ -38,12 +38,12 @@
 	const tanstackClient = useQueryClient();
 	const dbRecords = createQuery(() => logsQueryOptions(options.collectionName));
 	const vacations = createQuery(createVacationQueryOptions);
+
 	const tracker = createQuery(() => trackerQueryOptions(options.collectionName));
 	let interval = $derived.by(() => (tracker.isSuccess ? tracker.data?.interval : undefined));
 	let intervalUnit = $derived.by(() =>
 		tracker.isSuccess ? tracker.data?.intervalUnit : undefined
 	);
-
 	const query = () =>
 		createLogsQuery({
 			collectionName: options.collectionName,
@@ -280,9 +280,12 @@
 					<div class="grid min-h-20 content-center justify-items-center">
 						{#if dbRecords.isSuccess}
 							{#if notification}
-								{@const semantic = dayjs(notification.next).calendar(dayjs(), dayjsCalendarOptions)}
+								<!-- {@const semantic = dayjs(notification.next).calendar(dayjs(), dayjsCalendarOptions)} -->
+								{@const semantic = dayjs(notification.next).fromNow()}
 								{@const formatted = dayjs(notification.next).format('D MMM YYYY')}
-								<p class="text-primary text-2xl font-bold">{semantic}</p>
+								<p class="text-primary text-2xl font-bold">
+									{semantic?.[0].toUpperCase() + semantic.slice(1, semantic.length)}
+								</p>
 								<p>{formatted}</p>
 							{:else}
 								<div class="flex min-h-20 items-center gap-4 text-2xl font-bold">Nil</div>
