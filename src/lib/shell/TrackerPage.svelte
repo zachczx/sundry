@@ -276,7 +276,7 @@
 				<div
 					class="border-base-content/5 bg-primary/10 grid justify-items-center rounded-xl border p-4 shadow"
 				>
-					<h2 class="text-md text-center">Next</h2>
+					<h2 class="text-md text-center">Due</h2>
 					<div class="grid min-h-20 content-center justify-items-center">
 						{#if dbRecords.isSuccess}
 							{#if notification}
