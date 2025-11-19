@@ -43,8 +43,6 @@
 	const doggoBaths = createQuery(() => notificationQueryOptions('doggoBath'));
 	const doggoChewables = createQuery(() => notificationQueryOptions('doggoChewable'));
 
-	$inspect(doggoBaths);
-
 	let doggoBathDaysToNext = $derived.by(() => {
 		if (user.isPending) {
 			return undefined;
