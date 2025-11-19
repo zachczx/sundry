@@ -12,6 +12,7 @@
 		createLogsQuery,
 		logsRefetchOptions,
 		notificationQueryOptions,
+		notificationRefetchOptions,
 		trackerQueryOptions
 	} from '$lib/queries';
 	import { getNotificationStatus } from '$lib/notification';
@@ -47,8 +48,9 @@
 			intervalUnit: intervalUnit
 		});
 
-	const refetch = async () =>
-		await tanstackClient.refetchQueries(logsRefetchOptions(options.collectionName));
+	const refetch = async () => {
+		await tanstackClient.refetchQueries(notificationRefetchOptions(options.collectionName));
+	};
 </script>
 
 <section
