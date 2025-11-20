@@ -65,7 +65,7 @@
 
 <section
 	class={[
-		'border-base-300 grid min-h-18 gap-4 rounded-3xl border px-4 py-2',
+		'border-base-300 grid min-h-18 gap-4 rounded-2xl border px-2 py-2',
 		notification?.show ? 'bg-error/15 outline-error/30 outline' : 'bg-white/70'
 	]}
 >
@@ -106,6 +106,7 @@
 				compact={true}
 				color={'primary'}
 				icon={MaterialSymbolsCheck}
+				rounded="2xl"
 			/>
 		</div>
 	</div>

@@ -13,6 +13,8 @@
 		refetch,
 		compact = false,
 		color = 'primary',
+		rounded = 'full',
+		class: className,
 		icon: CustomIcon
 	}: {
 		text: string;
@@ -20,6 +22,8 @@
 		refetch: () => Promise<void>;
 		compact?: boolean;
 		color?: 'primary' | 'neutral';
+		rounded?: 'full' | '3xl' | '2xl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
+		class?: string;
 		icon?: Component;
 	} = $props();
 
@@ -55,13 +59,22 @@
 {#if !compact}
 	<button
 		class={[
-			'btn btn-lg flex w-full items-center gap-2 rounded-full',
+			'btn btn-lg flex w-full items-center gap-2',
+			rounded === '3xl' && 'rounded-3xl',
+			rounded === '2xl' && 'rounded-2xl',
+			rounded === 'xl' && 'rounded-xl',
+			rounded === 'lg' && 'rounded-lg',
+			rounded === 'md' && 'rounded-md',
+			rounded === 'sm' && 'rounded-sm',
+			rounded === 'xs' && 'rounded-xs',
+			rounded === 'full' && 'rounded-full',
 			status === 'default' && color === 'primary' && 'btn-primary',
 			status === 'loading' && color === 'primary' && 'btn-primary',
 			status === 'default' && color === 'neutral' && 'btn-neutral',
 			status === 'loading' && color === 'neutral' && 'btn-neutral',
 			status === 'success' && 'btn-success',
-			status === 'error' && 'btn-error'
+			status === 'error' && 'btn-error',
+			className
 		]}
 		onclick={addHandler}
 	>
@@ -85,12 +98,21 @@
 {:else}
 	<button
 		class={[
-			'btn btn-lg flex aspect-square w-full items-center gap-2 rounded-full p-0',
+			'btn btn-lg flex aspect-square w-full items-center gap-2 p-0',
+			rounded === '3xl' && 'rounded-3xl',
+			rounded === '2xl' && 'rounded-2xl',
+			rounded === 'xl' && 'rounded-xl',
+			rounded === 'lg' && 'rounded-lg',
+			rounded === 'md' && 'rounded-md',
+			rounded === 'sm' && 'rounded-sm',
+			rounded === 'xs' && 'rounded-xs',
+			rounded === 'full' && 'rounded-full',
 			status === 'default' && color === 'primary' && 'btn-primary',
 			status === 'loading' && color === 'primary' && 'btn-primary',
 			status === 'default' && color === 'neutral' && 'btn-neutral',
 			status === 'loading' && color === 'neutral' && 'btn-neutral',
-			status === 'success' && 'btn-success'
+			status === 'success' && 'btn-success',
+			className
 		]}
 		onclick={addHandler}
 	>

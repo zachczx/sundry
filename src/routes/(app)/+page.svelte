@@ -172,7 +172,7 @@
 				<div class="flex items-center gap-6">
 					<a
 						href="/household/count"
-						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-3xl p-2 text-sm font-semibold"
+						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
 					>
 						<div
 							class="text-base-100 bg-neutral/80 group-active:bg-neutral/90 group-focus-within:bg-neutral/90 rounded-xl p-2"
@@ -183,7 +183,7 @@
 					>
 					<a
 						href="/profile/vacation"
-						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-3xl p-2 text-sm font-semibold"
+						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
 					>
 						<div
 							class="text-base-100 bg-neutral/80 group-active:bg-neutral/90 group-focus-within:bg-neutral/90 rounded-xl p-2"
