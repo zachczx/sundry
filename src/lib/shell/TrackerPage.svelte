@@ -102,7 +102,7 @@
 		}
 	});
 
-	let notification = $derived.by(() => getNotificationStatus(dbRecords));
+	let notification = $derived.by(() => getNotificationStatus(dbRecords.data?.[0] ?? undefined));
 
 	type TabPages = 'overview' | 'stats' | 'calendar';
 
