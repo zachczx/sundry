@@ -40,7 +40,6 @@
 
 		return '';
 	});
-	$inspect(sprayInterval);
 
 	const createSprayRecord = () =>
 		createLogsQuery({

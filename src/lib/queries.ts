@@ -90,7 +90,6 @@ export function createUserQueryOptions() {
 	return queryOptions({
 		queryKey: ['users', pb.authStore?.record?.id],
 		queryFn: async (): Promise<UserDB> => {
-			console.log('triggered user');
 			return await pb.collection('users').getOne(String(pb.authStore?.record?.id));
 		},
 		staleTime: staleTime
