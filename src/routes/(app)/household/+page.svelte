@@ -80,7 +80,7 @@
 					}}
 				></ActionCard>
 
-				<div class="bg-base-100 border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4">
+				<div class="border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4">
 					<a href="/household/count" class="flex items-center">
 						<div class="flex grow items-center gap-4">
 							<MaterialSymbolsTimer class="size-12 opacity-75" />
