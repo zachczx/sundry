@@ -1,6 +1,7 @@
 import MaterialSymbolsCleaningServices from '$lib/assets/svg/MaterialSymbolsCleaningServices.svelte';
 import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
 import MaterialSymbolsHome from '$lib/assets/svg/MaterialSymbolsHome.svelte';
+import MaterialSymbolsPerson from '$lib/assets/svg/MaterialSymbolsPerson.svelte';
 import MaterialSymbolsPets from '$lib/assets/svg/MaterialSymbolsPets.svelte';
 
 export const topLevelRoutes = {
@@ -19,7 +20,7 @@ export const topLevelRoutes = {
 			label: 'Personal',
 			desktopNav: true,
 			mobileNav: true,
-			icon: MaterialSymbolsHealthAndSafety
+			icon: MaterialSymbolsPerson
 		},
 		{
 			id: 'household',
