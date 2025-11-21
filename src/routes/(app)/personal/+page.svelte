@@ -18,6 +18,9 @@
 	import MaterialSymbolsHealthAndSafety from '$lib/assets/svg/MaterialSymbolsHealthAndSafety.svelte';
 	import IconParkSolidBottleOne from '$lib/assets/svg/IconParkSolidBottleOne.svelte';
 	import ActionCard from '$lib/ui/ActionCard.svelte';
+	import FluentEmojiFlatFaceWithSteamFromNose from '$lib/assets/expressive-icons/FluentEmojiFlatFaceWithSteamFromNose.svelte';
+	import FluentEmojiFlatShield from '$lib/assets/expressive-icons/FluentEmojiFlatShield.svelte';
+	import FluentEmojiFlatLotionBottle from '$lib/assets/expressive-icons/FluentEmojiFlatLotionBottle.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -92,7 +95,7 @@
 						query: sprays,
 						notification: sprayNotification,
 						route: '/personal/spray',
-						icon: IconParkSolidBottleOne,
+						icon: FluentEmojiFlatLotionBottle,
 						last: sprayLast,
 						button: {
 							query: createSprayRecord,
@@ -109,7 +112,7 @@
 						query: gummies,
 						notification: gummyNotification,
 						route: '/personal/gummy',
-						icon: MaterialSymbolsHealthAndSafety,
+						icon: FluentEmojiFlatShield,
 						last: gummyLast,
 						button: {
 							query: createGummyRecord,

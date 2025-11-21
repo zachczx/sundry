@@ -18,6 +18,9 @@
 	import ActionCard from '$lib/ui/ActionCard.svelte';
 	import MaterialSymbolsShower from '$lib/assets/svg/MaterialSymbolsShower.svelte';
 	import MaterialSymbolsPill from '$lib/assets/svg/MaterialSymbolsPill.svelte';
+	import FluentEmojiFlatShower from '$lib/assets/expressive-icons/FluentEmojiFlatShower.svelte';
+	import FluentEmojiFlatPill from '$lib/assets/expressive-icons/FluentEmojiFlatPill.svelte';
+	import FluentEmojiFlatShield from '$lib/assets/expressive-icons/FluentEmojiFlatShield.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -100,7 +103,7 @@
 						query: doggoBaths,
 						notification: doggoBathNotification,
 						route: '/pet/bath',
-						icon: MaterialSymbolsShower,
+						icon: FluentEmojiFlatShower,
 						last: doggoBathLast,
 						button: {
 							query: createDoggoBathRecord,
@@ -117,7 +120,7 @@
 						query: doggoChewables,
 						notification: doggoChewableNotification,
 						route: '/pet/chewable',
-						icon: MaterialSymbolsPill,
+						icon: FluentEmojiFlatShield,
 						last: doggoChewableLast,
 						button: {
 							query: createDoggoChewableRecord,

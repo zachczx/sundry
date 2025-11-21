@@ -21,6 +21,8 @@
 	import PhTowelFill from '$lib/assets/svg/PhTowelFill.svelte';
 	import MaterialSymbolsTimer from '$lib/assets/svg/MaterialSymbolsTimer.svelte';
 	import ActionCard from '$lib/ui/ActionCard.svelte';
+	import StreamlineColorHotelLaundryFlat from '$lib/assets/expressive-icons/StreamlineColorHotelLaundryFlat.svelte';
+	import FluentEmojiFlatStopwatch from '$lib/assets/expressive-icons/FluentEmojiFlatStopwatch.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -69,7 +71,7 @@
 						query: towels,
 						notification: towelNotification,
 						route: '/household/towel',
-						icon: PhTowelFill,
+						icon: StreamlineColorHotelLaundryFlat,
 						last: towelLast,
 						button: {
 							query: createTowelRecord,
@@ -83,7 +85,7 @@
 				<div class="border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4">
 					<a href="/household/count" class="flex items-center">
 						<div class="flex grow items-center gap-4">
-							<MaterialSymbolsTimer class="size-12 opacity-75" />
+							<FluentEmojiFlatStopwatch class="size-12 opacity-75" />
 
 							<div>
 								<p class="text-xl font-bold">Timer</p>
