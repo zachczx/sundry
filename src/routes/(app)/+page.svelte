@@ -29,6 +29,11 @@
 	import MaterialSymbolsFlight from '$lib/assets/svg/MaterialSymbolsFlight.svelte';
 	import EmptyState from '$lib/assets/svg/EmptyState.svelte';
 	import EmptyCorgi from '$lib/assets/empty.webp?w=200&enhanced';
+	import StreamlineColorHotelLaundryFlat from '$lib/assets/expressive-icons/StreamlineColorHotelLaundryFlat.svelte';
+	import FluentEmojiFlatLotionBottle from '$lib/assets/expressive-icons/FluentEmojiFlatLotionBottle.svelte';
+	import FluentEmojiFlatShield from '$lib/assets/expressive-icons/FluentEmojiFlatShield.svelte';
+	import FluentEmojiFlatStopwatch from '$lib/assets/expressive-icons/FluentEmojiFlatStopwatch.svelte';
+	import FluentEmojiFlatAirplane from '$lib/assets/expressive-icons/FluentEmojiFlatAirplane.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -95,13 +100,13 @@
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<section class="grid gap-4 py-2">
-				<h2 class="text-base-content/70 text-lg font-bold">Key Actions</h2>
+				<h2 class="text-base-content/70 text-lg font-bold">Important</h2>
 				<ActionCardCompact
 					options={{
 						collectionName: 'towel',
 						title: 'Wash Towel',
 						route: '/household/towel',
-						icon: PhTowelFill,
+						icon: StreamlineColorHotelLaundryFlat,
 						button: {
 							status: towelButtonStatus,
 							text: 'Washed'
@@ -114,7 +119,7 @@
 						collectionName: 'spray',
 						title: 'Spray Nose',
 						route: '/personal/spray',
-						icon: IconParkSolidBottleOne,
+						icon: FluentEmojiFlatLotionBottle,
 						button: {
 							status: sprayButtonStatus,
 							text: 'Sprayed'
@@ -127,7 +132,7 @@
 						collectionName: 'gummy',
 						title: 'Elderberry Gummy',
 						route: '/personal/gummy',
-						icon: MaterialSymbolsHealthAndSafety,
+						icon: FluentEmojiFlatShield,
 						button: {
 							status: gummyButtonStatus,
 							text: 'Ate'
@@ -137,7 +142,7 @@
 			</section>
 
 			<section class="grid gap-0 py-2">
-				<h2 class="text-base-content/70 text-lg font-bold">General Tasks</h2>
+				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
 
 				{#if doggoBathNotification.show}
 					{@render upcomingCard({
@@ -167,29 +172,21 @@
 				{/if}
 			</section>
 
-			<section class="grid gap-4 py-2">
+			<section class="grid gap-0 py-0">
 				<h2 class="text-base-content/70 text-lg font-bold">Quick Links</h2>
-				<div class="flex items-center gap-6">
+				<div class="flex items-center gap-2">
 					<a
 						href="/household/count"
-						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
+						class="active:bg-neutral/10 focus-within:bg-neutral/10 focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-24 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
 					>
-						<div
-							class="text-base-100 bg-neutral/80 group-active:bg-neutral/90 group-focus-within:bg-neutral/90 rounded-xl p-2"
-						>
-							<MaterialSymbolsTimer class="size-7" />
-						</div>
+						<FluentEmojiFlatStopwatch class="size-8" />
 						Stopwatch</a
 					>
 					<a
 						href="/profile/vacation"
-						class="group focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-20 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
+						class="active:bg-neutral/10 focus-within:bg-neutral/10 focus-within:text-base-content active:text-base-content text-neutral grid aspect-square w-24 content-center justify-items-center gap-1 rounded-2xl p-2 text-sm font-semibold"
 					>
-						<div
-							class="text-base-100 bg-neutral/80 group-active:bg-neutral/90 group-focus-within:bg-neutral/90 rounded-xl p-2"
-						>
-							<MaterialSymbolsFlight class="size-7" />
-						</div>
+						<FluentEmojiFlatAirplane class="size-8" />
 						Vacation</a
 					>
 				</div>
