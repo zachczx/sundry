@@ -12,7 +12,10 @@
 			<enhanced:img
 				src={hero}
 				alt="hero"
-				class={[status === 'orange' && 'saturate-75', status === 'red' && 'saturate-50']}
+				class={[
+					notification.level === 'due' && 'saturate-75',
+					notification.level === 'overdue' && 'saturate-50'
+				]}
 			/>
 		</div>
 		<div
