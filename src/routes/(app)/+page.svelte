@@ -34,6 +34,8 @@
 	import FluentEmojiFlatShield from '$lib/assets/expressive-icons/FluentEmojiFlatShield.svelte';
 	import FluentEmojiFlatStopwatch from '$lib/assets/expressive-icons/FluentEmojiFlatStopwatch.svelte';
 	import FluentEmojiFlatAirplane from '$lib/assets/expressive-icons/FluentEmojiFlatAirplane.svelte';
+	import FluentEmojiFlatBed from '$lib/assets/expressive-icons/FluentEmojiFlatBed.svelte';
+	import FluentEmojiFlatShower from '$lib/assets/expressive-icons/FluentEmojiFlatShower.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -42,6 +44,9 @@
 	let towelButtonStatus: ButtonState = $state('default');
 	let sprayButtonStatus: ButtonState = $state('default');
 	let gummyButtonStatus: ButtonState = $state('default');
+	let bedsheetButtonStatus: ButtonState = $state('default');
+	let doggoBathButtonStatus: ButtonState = $state('default');
+	let doggoChewableButtonStatus: ButtonState = $state('default');
 
 	const user = createQuery(createUserQueryOptions);
 	const tanstackClient = useQueryClient();
@@ -55,6 +60,9 @@
 		}
 		return undefined;
 	});
+
+	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBath));
+
 	const doggoChewable = $derived.by(() => {
 		if (latestLogs.isSuccess) {
 			return latestLogs.data.find((item) => item.tracker === trackerNameToId('doggoChewable'));
@@ -62,38 +70,16 @@
 		return undefined;
 	});
 
-	let doggoBathDaysToNext = $derived(doggoBath?.interval);
-
-	let doggoChewableMonthsToNext = $derived(doggoChewable?.interval);
-
-	let doggoBathLast: string = $derived.by(() => {
-		if (doggoBath && doggoBath.time) return dayjs(doggoBath.time).fromNow();
-
-		return '';
-	});
-
-	let doggoChewableLast: string = $derived.by(() => {
-		if (doggoChewable && doggoChewable.time) return dayjs(doggoChewable.time).fromNow();
-
-		return '';
-	});
-
-	const doggoBathCreateQuery = async () =>
-		await pb.collection('doggoBath').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			daysToNext: doggoBathDaysToNext
-		});
-
-	const doggoChewableCreateQuery = async () =>
-		await pb.collection('doggoChewable').create({
-			user: pb.authStore.record?.id,
-			time: dayjs.tz(new Date(), 'Asia/Singapore'),
-			monthsToNext: doggoChewableMonthsToNext
-		});
-
-	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBath));
 	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewable));
+
+	const bedsheet = $derived.by(() => {
+		if (latestLogs.isSuccess) {
+			return latestLogs.data.find((item) => item.tracker === trackerNameToId('bedsheet'));
+		}
+		return undefined;
+	});
+
+	let bedsheetNotification = $derived.by(() => getNotificationStatus(bedsheet));
 </script>
 
 <PageWrapper title="Sundry" back={false} {pb}>
@@ -144,29 +130,52 @@
 			<section class="grid gap-0 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
 
+				{#if bedsheetNotification.show}
+					<ActionCardCompact
+						options={{
+							collectionName: 'bedsheet',
+							title: 'Bedsheet',
+							route: '/household/bedsheet',
+							icon: FluentEmojiFlatBed,
+							button: {
+								status: bedsheetButtonStatus,
+								text: 'Changed'
+							}
+						}}
+					></ActionCardCompact>
+				{/if}
+
 				{#if doggoBathNotification.show}
-					{@render upcomingCard({
-						title: 'Bath',
-						data: doggoBath,
-						route: '/pet/bath',
-						icon: MaterialSymbolsShower,
-						last: doggoBathLast,
-						notification: doggoBathNotification
-					})}
+					<ActionCardCompact
+						options={{
+							collectionName: 'doggoBath',
+							title: 'Bath',
+							route: '/pet/bath',
+							icon: FluentEmojiFlatShower,
+							button: {
+								status: doggoBathButtonStatus,
+								text: 'Bathed'
+							}
+						}}
+					></ActionCardCompact>
 				{/if}
 
 				{#if doggoChewableNotification.show}
-					{@render upcomingCard({
-						title: 'Chewable',
-						data: doggoChewable,
-						route: '/pet/chewable',
-						icon: MaterialSymbolsPill,
-						last: doggoChewableLast,
-						notification: doggoChewableNotification
-					})}
+					<ActionCardCompact
+						options={{
+							collectionName: 'doggoChewable',
+							title: 'Chewable',
+							route: '/pet/chewable',
+							icon: FluentEmojiFlatShield,
+							button: {
+								status: doggoChewableButtonStatus,
+								text: 'Fed'
+							}
+						}}
+					></ActionCardCompact>
 				{/if}
 
-				{#if !doggoBathNotification.show && !doggoChewableNotification.show}
+				{#if !bedsheetNotification && !doggoBathNotification.show && !doggoChewableNotification.show}
 					<enhanced:img src={EmptyCorgi} alt="nothing" class="justify-self-center" />
 					<p class="text-center">No other upcoming tasks!</p>
 				{/if}
@@ -194,47 +203,3 @@
 		</div>
 	</main>
 </PageWrapper>
-
-{#snippet upcomingCard(options: {
-	title: string;
-	data: LogsDB | undefined;
-	notification: NotificationStatus;
-	icon: Component;
-	route: string;
-	last: string;
-})}
-	<section
-		class={[
-			'border-base-300 grid gap-4 rounded-3xl border px-4 py-2',
-			options.notification.show ? 'bg-error/15 outline-error/30 outline' : 'bg-base-100'
-		]}
-	>
-		<a href={options.route} class="flex items-center">
-			<div class="flex grow items-center gap-4">
-				<options.icon class="size-9 opacity-75" />
-				<div>
-					<p class="text-xl font-bold">
-						{options.title}
-					</p>
-
-					{#if options.data}
-						{#if options.notification.show}
-							<span class="text-error font-medium tracking-tight">
-								{#if options.notification.level === 'overdue'}
-									Overdue
-								{:else if options.notification.level === 'due'}
-									Due
-								{/if}
-							</span>&nbsp;&nbsp;•&nbsp;&nbsp;
-						{/if}<span>{options.last}</span>
-					{/if}
-				</div>
-			</div>
-			<div class="flex h-full items-center">
-				<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-					><MaterialSymbolsChevronRight class="size-6" /></button
-				>
-			</div>
-		</a>
-	</section>
-{/snippet}
