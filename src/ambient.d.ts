@@ -87,3 +87,14 @@ interface TrackerPageOptions {
 type Collections = LogsDB | VacationDB;
 
 type CalendarRecord = Collections;
+
+interface ActionCardCompactOptions {
+	title: string;
+	collectionName: CollectionName;
+	icon: Component;
+	route: string;
+	button: {
+		status?: ButtonState;
+		text: string;
+	};
+}

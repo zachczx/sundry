@@ -41,45 +41,107 @@
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
 
-	let towelButtonStatus: ButtonState = $state('default');
-	let sprayButtonStatus: ButtonState = $state('default');
-	let gummyButtonStatus: ButtonState = $state('default');
-	let bedsheetButtonStatus: ButtonState = $state('default');
-	let doggoBathButtonStatus: ButtonState = $state('default');
-	let doggoChewableButtonStatus: ButtonState = $state('default');
-
-	const user = createQuery(createUserQueryOptions);
-	const tanstackClient = useQueryClient();
+	let buttonStatuses = $state<Record<string, ButtonState>>({
+		towel: 'default',
+		spray: 'default',
+		gummy: 'default',
+		bedsheet: 'default',
+		doggoBath: 'default',
+		doggoChewable: 'default'
+	});
 
 	const latestLogs = createQuery(notificationQueryOptions);
 
-	// Upcoming
-	const doggoBath = $derived.by(() => {
-		if (latestLogs.isSuccess) {
-			return latestLogs.data.find((item) => item.tracker === trackerNameToId('doggoBath'));
+	const options: ActionCardCompactOptions[] = [
+		{
+			collectionName: 'towel',
+			title: 'Wash Towel',
+			route: '/household/towel',
+			icon: StreamlineColorHotelLaundryFlat,
+			button: {
+				text: 'Washed',
+				status: buttonStatuses.towel
+			}
+		},
+		{
+			collectionName: 'spray',
+			title: 'Spray Nose',
+			route: '/personal/spray',
+			icon: FluentEmojiFlatLotionBottle,
+			button: {
+				text: 'Sprayed',
+				status: buttonStatuses.spray
+			}
+		},
+		{
+			collectionName: 'gummy',
+			title: 'Elderberry Gummy',
+			route: '/personal/gummy',
+			icon: FluentEmojiFlatShield,
+			button: {
+				text: 'Ate',
+				status: buttonStatuses.gummy
+			}
+		},
+		{
+			collectionName: 'bedsheet',
+			title: 'Bedsheet',
+			route: '/household/bedsheet',
+			icon: FluentEmojiFlatBed,
+			button: {
+				text: 'Changed',
+				status: buttonStatuses.bedsheet
+			}
+		},
+		{
+			collectionName: 'doggoBath',
+			title: 'Bath',
+			route: '/pet/bath',
+			icon: FluentEmojiFlatShower,
+			button: {
+				text: 'Bathed',
+				status: buttonStatuses.doggoBath
+			}
+		},
+		{
+			collectionName: 'doggoChewable',
+			title: 'Chewable',
+			route: '/pet/chewable',
+			icon: FluentEmojiFlatShield,
+			button: {
+				text: 'Fed',
+				status: buttonStatuses.doggoChewable
+			}
 		}
-		return undefined;
+	];
+
+	let tasks = $derived.by(() => {
+		if (!latestLogs.isSuccess || !latestLogs.data) return { important: [], general: [] };
+
+		const important = ['towel', 'spray', 'gummy'];
+
+		const importantTasks = options
+			.filter((task) => important.includes(task.collectionName))
+			.map((task) => {
+				const data = latestLogs.data.find(
+					(log) => log.tracker === trackerNameToId(task.collectionName)
+				);
+
+				return { ...task, notification: getNotificationStatus(data) };
+			});
+
+		const generalTasks = options
+			.filter((task) => !important.includes(task.collectionName))
+			.map((task) => {
+				const data = latestLogs.data.find(
+					(log) => log.tracker === trackerNameToId(task.collectionName)
+				);
+
+				return { ...task, notification: getNotificationStatus(data) };
+			});
+
+		return { important: importantTasks, general: generalTasks };
 	});
-
-	let doggoBathNotification = $derived.by(() => getNotificationStatus(doggoBath));
-
-	const doggoChewable = $derived.by(() => {
-		if (latestLogs.isSuccess) {
-			return latestLogs.data.find((item) => item.tracker === trackerNameToId('doggoChewable'));
-		}
-		return undefined;
-	});
-
-	let doggoChewableNotification = $derived.by(() => getNotificationStatus(doggoChewable));
-
-	const bedsheet = $derived.by(() => {
-		if (latestLogs.isSuccess) {
-			return latestLogs.data.find((item) => item.tracker === trackerNameToId('bedsheet'));
-		}
-		return undefined;
-	});
-
-	let bedsheetNotification = $derived.by(() => getNotificationStatus(bedsheet));
 </script>
 
 <PageWrapper title="Sundry" back={false} {pb}>
@@ -87,97 +149,50 @@
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">Important</h2>
-				<ActionCardCompact
-					options={{
-						collectionName: 'towel',
-						title: 'Wash Towel',
-						route: '/household/towel',
-						icon: StreamlineColorHotelLaundryFlat,
-						button: {
-							status: towelButtonStatus,
-							text: 'Washed'
-						}
-					}}
-				></ActionCardCompact>
 
-				<ActionCardCompact
-					options={{
-						collectionName: 'spray',
-						title: 'Spray Nose',
-						route: '/personal/spray',
-						icon: FluentEmojiFlatLotionBottle,
-						button: {
-							status: sprayButtonStatus,
-							text: 'Sprayed'
-						}
-					}}
-				></ActionCardCompact>
-
-				<ActionCardCompact
-					options={{
-						collectionName: 'gummy',
-						title: 'Elderberry Gummy',
-						route: '/personal/gummy',
-						icon: FluentEmojiFlatShield,
-						button: {
-							status: gummyButtonStatus,
-							text: 'Ate'
-						}
-					}}
-				></ActionCardCompact>
+				{#each tasks.important as task (task.collectionName)}
+					<ActionCardCompact
+						options={{
+							collectionName: task.collectionName,
+							title: task.title,
+							route: task.route,
+							icon: task.icon,
+							button: {
+								status: buttonStatuses[task.collectionName],
+								text: task.button.text
+							}
+						}}
+					></ActionCardCompact>
+				{/each}
 			</section>
 
-			<section class="grid gap-0 py-2">
+			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
 
-				{#if bedsheetNotification.show}
-					<ActionCardCompact
-						options={{
-							collectionName: 'bedsheet',
-							title: 'Bedsheet',
-							route: '/household/bedsheet',
-							icon: FluentEmojiFlatBed,
-							button: {
-								status: bedsheetButtonStatus,
-								text: 'Changed'
-							}
-						}}
-					></ActionCardCompact>
-				{/if}
+				{#if tasks.general && tasks.general.length > 0}
+					{@const show = tasks.general.filter((item) => item.notification.show).length}
 
-				{#if doggoBathNotification.show}
-					<ActionCardCompact
-						options={{
-							collectionName: 'doggoBath',
-							title: 'Bath',
-							route: '/pet/bath',
-							icon: FluentEmojiFlatShower,
-							button: {
-								status: doggoBathButtonStatus,
-								text: 'Bathed'
-							}
-						}}
-					></ActionCardCompact>
-				{/if}
-
-				{#if doggoChewableNotification.show}
-					<ActionCardCompact
-						options={{
-							collectionName: 'doggoChewable',
-							title: 'Chewable',
-							route: '/pet/chewable',
-							icon: FluentEmojiFlatShield,
-							button: {
-								status: doggoChewableButtonStatus,
-								text: 'Fed'
-							}
-						}}
-					></ActionCardCompact>
-				{/if}
-
-				{#if !bedsheetNotification && !doggoBathNotification.show && !doggoChewableNotification.show}
-					<enhanced:img src={EmptyCorgi} alt="nothing" class="justify-self-center" />
-					<p class="text-center">No other upcoming tasks!</p>
+					{#if show > 0}
+						{#each tasks.general as task (task.collectionName)}
+							{#if task.notification.show}
+								<ActionCardCompact
+									options={{
+										collectionName: task.collectionName,
+										title: task.title,
+										route: task.route,
+										icon: task.icon,
+										button: {
+											status: buttonStatuses[task.collectionName],
+											text: task.button.text
+										}
+									}}
+								></ActionCardCompact>
+							{/if}
+						{/each}
+					{:else}
+						<enhanced:img src={EmptyCorgi} alt="nothing" class="justify-self-center" />
+						<p class="text-center">No other upcoming tasks!</p>
+					{/if}
 				{/if}
 			</section>
 
