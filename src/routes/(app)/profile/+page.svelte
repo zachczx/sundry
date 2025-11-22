@@ -93,7 +93,7 @@
 					href="/profile/interval"
 					class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg"
 				>
-					<div class="grow font-semibold">Adjust Default Intervals</div>
+					<div class="grow font-semibold">Change Tracking Intervals</div>
 					<div class="flex h-full items-center">
 						<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
 							><MaterialSymbolsChevronRight class="size-7" /></button
