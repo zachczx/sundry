@@ -18,17 +18,25 @@
 				]}
 			/>
 		</div>
-		<div
-			class="bg-base-100 absolute top-2 -right-4 flex size-14 items-center justify-center rounded-full"
-		>
-			{#if notification.level === 'ok'}
+		{#if notification.level === 'ok'}
+			<div
+				class="bg-base-100 absolute top-2 -right-4 flex size-14 items-center justify-center rounded-full"
+			>
 				<MaterialSymbolsCheckCircle class="text-success size-13" />
-			{:else if notification.level === 'due'}
+			</div>
+		{:else if notification.level === 'due'}
+			<div
+				class="bg-base-100 absolute top-2 -right-4 flex size-14 items-center justify-center rounded-full"
+			>
 				<AntDesignExclamationCircleFilled class="text-warning size-13" />
-			{:else if notification.level === 'overdue'}
+			</div>
+		{:else if notification.level === 'overdue'}
+			<div
+				class="bg-base-100 absolute top-2 -right-4 flex size-14 items-center justify-center rounded-full"
+			>
 				<AntDesignExclamationCircleFilled class="text-error size-13" />
-			{/if}
-		</div>
+			</div>
+		{/if}
 	</div>
 {:else}
 	<EmptyState class="text-primary/30 my-4" />
