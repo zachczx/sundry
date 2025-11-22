@@ -20,18 +20,7 @@
 	import MaterialSymbolsRefresh from '$lib/assets/svg/MaterialSymbolsRefresh.svelte';
 	import MaterialSymbolsCheck from '$lib/assets/svg/MaterialSymbolsCheck.svelte';
 
-	let { options }: { options: Options } = $props();
-
-	interface Options {
-		title: string;
-		collectionName: CollectionName;
-		icon: Component;
-		route: string;
-		button: {
-			status: ButtonState;
-			text: string;
-		};
-	}
+	let { options }: { options: ActionCardCompactOptions } = $props();
 
 	const tanstackClient = useQueryClient();
 	const latestLogs = createQuery(notificationQueryOptions);
