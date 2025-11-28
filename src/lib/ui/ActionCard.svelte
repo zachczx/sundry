@@ -51,7 +51,7 @@
 </script>
 
 {#if size === 'compact'}
-	<section class={['border-base-300 grid min-h-18 gap-4 rounded-2xl border px-2 py-2']}>
+	<section class={['border-base-300 grid min-h-18 gap-4 rounded-2xl border bg-white/70 px-2 py-2']}>
 		<div class="flex items-center">
 			<a href={options.route} class="flex grow items-center gap-4">
 				<options.icon class="size-9 opacity-75" />
@@ -98,7 +98,7 @@
 {/if}
 
 {#if size === 'default'}
-	<section class={['border-base-300 grid min-h-24 gap-4 rounded-3xl border p-4']}>
+	<section class={['border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4']}>
 		<a href={options.route} class="flex items-center">
 			<div class="flex grow items-center gap-4">
 				<options.icon class="size-12 opacity-75" />
