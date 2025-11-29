@@ -52,7 +52,8 @@
 			const newFamily = await pb.collection('families').create({
 				name: 'Default',
 				'members+': newUserRecord?.id,
-				owner: newUserRecord?.id
+				owner: newUserRecord?.id,
+				enabled: true
 			});
 
 			await pb.collection('users').update(newUserRecord.id, {

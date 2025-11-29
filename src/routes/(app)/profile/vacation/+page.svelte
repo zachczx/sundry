@@ -17,6 +17,7 @@
 	import type { ChangeEventHandler } from 'svelte/elements';
 	import MaterialSymbolsDelete from '$lib/assets/svg/MaterialSymbolsDelete.svelte';
 	import { invalidateAll } from '$app/navigation';
+	import MaterialSymbolsFlightTakeoff from '$lib/assets/svg/MaterialSymbolsFlightTakeoff.svelte';
 
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
@@ -152,6 +153,7 @@
 		<form method="dialog">
 			<button class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2">✕</button>
 		</form>
+
 		<h3 class="mb-4 text-lg font-bold uppercase">Recent Vacations</h3>
 		<ul class="list-disc">
 			{#if vacations.isSuccess}

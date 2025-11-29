@@ -117,7 +117,7 @@ export function familyQueryOptions() {
 		queryFn: async (): Promise<FamilyDB> => {
 			const resp: FamilyDB = await pb
 				.collection('families')
-				.getFirstListItem(`members.id?="${pb.authStore?.record?.id}"`, { expand: 'members,owner' });
+				.getFirstListItem(`members.id?="${pb.authStore?.record?.id}" && enabled=true`, { expand: 'members,owner' });
 			return resp ?? null;
 		},
 		staleTime: staleTime
