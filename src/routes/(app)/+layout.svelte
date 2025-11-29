@@ -2,7 +2,7 @@
 	import { beforeNavigate } from '$app/navigation';
 	import { goto } from '$app/navigation';
 	import { pb } from '$lib/pb';
-	import type { Snippet } from 'svelte';
+	import { type Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
 

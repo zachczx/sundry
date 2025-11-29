@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import MaterialSymbolsPersonAdd from '$lib/assets/svg/MaterialSymbolsPersonAdd.svelte';
 	import MaterialSymbolsWarning from '$lib/assets/svg/MaterialSymbolsWarning.svelte';
 	import { pb } from '$lib/pb';
 	import {
@@ -25,7 +26,7 @@
 
 		try {
 			if (currentFamily.data?.owner === pb.authStore.record?.id) {
-				await pb.collection('families').delete(currentFamily.data.id);
+				await pb.collection('families').update(currentFamily.data.id, { enabled: false });
 			}
 
 			if (
@@ -82,6 +83,11 @@
 <dialog bind:this={modal} class="modal modal-bottom sm:modal-middle modal-open">
 	<div class="modal-box grid gap-8">
 		{#if currentInvite.isSuccess && destinationFamilyId}<div class="grid gap-4">
+				<div
+					class="bg-primary/10 text-primary flex aspect-square size-20 items-center justify-center justify-self-center overflow-hidden rounded-full"
+				>
+					<MaterialSymbolsPersonAdd class="ms-2.5 size-12" />
+				</div>
 				<h2 class="text-2xl font-bold">
 					You've been invited to "{currentInvite.data?.familyNameSnapshot}" Family!
 				</h2>

@@ -13,6 +13,7 @@
 		createVacationQueryOptions,
 		createVacationRefetchOptions,
 		familyQueryOptions,
+		familyRefetchOptions,
 		inviteQueryOptions
 	} from '$lib/queries';
 	import { page } from '$app/state';
@@ -27,6 +28,8 @@
 	import MaterialSymbolsShare from '$lib/assets/svg/MaterialSymbolsShare.svelte';
 	import MaterialSymbolsExclamation from '$lib/assets/svg/MaterialSymbolsExclamation.svelte';
 	import MdiAlertCircle from '$lib/assets/svg/MdiAlertCircle.svelte';
+	import MaterialSymbolsMoreVert from '$lib/assets/svg/MaterialSymbolsMoreVert.svelte';
+	import MaterialSymbolsPersonRemove from '$lib/assets/svg/MaterialSymbolsPersonRemove.svelte';
 
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
@@ -34,12 +37,14 @@
 	const user = createQuery(createUserQueryOptions);
 	const family = createQuery(familyQueryOptions);
 	const currentInvite = createQuery(inviteQueryOptions);
+	const tanstackClient = useQueryClient();
 
-	$inspect(family);
 	let spinner = $state(false);
 	let invited = $state(false);
 
 	let invitee = $state('');
+
+	let modals = $state<HTMLDialogElement[]>([]);
 
 	async function addHandler() {
 		if (!user.isSuccess) return;
@@ -63,18 +68,20 @@
 		}
 	}
 
-	async function deleteHandler(deleteId: string) {
-		if (!user.isSuccess) return;
+	async function deleteHandler(userId: string) {
+		if (!user.isSuccess || !family.data) return;
 		spinner = true;
 
 		try {
-			// const result = await pb.collection('vacation').delete(deleteId);
-			// if (result) {
-			// 	addToast('success', 'Deleted successfully!');
-			// 	spinner = false;
-			// 	await tanstackClient.refetchQueries(createVacationRefetchOptions());
-			// 	invalidateAll();
-			// }
+			const result = await pb.collection('families').update(family.data.id, {
+				'members-': userId
+			});
+
+			if (result) {
+				addToast('success', 'Removed member!');
+				spinner = false;
+				await tanstackClient.refetchQueries(familyRefetchOptions());
+			}
 		} catch (err) {
 			console.log(err);
 		}
@@ -82,21 +89,6 @@
 
 	async function handleInvite() {
 		if (!family.data) return;
-		// const shareData = {
-		// 	title: 'Join my Sundry Family',
-		// 	text: `Join my family on Sundry! Use code: ${inviteId}`,
-		// 	url: `http://localhost:5173/profile/family/invite?i=${inviteId}`
-		// };
-		// if (navigator.share) {
-		// 	try {
-		// 		await navigator.share(shareData);
-		// 		return;
-		// 	} catch (err) {
-		// 		console.log(err);
-		// 	}
-		// }
-		// await navigator.clipboard.writeText(code);
-		// addToast('success', 'Code copied to clipboard!');
 
 		invited = true;
 
@@ -151,18 +143,16 @@
 					<div class="custom-loader"></div>
 				{/if}
 				{#if family.isSuccess && family.data}
-					{@const f = family.data}
-
 					<div>
-						{#if f.owner === pb.authStore.record?.id}
-							You're the owner of "{f.name}".
+						{#if family.data.owner === pb.authStore.record?.id}
+							You're the owner of "{family.data.name}".
 						{:else}
 							You are in
 							<span class="text-primary font-bold">
-								{#if f.expand?.owner?.name}
-									{f.expand?.owner?.name}
+								{#if family.data.expand?.owner?.name}
+									{family.data.expand?.owner?.name}
 								{:else}
-									{@const nameFromEmail = cleanEmail(f.expand?.owner?.email)}
+									{@const nameFromEmail = cleanEmail(family.data.expand?.owner?.email)}
 									{nameFromEmail}
 								{/if}</span
 							>'s family.
@@ -183,23 +173,39 @@
 
 				<ul class="grid list-disc">
 					{#if family.isSuccess && family.data}
-						{@const f = family.data}
-						{#each f.expand?.members as member}
-							<li class="flex items-center gap-4 py-1">
-								<MaterialSymbolsPerson />
+						{#each family.data.expand?.members as member, i}
+							<li class="flex items-center">
+								<div class="flex grow items-center gap-4 py-1">
+									<MaterialSymbolsPerson />
+									{#if member.name}
+										{member.name}
+									{:else}
+										{member.email}
+									{/if}
+									<div class="flex items-center gap-2">
+										{#if family.data.owner === member.id}
+											<span class="btn btn-outline btn-xs border-base-content/50 border">Owner</span
+											>
+										{/if}
+										{#if pb.authStore.record?.id === member.id}
+											<span class="btn btn-outline btn-xs border-base-content/50 border">You</span>
+										{/if}
+									</div>
+								</div>
 
-								{#if member.name}
-									{member.name}
-								{:else}
-									{member.email}
-								{/if}
-								<div class="flex items-center gap-2">
-									{#if f.owner === member.id}
-										<span class="btn btn-outline btn-xs border-base-content/50 border">Owner</span>
-									{/if}
-									{#if pb.authStore.record?.id === member.id}
-										<span class="btn btn-outline btn-xs border-base-content/50 border">You</span>
-									{/if}
+								<div class="dropdown dropdown-end">
+									<div tabindex="0" role="button" class="btn btn-ghost drawer-button px-2 py-0">
+										<MaterialSymbolsMoreVert class="" />
+									</div>
+									<ul
+										class="dropdown-content menu rounded-box bg-base-100 text-md text-base-content z-1 min-w-32 shadow-lg"
+									>
+										<button
+											onclick={() => modals[i].showModal()}
+											class="btn btn-ghost flex w-full items-center gap-2 rounded-xl"
+											><MaterialSymbolsPersonRemove class="size-[1.3em]" />Remove</button
+										>
+									</ul>
 								</div>
 							</li>
 						{/each}
@@ -238,48 +244,34 @@
 					<p class="text-xs">They'll need to accept your invitation.</p>
 				{/if}
 			</section>
-
-			<!-- <section class="border-base-300 grid min-h-18 rounded-2xl border bg-white/70 p-4">
-				<h2 class="mb-4 text-xl font-bold">Join Someone's Family</h2>
-				<div class="join mb-2">
-					<input type="text" disabled class="input join-item w-full font-medium" value="" />
-					<button
-						type="button"
-						class={[
-							'join-item btn btn-neutral btn-0 flex min-w-20 items-center gap-2',
-							copied && 'btn-success'
-						]}
-					>
-						Join
-					</button>
-				</div>
-			</section> -->
 		</div>
 	</div>
 </PageWrapper>
 
-<!-- <dialog bind:this={vacationsModal} class="modal modal-bottom sm:modal-middle">
-	<div class="modal-box">
-		<form method="dialog">
-			<button class="btn btn-sm btn-circle btn-ghost absolute top-2 right-2">✕</button>
-		</form>
-		<h3 class="mb-4 text-lg font-bold uppercase">Recent Vacations</h3>
-		<ul class="list-disc">
-			{#if vacations.isSuccess}
-				{#each vacations.data as v}
-					{@const dateTime = formatTime(v.startDateTime, v.endDateTime)}
-					<li class="border-b-base-300 ms-6 border-b py-4">
-						<div class="flex items-center gap-4">
-							<div class="grow">{dateTime}</div>
-							<button
-								class="btn btn-error btn-sm"
-								onclick={() => deleteHandler(v.id)}
-								aria-label="delete"><MaterialSymbolsDelete class="size-5" /></button
-							>
-						</div>
-					</li>
-				{/each}
-			{/if}
-		</ul>
-	</div>
-</dialog> -->
+{#if family.isSuccess && family.data}
+	{#each family.data.expand?.members as member, i}
+		<dialog bind:this={modals[i]} class="modal modal-bottom sm:modal-middle">
+			<div class="modal-box grid gap-8">
+				<div
+					class="bg-error/10 text-error flex aspect-square size-20 items-center justify-center justify-self-center overflow-hidden rounded-full"
+				>
+					<MaterialSymbolsPersonRemove class="ms-2.5 size-12" />
+				</div>
+				<div class="grid gap-4">
+					<h2 class="text-2xl font-bold">Remove Member?</h2>
+					<ul class="ms-6 list-disc space-y-2">
+						<li>This will revoke their access to your family's logs.</li>
+					</ul>
+				</div>
+				<div class="grid grid-cols-1 gap-4">
+					<button class="btn btn-error btn-lg" onclick={() => deleteHandler(member.id)}
+						>Remove</button
+					>
+					<form method="dialog" class="">
+						<button class="btn btn-outline btn-lg w-full">Cancel</button>
+					</form>
+				</div>
+			</div>
+		</dialog>
+	{/each}
+{/if}
