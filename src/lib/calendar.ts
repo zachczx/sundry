@@ -8,9 +8,11 @@ function hasDateRange(record: CalendarRecord): record is VacationDB {
 
 export function getCalendarEntries(
 	query: CreateQueryResult<CalendarRecord[], Error>,
-	title: string,
+	title: string | undefined,
 	icon?: string
 ) {
+	if (!title) return [];
+
 	const times: Calendar.EventInput[] = [];
 	if (query.isSuccess) {
 		for (const r of query.data ?? []) {

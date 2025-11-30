@@ -3,36 +3,54 @@ export const trackerDefaults = [
 		name: 'bedsheet',
 		display: 'Bedsheet',
 		interval: 14,
-		intervalUnit: 'day'
+		intervalUnit: 'day',
+		category: 'household',
+		actionLabel: 'Changed',
+		pinned: false
 	},
 	{
 		name: 'doggoBath',
 		display: 'Bath',
 		interval: 14,
-		intervalUnit: 'day'
+		intervalUnit: 'day',
+		category: 'pet',
+		actionLabel: 'Bathed',
+		pinned: false
 	},
 	{
 		name: 'doggoChewable',
-		display: 'Chewable',
+		display: 'Nexgard',
 		interval: 1,
-		intervalUnit: 'month'
+		intervalUnit: 'month',
+		category: 'pet',
+		actionLabel: 'Fed',
+		pinned: false
 	},
 	{
 		name: 'gummy',
 		display: 'Gummy',
 		interval: 2,
-		intervalUnit: 'day'
+		intervalUnit: 'day',
+		category: 'personal',
+		actionLabel: 'Ate',
+		pinned: true
 	},
 	{
 		name: 'spray',
-		display: 'Spray',
+		display: 'Nasal Spray',
 		interval: 3,
-		intervalUnit: 'day'
+		intervalUnit: 'day',
+		category: 'personal',
+		actionLabel: 'Sprayed',
+		pinned: true
 	},
 	{
 		name: 'towel',
-		display: 'Towel',
+		display: 'Towel Wash',
 		interval: 5,
-		intervalUnit: 'day'
+		intervalUnit: 'day',
+		category: 'household',
+		actionLabel: 'Washed',
+		pinned: true
 	}
 ] as const;

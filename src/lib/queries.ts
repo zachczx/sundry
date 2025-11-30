@@ -7,27 +7,9 @@ const staleTime = 5 * 60 * 1000;
 
 export const queryClient = new QueryClient();
 
-/** 
-requestKey prevents "Auto-cancellation" errors by pb. Spray was getting loaded twice, with first being cancelled.
-Cause: pb treats simultaneous requests to same endpoint as duplicates, so cancels it.
-Solution: 'requestKey' needed so only the same tracker fetch cancels the previous.
-*/
-export function logsQueryOptions(name: CollectionName) {
-	return queryOptions({
-		queryKey: ['log-' + name, pb.authStore?.record?.id],
-		queryFn: async (): Promise<LogsDB[]> =>
-			await pb.collection('logs').getFullList({
-				filter: `tracker.name="${name}"`,
-				sort: '-time',
-				requestKey: `${name}-logs`
-			}),
-		staleTime: staleTime
-	});
-}
-
 export function allLogsQueryOptions() {
 	return queryOptions({
-		queryKey: ['log-all', pb.authStore?.record?.id],
+		queryKey: ['logs-all', pb.authStore?.record?.id],
 		queryFn: async (): Promise<LogsDB[]> =>
 			await pb.collection('logs').getFullList({
 				sort: '-time'
@@ -36,7 +18,53 @@ export function allLogsQueryOptions() {
 	});
 }
 
-export function logsRefetchOptions(name: CollectionName): RefetchQueryFilters {
+export function allLogsRefetchOptions(): RefetchQueryFilters {
+	return {
+		queryKey: ['logs-all', pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+export function allTrackersQueryOptions() {
+	return queryOptions({
+		queryKey: ['trackers-all', pb.authStore?.record?.id],
+		queryFn: async (): Promise<TrackerDB[]> =>
+			await pb.collection('trackers').getFullList({ sort: 'display', expand: 'family' }),
+		staleTime: staleTime
+	});
+}
+
+export function allTrackersRefetchOptions(): RefetchQueryFilters {
+	return {
+		queryKey: ['trackers-all', pb.authStore?.record?.id],
+		type: 'active',
+		exact: true
+	};
+}
+
+/** 
+requestKey prevents "Auto-cancellation" errors by pb. Spray was getting loaded twice, with first being cancelled.
+Cause: pb treats simultaneous requests to same endpoint as duplicates, so cancels it.
+Solution: 'requestKey' needed so only the same tracker fetch cancels the previous.
+*/
+export function logsQueryOptions(name: string | undefined) {
+	return queryOptions({
+		queryKey: ['log-' + name, pb.authStore?.record?.id],
+		queryFn: async (): Promise<LogsDB[]> => {
+			if (!name) return [];
+
+			return await pb.collection('logs').getFullList({
+				filter: `tracker.name="${name}"`,
+				sort: '-time',
+				requestKey: `${name}-logs`
+			});
+		},
+		staleTime: staleTime
+	});
+}
+
+export function logsRefetchOptions(name: string | undefined): RefetchQueryFilters {
 	return {
 		queryKey: ['log-' + name, pb.authStore?.record?.id],
 		type: 'active',
@@ -62,7 +90,8 @@ export async function createLogsQuery(options: {
 export function notificationQueryOptions() {
 	return queryOptions({
 		queryKey: ['notif', pb.authStore?.record?.id],
-		queryFn: async (): Promise<LogsDB[]> => await pb.collection('latest_logs').getFullList(),
+		queryFn: async (): Promise<LogsDB[]> =>
+			await pb.collection('latest_logs').getFullList({ expand: 'tracker' }),
 		staleTime: staleTime
 	});
 }
@@ -92,18 +121,21 @@ export function feedRefetchOptions(): RefetchQueryFilters {
 	};
 }
 
-export function trackerQueryOptions(name: CollectionName) {
+export function trackerQueryOptions(name: string | undefined) {
 	return queryOptions({
 		queryKey: ['tracker' + name, pb.authStore?.record?.id],
-		queryFn: async (): Promise<TrackerDB> =>
-			await pb.collection('trackers').getFirstListItem(`name="${name}"`, {
+		queryFn: async (): Promise<TrackerDB | null> => {
+			if (!name) return null;
+
+			return await pb.collection('trackers').getFirstListItem(`name="${name}"`, {
 				requestKey: `${name}-tracker-details`
-			}),
+			});
+		},
 		staleTime: staleTime
 	});
 }
 
-export function trackerRefetchOptions(name: CollectionName): RefetchQueryFilters {
+export function trackerRefetchOptions(name: string): RefetchQueryFilters {
 	return {
 		queryKey: ['tracker' + name, pb.authStore?.record?.id],
 		type: 'active',
@@ -117,7 +149,9 @@ export function familyQueryOptions() {
 		queryFn: async (): Promise<FamilyDB> => {
 			const resp: FamilyDB = await pb
 				.collection('families')
-				.getFirstListItem(`members.id?="${pb.authStore?.record?.id}" && enabled=true`, { expand: 'members,owner' });
+				.getFirstListItem(`members.id?="${pb.authStore?.record?.id}" && enabled=true`, {
+					expand: 'members,owner'
+				});
 			return resp ?? null;
 		},
 		staleTime: staleTime
@@ -182,36 +216,13 @@ export function createUserRefetchOptions(): RefetchQueryFilters {
 	};
 }
 
-export function allTrackersQueryOptions() {
-	return queryOptions({
-		queryKey: ['trackers-all', pb.authStore?.record?.id],
-		queryFn: async (): Promise<TrackerDB[]> => await pb.collection('trackers').getFullList(),
-		staleTime: staleTime
-	});
-}
-
-// const trackers = {
-// 	bedsheet: 'vk58159wczyxmus',
-// 	doggoBath: 'hhz09lsfj1o5mbp',
-// 	doggoChewable: 'h3e3xkbmoxma6dv',
-// 	gummy: '8t9hsvqah63rs7h',
-// 	spray: '381t91o03thrvyd',
-// 	towel: 'vvd9jnl0uw8qnie'
-// };
-
-export function trackerNameToId(
-	name: CollectionName,
-	trackers: TrackerDB[] | undefined
-): string | null {
+export function trackerNameToId(name: string, trackers: TrackerDB[] | undefined): string | null {
 	if (!trackers) return null;
 
 	return trackers.find((item) => item.name === name)?.id ?? null;
 }
 
-export function trackerIdToName(
-	id: string,
-	trackers: TrackerDB[] | undefined
-): CollectionName | null {
+export function trackerIdToName(id: string, trackers: TrackerDB[] | undefined): string | null {
 	if (!trackers) return null;
 
 	return trackers.find((item) => id === item.id)?.name ?? null;

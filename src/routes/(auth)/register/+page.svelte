@@ -46,19 +46,16 @@
 		const authData = await pb.collection('users').authWithPassword(newUser.email, newUser.password);
 		if (!authData.token || !newUserRecord) return;
 
-		let familyId = '';
-
+		let newFamily;
 		try {
-			const newFamily = await pb.collection('families').create({
+			newFamily = await pb.collection('families').create({
 				name: 'Default',
 				'members+': newUserRecord?.id,
 				owner: newUserRecord?.id,
 				enabled: true
 			});
 
-			await pb.collection('users').update(newUserRecord.id, {
-				family: newFamily.id
-			});
+			console.log('here', newFamily);
 
 			const batch = pb.createBatch();
 
@@ -78,6 +75,7 @@
 			goto('/');
 		} catch (err) {
 			console.log(err);
+			goto('/error');
 		}
 	}
 

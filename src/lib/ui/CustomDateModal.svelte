@@ -15,12 +15,12 @@
 	dayjs.extend(timezone);
 
 	let {
-		collectionName,
+		tracker,
 		interval,
 		intervalUnit,
 		tanstackClient
 	}: {
-		collectionName: CollectionName;
+		tracker: TrackerDB | undefined;
 		interval: number | undefined;
 		intervalUnit: string | undefined;
 		tanstackClient: QueryClient;
@@ -50,7 +50,7 @@
 		buttonStatus = 'loading';
 
 		const result = await pb.collection('logs').create({
-			tracker: trackerNameToId(collectionName),
+			tracker: tracker?.id,
 			user: pb.authStore.record?.id,
 			time: dayjs.tz(timestamp, 'Asia/Singapore'),
 			interval: interval,
@@ -105,18 +105,7 @@
 			{:else if buttonStatus === 'loading'}
 				<span class="loading loading-spinner loading-md"></span>
 			{:else}
-				{#if collectionName === 'towel'}
-					Add Wash
-				{/if}
-				{#if collectionName === 'spray'}
-					Add Spray
-				{/if}
-				{#if collectionName === 'gummy'}
-					Add Gummy
-				{/if}
-				{#if collectionName === 'doggoChewable'}
-					Add Feed
-				{/if}
+				{tracker?.actionLabel}
 			{/if}
 		</button>
 

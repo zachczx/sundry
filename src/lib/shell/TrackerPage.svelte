@@ -218,12 +218,7 @@
 			<ActionButton {query} {refetch} text={options.labels.ctaButtonText} />
 
 			<div class="flex justify-start">
-				<CustomDateModal
-					collectionName={options.collectionName}
-					{tanstackClient}
-					{interval}
-					{intervalUnit}
-				/>
+				<CustomDateModal tracker={options.tracker} {tanstackClient} {interval} {intervalUnit} />
 			</div>
 		</div>
 
