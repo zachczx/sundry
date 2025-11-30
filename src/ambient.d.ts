@@ -53,6 +53,10 @@ interface TrackerDB {
 	display: string;
 	interval: number;
 	intervalUnit: IntervalUnit;
+	category: string;
+	actionLabel: string;
+	pinned: boolean;
+	show: boolean;
 	created: string;
 	updated: string;
 }
@@ -88,22 +92,26 @@ interface NotificationStatus {
 
 type ButtonState = 'default' | 'loading' | 'success' | 'error';
 
-type CollectionName =
-	| 'towel'
-	| 'spray'
-	| 'gummy'
-	| 'user'
-	| 'bedsheet'
-	| 'vacation'
-	| 'doggoBath'
-	| 'doggoChewable';
+// type CollectionName =
+// 	| 'towel'
+// 	| 'spray'
+// 	| 'gummy'
+// 	| 'user'
+// 	| 'bedsheet'
+// 	| 'vacation'
+// 	| 'doggoBath'
+// 	| 'doggoChewable';
 
 // Types/Interfaces for TrackerPage component abstraction
 
 interface TrackerPageOptions {
-	trackerId: string;
-	collectionName: CollectionName;
-	labels: { pageTitle: string; ctaButtonText: string; noun: string };
+	tracker: TrackerDB | undefined;
+	collectionName: string | undefined;
+	labels: {
+		pageTitle: string | undefined;
+		ctaButtonText: string | undefined;
+		noun: string | undefined;
+	};
 	calculateGaps?: (records: LogsDB[], vacations: VacationDB[]) => LogsRecord[];
 }
 

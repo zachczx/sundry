@@ -8,6 +8,7 @@
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import { createQuery, useQueryClient, type CreateQueryResult } from '@tanstack/svelte-query';
 	import {
+		allLogsQueryOptions,
 		allTrackersQueryOptions,
 		createUserQueryOptions,
 		logsQueryOptions,
@@ -42,7 +43,8 @@
 	});
 
 	const latestLogs = createQuery(notificationQueryOptions);
-	const trackers = createQuery(allTrackersQueryOptions);
+	const trackersDb = createQuery(allTrackersQueryOptions);
+	const allLogsDb = createQuery(allLogsQueryOptions);
 
 	const options: ActionCardOptions[] = [
 		{ ...towel, size: 'compact', button: { ...towel.button, status: buttonStatuses.towel } },
@@ -65,32 +67,82 @@
 		}
 	];
 
-	let tasks = $derived.by(() => {
-		if (!latestLogs.isSuccess || !latestLogs.data) return { important: [], general: [] };
+	// let tasks = $derived.by(() => {
+	// 	if (!latestLogs.isSuccess || !latestLogs.data) return { important: [], general: [] };
 
-		const important = ['towel', 'spray', 'gummy'];
+	// 	const importantTasks = trackersDb
+	// 		.filter((tracker) => tracker.pinned)
+	// 		.map((task) => {
+	// 			const data = latestLogs.data.find(
+	// 				(log) => log.tracker === trackerNameToId(task.collectionName, trackers.data)
+	// 			);
 
-		const importantTasks = options
-			.filter((task) => important.includes(task.collectionName))
-			.map((task) => {
-				const data = latestLogs.data.find(
-					(log) => log.tracker === trackerNameToId(task.collectionName, trackers.data)
-				);
+	// 			return { ...task, notification: getTrackerStatus(data) };
+	// 		});
 
-				return { ...task, notification: getTrackerStatus(data) };
-			});
+	// 	const generalTasks = options
+	// 		.filter((task) => !important.includes(task.collectionName))
+	// 		.map((task) => {
+	// 			const data = latestLogs.data.find(
+	// 				(log) => log.tracker === trackerNameToId(task.collectionName, trackers.data)
+	// 			);
 
-		const generalTasks = options
-			.filter((task) => !important.includes(task.collectionName))
-			.map((task) => {
-				const data = latestLogs.data.find(
-					(log) => log.tracker === trackerNameToId(task.collectionName, trackers.data)
-				);
+	// 			return { ...task, notification: getTrackerStatus(data) };
+	// 		});
 
-				return { ...task, notification: getTrackerStatus(data) };
-			});
+	// 	return { important: importantTasks, general: generalTasks };
+	// });
 
-		return { important: importantTasks, general: generalTasks };
+	//////////////////////////////////////
+	//////////////////////////////////////
+	//////////////////////////////////////
+	//////////////////////////////////////
+	//////////////////////////////////////
+
+	let trackers = $derived.by(() => {
+		if (!trackersDb.isSuccess || !trackersDb.data) return { pinned: [], general: [] };
+
+		const pinned = trackersDb.data.filter((tracker) => tracker.pinned);
+		const general = trackersDb.data.filter((tracker) => !tracker.pinned);
+
+		return { pinned: pinned, general: general };
+	});
+
+	let logs = $derived.by(() => {
+		if (!allLogsDb.isSuccess || !allLogsDb.data) return { pinned: [], general: [] };
+
+		const pinned = [];
+		const general = [];
+
+		for (const t of trackers.pinned) {
+			const logData = allLogsDb.data.filter((log) => t.id === log.tracker);
+			const trackerData = trackers.pinned.find((tracker) => tracker.id === t.id);
+			const config = options.find((opt) => opt.collectionName === trackerData?.name);
+			const mergedData = {
+				trackerName: t.name,
+				trackerData: trackerData,
+				logData: logData,
+				config: config,
+				notification: getTrackerStatus(logData)
+			};
+			pinned.push(mergedData);
+		}
+
+		for (const t of trackers.general) {
+			const logData = allLogsDb.data.filter((log) => t.id === log.tracker);
+			const trackerData = trackers.general.find((tracker) => tracker.id === t.id);
+			const config = options.find((opt) => opt.collectionName === trackerData?.name);
+			const mergedData = {
+				trackerName: t.name,
+				trackerData: trackerData,
+				logData: logData,
+				config: config,
+				notification: getTrackerStatus(logData)
+			};
+			general.push(mergedData);
+		}
+
+		return { pinned: pinned, general: general };
 	});
 </script>
 
@@ -98,53 +150,60 @@
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<section class="grid gap-4 py-2">
-				<h2 class="text-base-content/70 text-lg font-bold">Important</h2>
+				<h2 class="text-base-content/70 text-lg font-bold">Pinned</h2>
 
-				{#each tasks.important as task (task.collectionName)}
-					<ActionCard
-						options={{
-							collectionName: task.collectionName,
-							size: task.size ? task.size : undefined,
-							title: task.title,
-							route: task.route,
-							icon: task.icon,
-							button: {
-								status: buttonStatuses[task.collectionName],
-								text: task.button.text
-							}
-						}}
-					></ActionCard>
-				{/each}
+				{#if logs.pinned && logs.pinned.length > 0}
+					{#each logs.pinned as log (log.trackerName)}
+						{#if log.trackerData?.show}
+							<ActionCard
+								options={{
+									collectionName: log.trackerName,
+									size: 'compact',
+									title: log.trackerData?.display ?? '',
+									route: `/${log.trackerData.category}/${log.trackerData.id}`,
+									icon: log.config?.icon ?? '',
+									button: {
+										status: buttonStatuses[log.trackerName],
+										text: log.trackerData?.actionLabel ?? ''
+									}
+								}}
+							></ActionCard>
+						{/if}
+					{/each}
+				{:else}
+					<div class="justify-self-center">
+						<enhanced:img src={EmptyCorgi} alt="nothing" />
+						<p class="text-center">No pinned tasks!</p>
+					</div>
+				{/if}
 			</section>
 
 			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
 
-				{#if tasks.general && tasks.general.length > 0}
-					{@const show = tasks.general.filter((item) => item.notification.show).length}
-
-					{#if show > 0}
-						{#each tasks.general as task (task.collectionName)}
-							{#if task.notification.show}
-								<ActionCard
-									options={{
-										collectionName: task.collectionName,
-										title: task.title,
-										route: task.route,
-										icon: task.icon,
-										button: {
-											status: buttonStatuses[task.collectionName],
-											text: task.button.text
-										}
-									}}
-								></ActionCard>
-							{/if}
-						{/each}
-					{:else}
-						<div class="justify-self-center">
-							<enhanced:img src={EmptyCorgi} alt="nothing" />
-							<p class="text-center">No other upcoming tasks!</p>
-						</div>{/if}
+				{#if logs.general && logs.general.length > 0}
+					{#each logs.general as log (log.trackerName)}
+						{#if log.trackerData?.show}
+							<ActionCard
+								options={{
+									collectionName: log.trackerName,
+									size: 'compact',
+									title: log.trackerData?.display ?? '',
+									route: log.config?.route ?? '',
+									icon: log.config?.icon ?? '',
+									button: {
+										status: buttonStatuses[log.trackerName],
+										text: log.trackerData?.actionLabel ?? ''
+									}
+								}}
+							></ActionCard>
+						{/if}
+					{/each}
+				{:else}
+					<div class="justify-self-center">
+						<enhanced:img src={EmptyCorgi} alt="nothing" />
+						<p class="text-center">No tasks!</p>
+					</div>
 				{/if}
 			</section>
 

@@ -7,7 +7,7 @@
 		singleDay
 	}: {
 		modal: HTMLDialogElement | undefined;
-		singleDay: CollectionsTrackingTime[] | undefined;
+		singleDay: LogsDB[] | undefined;
 	} = $props();
 </script>
 

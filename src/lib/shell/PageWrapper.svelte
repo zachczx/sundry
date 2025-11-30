@@ -16,7 +16,7 @@
 	}: {
 		pb: Client;
 		children: Snippet;
-		title: string;
+		title: string | undefined;
 		back?: boolean;
 		largeScreenCenter?: boolean;
 	} = $props();
@@ -42,10 +42,12 @@
 
 		return '';
 	});
+
+	const defaultTitle = 'Sundry';
 </script>
 
 <svelte:head>
-	<title>{title}</title>
+	<title>{title ? title : defaultTitle}</title>
 </svelte:head>
 
 <div class="grid h-dvh w-full justify-items-center">
@@ -86,7 +88,7 @@
 			{/if}
 
 			<a class="hidden text-xl font-bold lg:flex" href="/">Sundry</a>
-			<span class="text-xl font-bold lg:hidden">{title}</span>
+			<span class="text-xl font-bold lg:hidden">{title ? title : defaultTitle}</span>
 		</div>
 		<div id="desktop-menu" class="navbar-center hidden lg:flex">
 			<ul class="menu menu-horizontal gap-8 px-1 text-lg">

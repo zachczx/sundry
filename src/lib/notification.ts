@@ -10,12 +10,21 @@ export const defaultNotificationStatus: NotificationStatus = {
 	level: 'ok'
 };
 
-export function getTrackerStatus(data: LogsDB | undefined): NotificationStatus {
+export function getTrackerStatus(data: LogsDB | LogsDB[] | undefined): NotificationStatus {
 	if (!data) return emptyNotificationStatus;
-	const notifDetails = getNotificationLabel(data);
 
-	if (data.intervalUnit === 'month') {
-		const nextDate = dayjs(data.time).add(data.interval, 'month');
+	let singleRecord = {} as LogsDB;
+	if (Array.isArray(data) && data.length > 0) {
+		singleRecord = data[0];
+	}
+	if (!Array.isArray(data)) {
+		singleRecord = data;
+	}
+
+	const notifDetails = getNotificationLabel(singleRecord);
+
+	if (singleRecord.intervalUnit === 'month') {
+		const nextDate = dayjs(singleRecord.time).add(singleRecord.interval, 'month');
 		const daysTillNextDate = nextDate.diff(dayjs(), 'day', true);
 
 		if (daysTillNextDate > 1) {
@@ -39,11 +48,11 @@ export function getTrackerStatus(data: LogsDB | undefined): NotificationStatus {
 		const now = dayjs();
 		const leadTimeHours = 6;
 
-		const intervalHours = data.interval * 24;
+		const intervalHours = singleRecord.interval * 24;
 
-		const nextDate = dayjs(data.time).add(data.interval, 'day');
+		const nextDate = dayjs(singleRecord.time).add(singleRecord.interval, 'day');
 
-		const hoursSinceLastRecord = now.diff(dayjs(data.time), 'hour', true);
+		const hoursSinceLastRecord = now.diff(dayjs(singleRecord.time), 'hour', true);
 		if (hoursSinceLastRecord >= intervalHours - leadTimeHours) {
 			const overdue = hoursSinceLastRecord > intervalHours;
 			return {

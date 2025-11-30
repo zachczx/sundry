@@ -17,7 +17,7 @@
 		class: className,
 		icon: CustomIcon
 	}: {
-		text: string;
+		text: string | undefined;
 		query: () => Promise<RecordModel>;
 		refetch: () => Promise<void>;
 		compact?: boolean;

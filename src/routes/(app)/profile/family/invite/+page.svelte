@@ -17,7 +17,6 @@
 
 	const destinationFamilyId = page.url.searchParams.get('i') ?? '';
 	const userAllLogs = createQuery(allLogsQueryOptions);
-	const currentFamily = createQuery(familyQueryOptions);
 	const currentInvite = createQuery(inviteQueryOptions);
 	const tanstackClient = useQueryClient();
 
@@ -25,28 +24,9 @@
 		if (!pb.authStore.record) return;
 
 		try {
-			if (currentFamily.data?.owner === pb.authStore.record?.id) {
-				await pb.collection('families').update(currentFamily.data.id, { enabled: false });
-			}
-
-			if (
-				currentFamily.data &&
-				currentFamily.data.owner !== pb.authStore.record.id &&
-				currentFamily.data.members.includes(pb.authStore.record.id ?? '')
-			) {
-				await pb
-					.collection('families')
-					.update(currentFamily.data.id, { 'members-': pb.authStore.record.id });
-			}
-
-			console.log(destinationFamilyId);
-			const resp = await pb.collection('families').update(destinationFamilyId, {
+			await pb.collection('families').update(destinationFamilyId, {
 				'members+': pb.authStore.record.id,
 				'activeInvites-': pb.authStore.record.id
-			});
-
-			await pb.collection('users').update(pb.authStore.record.id, {
-				family: destinationFamilyId
 			});
 
 			if (currentInvite.data) {
@@ -57,7 +37,7 @@
 				console.log(cleanup);
 			}
 
-			await tanstackClient.refetchQueries(familyRefetchOptions());
+			// TODO: This part is slow
 			await tanstackClient.refetchQueries(inviteRefetchOptions());
 
 			addToast('success', 'Joined family!');
