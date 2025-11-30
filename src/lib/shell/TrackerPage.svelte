@@ -209,6 +209,10 @@
 		<div class="grid w-full content-start justify-items-center gap-4">
 			{#if dbRecords.isSuccess}
 				<StatusHeroImage {notification} />
+			{:else}
+				<div class="avatar relative mt-2 mb-4">
+					<div class="skeleton aspect-square w-40 rounded-full shadow-md"></div>
+				</div>
 			{/if}
 
 			<ActionButton {query} {refetch} text={options.labels.ctaButtonText} />

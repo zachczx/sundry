@@ -16,6 +16,7 @@
 					notification.level === 'due' && 'saturate-75',
 					notification.level === 'overdue' && 'saturate-50'
 				]}
+				fetchpriority="high"
 			/>
 		</div>
 		{#if notification.level === 'ok'}
