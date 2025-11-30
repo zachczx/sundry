@@ -189,7 +189,7 @@
 									collectionName: log.trackerName,
 									size: 'compact',
 									title: log.trackerData?.display ?? '',
-									route: log.config?.route ?? '',
+									route: `/${log.trackerData.category}/${log.trackerData.id}`,
 									icon: log.config?.icon ?? '',
 									button: {
 										status: buttonStatuses[log.trackerName],
