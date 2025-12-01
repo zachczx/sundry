@@ -12,6 +12,8 @@
 	import { createQuery } from '@tanstack/svelte-query';
 	import { allTrackersQueryOptions } from '$lib/queries';
 	import { getTrackerIcon } from '$lib/mapper.js';
+	import SkeletonActionCard from '$lib/ui/SkeletonActionCard.svelte';
+	import EmptyCorgi from '$lib/assets/empty.webp?w=200&enhanced';
 
 	let { data } = $props();
 
@@ -43,63 +45,53 @@
 	<main class="h-full">
 		<div id="mobile" class="grid w-full max-w-lg gap-8 justify-self-center lg:text-base">
 			<div class="grid gap-8 py-4">
-				{#each currentTrackers as tracker}
-					<ActionCard
-						options={{
-							collectionName: tracker.name,
-							title: tracker.display,
-							route: `/${tracker.category}/${tracker.id}`,
-							icon: getTrackerIcon(tracker.name),
-							button: {
-								text: tracker.actionLabel,
-								status: buttonStatuses?.[tracker.name]
-							}
-						}}
-					></ActionCard>
-				{/each}
+				{#if trackersDb.isPending}
+					<SkeletonActionCard />
+					<SkeletonActionCard />
+				{:else if currentTrackers && currentTrackers.length > 0}
+					{#each currentTrackers as tracker}
+						<ActionCard
+							options={{
+								collectionName: tracker.name,
+								title: tracker.display,
+								route: `/${tracker.category}/${tracker.id}`,
+								icon: getTrackerIcon(tracker.name),
+								button: {
+									text: tracker.actionLabel,
+									status: buttonStatuses?.[tracker.name]
+								}
+							}}
+						></ActionCard>
+					{/each}
 
-				<!-- <ActionCard
-					options={{
-						...towel,
-						button: { ...towel.button, status: buttonStatuses.towel }
-					}}
-				></ActionCard>
+					{#if data.category === 'household'}
+						<div class="border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4">
+							<a href="/household/count" class="flex items-center">
+								<div class="flex grow items-center gap-4">
+									<FluentEmojiFlatStopwatch class="size-12 opacity-75" />
 
-				<ActionCard
-					options={{
-						collectionName: 'bedsheet',
-						title: 'Bedsheet',
-						route: '/household/bedsheet',
-						icon: FluentEmojiFlatBed,
-						button: {
-							text: 'Changed',
-							status: buttonStatuses.bedsheet
-						}
-					}}
-				></ActionCard> -->
-
-				{#if data.category === 'household'}
-					<div class="border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4">
-						<a href="/household/count" class="flex items-center">
-							<div class="flex grow items-center gap-4">
-								<FluentEmojiFlatStopwatch class="size-12 opacity-75" />
-
-								<div>
-									<p class="text-xl font-bold">Timer</p>
+									<div>
+										<p class="text-xl font-bold">Timer</p>
+									</div>
 								</div>
-							</div>
-							<div class="flex h-full items-center">
-								<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-									><MaterialSymbolsChevronRight class="size-6" /></button
-								>
-							</div>
-						</a>
-						<button
-							class="btn btn-lg btn-primary flex w-full items-center gap-2 rounded-full"
-							onclick={() => goto('/household/count?start=true')}
-						>
-							Start Timer
-						</button>
+								<div class="flex h-full items-center">
+									<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
+										><MaterialSymbolsChevronRight class="size-6" /></button
+									>
+								</div>
+							</a>
+							<button
+								class="btn btn-lg btn-primary flex w-full items-center gap-2 rounded-full"
+								onclick={() => goto('/household/count?start=true')}
+							>
+								Start Timer
+							</button>
+						</div>
+					{/if}
+				{:else}
+					<div class="justify-self-center">
+						<enhanced:img src={EmptyCorgi} alt="nothing" />
+						<p class="text-center">Nothing being tracked!</p>
 					</div>
 				{/if}
 			</div>

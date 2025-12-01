@@ -17,6 +17,7 @@
 	import FluentEmojiFlatStopwatch from '$lib/assets/expressive-icons/FluentEmojiFlatStopwatch.svelte';
 	import FluentEmojiFlatAirplane from '$lib/assets/expressive-icons/FluentEmojiFlatAirplane.svelte';
 	import { getTrackerIcon } from '$lib/mapper';
+	import SkeletonActionCard from '$lib/ui/SkeletonActionCard.svelte';
 
 	dayjs.extend(relativeTime);
 	dayjs.extend(utc);
@@ -86,7 +87,11 @@
 			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">Pinned</h2>
 
-				{#if logs.pinned && logs.pinned.length > 0}
+				{#if allLogsDb.isPending}
+					<SkeletonActionCard size="compact" />
+					<SkeletonActionCard size="compact" />
+					<SkeletonActionCard size="compact" />
+				{:else if logs.pinned && logs.pinned.length > 0}
 					{#each logs.pinned as log (log.trackerName)}
 						{#if log.trackerData?.show}
 							<ActionCard
@@ -115,7 +120,11 @@
 			<section class="grid gap-4 py-2">
 				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
 
-				{#if logs.general && logs.general.length > 0}
+				{#if allLogsDb.isPending}
+					<SkeletonActionCard size="compact" />
+					<SkeletonActionCard size="compact" />
+					<SkeletonActionCard size="compact" />
+				{:else if logs.general && logs.general.length > 0}
 					{#each logs.general as log (log.trackerName)}
 						{#if log.trackerData?.show}
 							<ActionCard
