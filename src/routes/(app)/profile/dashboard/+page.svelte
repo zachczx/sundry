@@ -105,21 +105,23 @@
 			Customize Dashboard
 		</h1>
 
-		{#each Object.values(trackers) as trackerList}
-			<section
-				class="border-base-300 grid min-h-18 content-start rounded-2xl border bg-white/70 p-4"
-			>
-				{#if trackerList && trackerList.length > 0}
-					<h2 class="flex items-center gap-4 text-xl font-bold">
-						{trackerList[0].expand?.family?.name}
-					</h2>
-				{/if}
+		<div class="grid gap-8">
+			{#each Object.values(trackers) as trackerList}
+				<section
+					class="border-base-300 grid min-h-18 content-start rounded-2xl border bg-white/70 p-4"
+				>
+					{#if trackerList && trackerList.length > 0}
+						<h2 class="flex items-center gap-4 text-xl font-bold">
+							{trackerList[0].expand?.family?.name}
+						</h2>
+					{/if}
 
-				{#each trackerList as tracker (tracker.id)}
-					{@render menuItem(tracker)}
-				{/each}
-			</section>
-		{/each}
+					{#each trackerList as tracker (tracker.id)}
+						{@render menuItem(tracker)}
+					{/each}
+				</section>
+			{/each}
+		</div>
 	</div>
 </PageWrapper>
 <MaterialSymbolsFilterList class="size-6" />
