@@ -122,7 +122,7 @@ type Collections = LogsDB | VacationDB;
 type CalendarRecord = Collections;
 
 interface ActionCardOptions {
-	title: string;
+	title: string | undefined;
 	size?: 'compact' | 'default' | 'list';
 	trackerName: string;
 	icon: Component;
@@ -130,6 +130,6 @@ interface ActionCardOptions {
 	lastChild?: boolean;
 	button: {
 		status?: ButtonState;
-		text: string;
+		text: string | undefined;
 	};
 }

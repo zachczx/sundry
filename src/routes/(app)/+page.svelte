@@ -93,21 +93,19 @@
 					<SkeletonActionCard size="compact" />
 				{:else if logs.pinned && logs.pinned.length > 0}
 					{#each logs.pinned as log (log.trackerName)}
-						{#if log.trackerData?.show}
-							<ActionCard
-								options={{
-									trackerName: log.trackerName,
-									size: 'compact',
-									title: log.trackerData?.display,
-									route: `/${log.trackerData.category}/${log.trackerData.id}`,
-									icon: getTrackerIcon(log.trackerName),
-									button: {
-										status: buttonStatuses?.[log.trackerName],
-										text: log.trackerData?.actionLabel
-									}
-								}}
-							></ActionCard>
-						{/if}
+						<ActionCard
+							options={{
+								trackerName: log.trackerName,
+								size: 'compact',
+								title: log.trackerData?.display,
+								route: `/${log.trackerData?.category}/${log.trackerData?.id}`,
+								icon: getTrackerIcon(log.trackerName),
+								button: {
+									status: buttonStatuses?.[log.trackerName],
+									text: log.trackerData?.actionLabel
+								}
+							}}
+						></ActionCard>
 					{/each}
 				{:else}
 					<div class="justify-self-center">
@@ -127,22 +125,20 @@
 						<SkeletonActionCard size="compact" />
 					{:else if logs.general && logs.general.length > 0}
 						{#each logs.general as log, i (log.trackerName)}
-							{#if log.trackerData?.show}
-								<ActionCard
-									options={{
-										trackerName: log.trackerName,
-										size: 'list',
-										title: log.trackerData?.display,
-										route: `/${log.trackerData.category}/${log.trackerData.id}`,
-										icon: getTrackerIcon(log.trackerName),
-										lastChild: i === logs.general.length - 1 ? true : undefined,
-										button: {
-											status: buttonStatuses?.[log.trackerName],
-											text: log.trackerData?.actionLabel
-										}
-									}}
-								></ActionCard>
-							{/if}
+							<ActionCard
+								options={{
+									trackerName: log.trackerName,
+									size: 'list',
+									title: log.trackerData?.display,
+									route: `/${log.trackerData?.category}/${log.trackerData?.id}`,
+									icon: getTrackerIcon(log.trackerName),
+									lastChild: i === logs.general.length - 1 ? true : undefined,
+									button: {
+										status: buttonStatuses?.[log.trackerName],
+										text: log.trackerData?.actionLabel
+									}
+								}}
+							></ActionCard>
 						{/each}
 					{:else}
 						<div class="justify-self-center">

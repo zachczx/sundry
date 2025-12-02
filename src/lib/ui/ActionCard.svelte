@@ -14,8 +14,16 @@
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
 	import MaterialSymbolsWarning from '$lib/assets/svg/MaterialSymbolsWarning.svelte';
 	import MaterialSymbolsExclamation from '$lib/assets/svg/MaterialSymbolsExclamation.svelte';
+	import { onMount } from 'svelte';
+	import { error } from '@sveltejs/kit';
 
 	let { options }: { options: ActionCardOptions } = $props();
+
+	onMount(() => {
+		if (!options.title) {
+			error(500);
+		}
+	});
 
 	let size = $derived(options.size ?? 'default');
 
