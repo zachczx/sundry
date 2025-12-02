@@ -16,6 +16,7 @@
 	import SegmentedControl from '$lib/ui/SegmentedControl.svelte';
 	import type { ChangeEventHandler } from 'svelte/elements';
 	import MaterialSymbolsChevronRight from '$lib/assets/svg/MaterialSymbolsChevronRight.svelte';
+	import { MenuItem } from '@ark-ui/svelte';
 
 	dayjs.extend(utc);
 	dayjs.extend(timezone);
@@ -72,41 +73,10 @@
 		<div class="overflow-y-auto">
 			<h1 class="text-primary mb-4 text-center text-4xl font-bold max-lg:hidden">Profile</h1>
 			<div class="grid w-full content-start">
-				<a
-					href="/profile/family"
-					class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg"
-				>
-					<div class="grow font-semibold">Manage Family</div>
-					<div class="flex h-full items-center">
-						<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-							><MaterialSymbolsChevronRight class="size-7" /></button
-						>
-					</div>
-				</a>
-
-				<a
-					href="/profile/interval"
-					class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg"
-				>
-					<div class="grow font-semibold">Change Tracking Intervals</div>
-					<div class="flex h-full items-center">
-						<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-							><MaterialSymbolsChevronRight class="size-7" /></button
-						>
-					</div>
-				</a>
-
-				<a
-					href="/profile/vacation"
-					class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg"
-				>
-					<div class="grow font-semibold">Manage Vacation Dates</div>
-					<div class="flex h-full items-center">
-						<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
-							><MaterialSymbolsChevronRight class="size-7" /></button
-						>
-					</div>
-				</a>
+				{@render menuItem('dashboard', 'Customize Dashboard')}
+				{@render menuItem('family', 'Manage Family')}
+				{@render menuItem('interval', 'Change Tracking Intervals')}
+				{@render menuItem('vacation', 'Manage Vacation Dates')}
 
 				<form class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg" {onchange}>
 					<legend class="fieldset-legend grow">Sound</legend>
@@ -124,3 +94,17 @@
 		</div>
 	</div>
 </PageWrapper>
+
+{#snippet menuItem(href: string, title: string)}
+	<a
+		href={'/profile/' + href}
+		class="border-b-base-300 flex items-center border-b pt-4 pb-6 text-lg"
+	>
+		<div class="grow font-semibold">{title}</div>
+		<div class="flex h-full items-center">
+			<button class="active:bg-neutral/10 cursor-pointer rounded-lg p-1 opacity-75"
+				><MaterialSymbolsChevronRight class="size-7" /></button
+			>
+		</div>
+	</a>
+{/snippet}

@@ -49,6 +49,7 @@ interface LogsRecord extends LogsDB {
 interface TrackerDB {
 	id: string;
 	user: string;
+	family: string;
 	name: CollectionName;
 	display: string;
 	interval: number;
@@ -59,6 +60,7 @@ interface TrackerDB {
 	show: boolean;
 	created: string;
 	updated: string;
+	expand?: { family?: FamilyDB };
 }
 
 interface FamilyDB {
