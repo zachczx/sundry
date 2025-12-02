@@ -107,7 +107,7 @@
 				{/each}
 			</ul>
 		</div>
-		<div class="disabled-navbar-end">
+		<div class="lg:navbar-end">
 			<div id="mobile-hamburger" class="dropdown flex items-center lg:hidden">
 				<FeedDropdown />
 				<a href="/profile" class="btn btn-ghost px-2 py-0"
