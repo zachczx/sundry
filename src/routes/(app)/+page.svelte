@@ -96,7 +96,7 @@
 						{#if log.trackerData?.show}
 							<ActionCard
 								options={{
-									collectionName: log.trackerName,
+									trackerName: log.trackerName,
 									size: 'compact',
 									title: log.trackerData?.display,
 									route: `/${log.trackerData.category}/${log.trackerData.id}`,
@@ -118,36 +118,39 @@
 			</section>
 
 			<section class="grid gap-4 py-2">
-				<h2 class="text-base-content/70 text-lg font-bold">General</h2>
+				<h2 class="text-base-content/70 text-lg font-bold">Other Tasks</h2>
 
-				{#if allLogsDb.isPending}
-					<SkeletonActionCard size="compact" />
-					<SkeletonActionCard size="compact" />
-					<SkeletonActionCard size="compact" />
-				{:else if logs.general && logs.general.length > 0}
-					{#each logs.general as log (log.trackerName)}
-						{#if log.trackerData?.show}
-							<ActionCard
-								options={{
-									collectionName: log.trackerName,
-									size: 'compact',
-									title: log.trackerData?.display,
-									route: `/${log.trackerData.category}/${log.trackerData.id}`,
-									icon: getTrackerIcon(log.trackerName),
-									button: {
-										status: buttonStatuses?.[log.trackerName],
-										text: log.trackerData?.actionLabel
-									}
-								}}
-							></ActionCard>
-						{/if}
-					{/each}
-				{:else}
-					<div class="justify-self-center">
-						<enhanced:img src={EmptyCorgi} alt="nothing" />
-						<p class="text-center">No tasks!</p>
-					</div>
-				{/if}
+				<div class="border-base-300/50 rounded-2xl border bg-white/70">
+					{#if allLogsDb.isPending}
+						<SkeletonActionCard size="compact" />
+						<SkeletonActionCard size="compact" />
+						<SkeletonActionCard size="compact" />
+					{:else if logs.general && logs.general.length > 0}
+						{#each logs.general as log, i (log.trackerName)}
+							{#if log.trackerData?.show}
+								<ActionCard
+									options={{
+										trackerName: log.trackerName,
+										size: 'list',
+										title: log.trackerData?.display,
+										route: `/${log.trackerData.category}/${log.trackerData.id}`,
+										icon: getTrackerIcon(log.trackerName),
+										lastChild: i === logs.general.length - 1 ? true : undefined,
+										button: {
+											status: buttonStatuses?.[log.trackerName],
+											text: log.trackerData?.actionLabel
+										}
+									}}
+								></ActionCard>
+							{/if}
+						{/each}
+					{:else}
+						<div class="justify-self-center">
+							<enhanced:img src={EmptyCorgi} alt="nothing" />
+							<p class="text-center">No tasks!</p>
+						</div>
+					{/if}
+				</div>
 			</section>
 
 			<section class="grid gap-0 py-0">

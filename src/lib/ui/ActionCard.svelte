@@ -23,12 +23,12 @@
 	const latestLogs = createQuery(notificationQueryOptions);
 	const trackers = createQuery(allTrackersQueryOptions);
 	let tracker = $derived.by(() =>
-		trackers.data?.find((tracker) => tracker.name === options.collectionName)
+		trackers.data?.find((tracker) => tracker.name === options.trackerName)
 	);
 	const notification = $derived.by(() => {
 		if (latestLogs.isSuccess && latestLogs.data) {
 			const notif = latestLogs.data.find(
-				(item) => trackerIdToName(item.tracker, trackers.data) === options.collectionName
+				(item) => trackerIdToName(item.tracker, trackers.data) === options.trackerName
 			);
 			return getTrackerStatus(notif);
 		}
@@ -50,8 +50,52 @@
 	};
 </script>
 
+{#if size === 'list'}
+	<a
+		href={options.route}
+		class={['grid gap-4 px-2 py-2', !options.lastChild && 'border-b-base-300/50 border-b']}
+	>
+		<div class="flex items-center">
+			<div class="flex grow items-center gap-4">
+				<div class="flex size-9 items-center justify-center">
+					<options.icon class="size-7 opacity-75" />
+				</div>
+				<div class="grid gap-0">
+					<div class="text-base-content/90 text-lg font-bold">
+						{options.title}
+					</div>
+					{#if latestLogs.isPending && !latestLogs.data}
+						<div class="custom-loader"></div>
+					{/if}
+					{#if latestLogs.error}
+						An error has occurred:
+						{latestLogs.error.message}
+					{/if}
+					{#if latestLogs.isSuccess && latestLogs.data?.length > 0}
+						{#if notification?.show}
+							{#if notification.level === 'overdue'}
+								<span class="text-error font-bold tracking-tight">Overdue</span>
+							{:else if notification.level === 'due'}
+								<span class="text-error font-semibold tracking-tight">Due</span>
+							{/if}
+						{:else}
+							<span class="text-neutral/70 text-sm font-medium tracking-tight"
+								>Due {dayjs(notification?.next).fromNow()}</span
+							>
+						{/if}
+					{/if}
+				</div>
+			</div>
+
+			<div class="flex h-full items-center">
+				<MaterialSymbolsChevronRight class="size-5 opacity-75" />
+			</div>
+		</div>
+	</a>
+{/if}
+
 {#if size === 'compact'}
-	<section class={['border-base-300 grid min-h-18 gap-4 rounded-2xl border bg-white/70 px-2 py-2']}>
+	<section class="border-base-300 grid min-h-18 gap-4 rounded-2xl border bg-white/70 px-2 py-2">
 		<div class="flex items-center">
 			<a href={options.route} class="flex grow items-center gap-4">
 				<options.icon class="size-9 opacity-75" />
@@ -98,7 +142,7 @@
 {/if}
 
 {#if size === 'default'}
-	<section class={['border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4']}>
+	<section class="border-base-300 grid min-h-24 gap-4 rounded-3xl border bg-white/70 p-4">
 		<a href={options.route} class="flex items-center">
 			<div class="flex grow items-center gap-4">
 				<options.icon class="size-12 opacity-75" />

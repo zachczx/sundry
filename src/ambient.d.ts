@@ -121,10 +121,11 @@ type CalendarRecord = Collections;
 
 interface ActionCardOptions {
 	title: string;
-	size?: 'compact' | 'default';
-	collectionName: CollectionName;
+	size?: 'compact' | 'default' | 'list';
+	trackerName: string;
 	icon: Component;
 	route: string;
+	lastChild?: boolean;
 	button: {
 		status?: ButtonState;
 		text: string;
